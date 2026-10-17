@@ -1,0 +1,5 @@
+board: RDK X5 EVB 192.168.1.10, kernel 6.1.83-DR-PL5.1_V1.0.20
+collector: tracebox v57.1-c59f57dd4 (ARM64, from /root/sdk_md_x5_1.1.1/perfetto/linux-arm64/linux-arm64/)
+analyzer: Perfetto v57.1-c59f57dd4 (c59f57dd4d9c4ad37c44f0fee9dde060707534fa)
+script_under_test: /data/rdk_mem_case.sh md5=2d70ea97dfe637757f23638063503047 bytes=235
+date: 2026-10-18 (host)

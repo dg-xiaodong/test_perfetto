@@ -1,0 +1,7 @@
+# Board-side capture (traces written to /userdata ext4, NEVER to /data tmpfs)
+/userdata/perfetto-debug/tracebox --txt -c /userdata/perfetto-debug/mem1.pbtxt \
+  -o /userdata/perfetto-debug/run1.pftrace
+# run_case.sh starts tracebox, waits 8s, then runs the workload, waits 25s after it, then waits for duration.
+sh /userdata/perfetto-debug/run_case.sh run1 /userdata/perfetto-debug/mem1.pbtxt tmpfs
+# Host pull
+scp root@192.168.1.10:/userdata/perfetto-debug/run1.pftrace .

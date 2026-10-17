@@ -1,0 +1,6 @@
+run0: bounds=[36353804794293,36473250897891] span=119.4s counter_samples={'Cached': 479, 'MemAvailable': 479, 'Shmem': 479} rss_stat_events=437 non_info_stats=0
+run1: bounds=[36474876605017,36594515646949] span=119.6s counter_samples={'Cached': 480, 'MemAvailable': 480, 'Shmem': 480} rss_stat_events=1108 non_info_stats=0
+run2: bounds=[36641496050596,36741000904269] span=99.5s counter_samples={'Cached': 399, 'MemAvailable': 399, 'Shmem': 399} rss_stat_events=1181 non_info_stats=0
+run3: bounds=[36742575947186,36862015343452] span=119.4s counter_samples={'Cached': 479, 'MemAvailable': 479, 'Shmem': 479} rss_stat_events=11488 non_info_stats=0
+run4: bounds=[36863836246577,36983251440593] span=119.4s counter_samples={'Cached': 479, 'MemAvailable': 479, 'Shmem': 479} rss_stat_events=2678 non_info_stats=0
+run5: bounds=[36993827023973,37093251007395] span=99.4s counter_samples={'Cached': 399, 'MemAvailable': 399, 'Shmem': 399} rss_stat_events=6704 non_info_stats=0

@@ -1,0 +1,18 @@
+=== run run0 mode=none cfg=mem1.pbtxt script_md5=2d70ea97dfe637757f23638063503047 bytes=235 kernel=6.1.83-DR-PL5.1_V1.0.20 start=Thu Jan  1 10:05:53 UTC 1970 ===
+MemTotal:        1336028 kB
+MemFree:         1010012 kB
+MemAvailable:    1123628 kB
+Buffers:           43484 kB
+Cached:            51988 kB
+SwapCached:            0 kB
+workload_start_uptime=36361.25
+workload_end_uptime=36361.26
+WORKLOAD_OK=0
+recovery_end_uptime=36386.28
+tracebox_exit=0
+MemTotal:        1336028 kB
+MemFree:         1010028 kB
+MemAvailable:    1124252 kB
+Buffers:           43612 kB
+Cached:            52500 kB
+SwapCached:            0 kB

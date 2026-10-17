@@ -1,0 +1,22 @@
+=== run run4 mode=kill cfg=mem1.pbtxt script_md5=2d70ea97dfe637757f23638063503047 bytes=235 kernel=6.1.83-DR-PL5.1_V1.0.20 start=Thu Jan  1 10:14:23 UTC 1970 ===
+MemTotal:        1336028 kB
+MemFree:         1007524 kB
+MemAvailable:    1124216 kB
+Buffers:           44068 kB
+Cached:            54348 kB
+SwapCached:            0 kB
+workload_start_uptime=36871.14
+TEST START
+kill_at_uptime=36889.15 stale_file=25165824
+stale_held_uptime=36899.17 stale_file=25165824
+stale_removed_uptime=36907.21
+workload_end_uptime=36917.21
+WORKLOAD_OK=0
+recovery_end_uptime=36942.23
+tracebox_exit=0
+MemTotal:        1336028 kB
+MemFree:         1006832 kB
+MemAvailable:    1124192 kB
+Buffers:           44196 kB
+Cached:            54976 kB
+SwapCached:            0 kB

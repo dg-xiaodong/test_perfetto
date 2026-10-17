@@ -1,0 +1,58 @@
+=== run run3 mode=cycles cfg=mem3.pbtxt script_md5=2d70ea97dfe637757f23638063503047 bytes=235 kernel=6.1.83-DR-PL5.1_V1.0.20 start=Thu Jan  1 10:12:21 UTC 1970 ===
+MemTotal:        1336028 kB
+MemFree:         1008268 kB
+MemAvailable:    1123992 kB
+Buffers:           43916 kB
+Cached:            53632 kB
+SwapCached:            0 kB
+workload_start_uptime=36749.97
+cycle 0 written uptime=36750.03 bytes=25165824
+cycle 0 removed uptime=36750.07
+cycle 1 written uptime=36751.12 bytes=25165824
+cycle 1 removed uptime=36751.16
+cycle 2 written uptime=36752.22 bytes=25165824
+cycle 2 removed uptime=36752.25
+cycle 3 written uptime=36753.31 bytes=25165824
+cycle 3 removed uptime=36753.35
+cycle 4 written uptime=36754.41 bytes=25165824
+cycle 4 removed uptime=36754.44
+cycle 5 written uptime=36755.50 bytes=25165824
+cycle 5 removed uptime=36755.54
+cycle 6 written uptime=36756.60 bytes=25165824
+cycle 6 removed uptime=36756.63
+cycle 7 written uptime=36757.69 bytes=25165824
+cycle 7 removed uptime=36757.73
+cycle 8 written uptime=36758.78 bytes=25165824
+cycle 8 removed uptime=36758.82
+cycle 9 written uptime=36759.88 bytes=25165824
+cycle 9 removed uptime=36759.92
+cycle 10 written uptime=36760.97 bytes=25165824
+cycle 10 removed uptime=36761.01
+cycle 11 written uptime=36762.07 bytes=25165824
+cycle 11 removed uptime=36762.10
+cycle 12 written uptime=36763.16 bytes=25165824
+cycle 12 removed uptime=36763.20
+cycle 13 written uptime=36764.26 bytes=25165824
+cycle 13 removed uptime=36764.30
+cycle 14 written uptime=36765.35 bytes=25165824
+cycle 14 removed uptime=36765.39
+cycle 15 written uptime=36766.45 bytes=25165824
+cycle 15 removed uptime=36766.49
+cycle 16 written uptime=36767.54 bytes=25165824
+cycle 16 removed uptime=36767.58
+cycle 17 written uptime=36768.64 bytes=25165824
+cycle 17 removed uptime=36768.68
+cycle 18 written uptime=36769.73 bytes=25165824
+cycle 18 removed uptime=36769.77
+cycle 19 written uptime=36770.83 bytes=25165824
+cycle 19 removed uptime=36770.87
+workload_end_uptime=36771.87
+WORKLOAD_OK=0
+recovery_end_uptime=36796.89
+tracebox_exit=0
+MemTotal:        1336028 kB
+MemFree:         1007592 kB
+MemAvailable:    1124192 kB
+Buffers:           44060 kB
+Cached:            54352 kB
+SwapCached:            0 kB

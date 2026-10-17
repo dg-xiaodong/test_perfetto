@@ -1,0 +1,7 @@
+run,mode,span_s,meminfo_samples,first_avail_MiB,min_avail_MiB,max_shmem_MiB,end_avail_MiB,end_shmem_MiB
+run0,idle baseline,119.4,479,1087.1,1086.6,0.7,1086.8,0.7
+run1,script on /data tmpfs,119.6,480,1087.6,1062.6,24.4,1087.0,0.73
+run2,control: same bytes on /data ext4,99.5,399,1086.8,1085.7,0.7,1085.7,0.66
+run3,20 fast write/rm cycles (tmpfs),119.4,479,1087.2,1061.4,24.5,1086.2,1.03
+run4,SIGKILL -> orphan tmpfs file,119.4,479,1088.2,1062.3,24.5,1086.4,0.78
+run5,10 write/hold/rm cycles (tmpfs),99.4,399,1087.4,1061.2,24.6,1085.2,0.82

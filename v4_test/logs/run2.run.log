@@ -1,0 +1,20 @@
+=== run run2 mode=ext4 cfg=mem2.pbtxt script_md5=2d70ea97dfe637757f23638063503047 bytes=235 kernel=6.1.83-DR-PL5.1_V1.0.20 start=Thu Jan  1 10:10:40 UTC 1970 ===
+MemTotal:        1336028 kB
+MemFree:         1007960 kB
+MemAvailable:    1123032 kB
+Buffers:           43796 kB
+Cached:            53044 kB
+SwapCached:            0 kB
+workload_start_uptime=36648.80
+TEST START
+TEST END
+workload_end_uptime=36693.96
+WORKLOAD_OK=1
+recovery_end_uptime=36718.98
+tracebox_exit=0
+MemTotal:        1336028 kB
+MemFree:         1008440 kB
+MemAvailable:    1124084 kB
+Buffers:           43916 kB
+Cached:            53568 kB
+SwapCached:            0 kB

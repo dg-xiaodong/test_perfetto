@@ -1,0 +1,38 @@
+=== run run5 mode=cycles_hold cfg=mem2.pbtxt script_md5=2d70ea97dfe637757f23638063503047 bytes=235 kernel=6.1.83-DR-PL5.1_V1.0.20 start=Thu Jan  1 10:16:33 UTC 1970 ===
+MemTotal:        1336028 kB
+MemFree:         1006092 kB
+MemAvailable:    1123548 kB
+Buffers:           44204 kB
+Cached:            54948 kB
+SwapCached:            0 kB
+workload_start_uptime=37001.23
+cycle 0 written uptime=37001.28 bytes=25165824
+cycle 0 removed uptime=37004.32
+cycle 1 written uptime=37005.38 bytes=25165824
+cycle 1 removed uptime=37008.42
+cycle 2 written uptime=37009.48 bytes=25165824
+cycle 2 removed uptime=37012.52
+cycle 3 written uptime=37013.58 bytes=25165824
+cycle 3 removed uptime=37016.62
+cycle 4 written uptime=37017.68 bytes=25165824
+cycle 4 removed uptime=37020.72
+cycle 5 written uptime=37021.78 bytes=25165824
+cycle 5 removed uptime=37024.82
+cycle 6 written uptime=37025.88 bytes=25165824
+cycle 6 removed uptime=37028.92
+cycle 7 written uptime=37029.98 bytes=25165824
+cycle 7 removed uptime=37033.02
+cycle 8 written uptime=37034.07 bytes=25165824
+cycle 8 removed uptime=37037.11
+cycle 9 written uptime=37038.17 bytes=25165824
+cycle 9 removed uptime=37041.21
+workload_end_uptime=37042.22
+WORKLOAD_OK=0
+recovery_end_uptime=37067.23
+tracebox_exit=0
+MemTotal:        1336028 kB
+MemFree:         1006232 kB
+MemAvailable:    1124352 kB
+Buffers:           44324 kB
+Cached:            55568 kB
+SwapCached:            0 kB

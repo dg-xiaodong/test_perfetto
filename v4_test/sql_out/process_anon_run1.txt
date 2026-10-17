@@ -1,0 +1,13 @@
+run1: per-process max mem.rss.anon (MiB), from process_stats @250ms
+/sbin/udevd	1.648	(480 samples)
+./cam-service	1.191	(480 samples)
+/userdata/perfetto-debug/tracebox	0.891	(482 samples)
+/userdata/perfetto-debug/tracebox	0.750	(482 samples)
+/userdata/perfetto-debug/tracebox	0.738	(480 samples)
+sshd:	0.707	(480 samples)
+sshd:	0.703	(480 samples)
+/bin/bash	0.566	(480 samples)
+-bash	0.504	(480 samples)
+sshd:	0.500	(480 samples)
+/usr/sbin/ntpd	0.469	(480 samples)
+/userdata/perfetto-debug/tracebox	0.309	(480 samples)
