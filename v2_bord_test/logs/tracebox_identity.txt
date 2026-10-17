@@ -1,0 +1,21 @@
+Warning: Permanently added '<BOARD_IP>' (ED25519) to the list of known hosts.
+Perfetto v57.1-c59f57dd4 (c59f57dd4d9c4ad37c44f0fee9dde060707534fa)
+---
+	linux-vdso.so.1 (0x0000ffffab102000)
+	libpthread.so.0 => /lib64/libpthread.so.0 (0x0000ffffaada0000)
+	librt.so.1 => /lib64/librt.so.1 (0x0000ffffaad80000)
+	libdl.so.2 => /lib64/libdl.so.2 (0x0000ffffaad60000)
+	libm.so.6 => /lib64/libm.so.6 (0x0000ffffaacc0000)
+	libgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x0000ffffaac90000)
+	libc.so.6 => /lib64/libc.so.6 (0x0000ffffaaaf0000)
+	/lib/ld-linux-aarch64.so.1 (0x0000ffffab0ca000)
+---preload---
+ldd: warning: you do not have execution permission for `/data/smoke102/libheapprofd_glibc_preload.so'
+	linux-vdso.so.1 (0x0000ffffba923000)
+	libpthread.so.0 => /lib64/libpthread.so.0 (0x0000ffffba7b0000)
+	librt.so.1 => /lib64/librt.so.1 (0x0000ffffba790000)
+	libdl.so.2 => /lib64/libdl.so.2 (0x0000ffffba770000)
+	libm.so.6 => /lib64/libm.so.6 (0x0000ffffba6d0000)
+	libgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x0000ffffba6a0000)
+	libc.so.6 => /lib64/libc.so.6 (0x0000ffffba500000)
+	/lib/ld-linux-aarch64.so.1 (0x0000ffffba8eb000)

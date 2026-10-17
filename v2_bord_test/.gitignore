@@ -1,0 +1,3 @@
+# This record contains session/app logs that are evidence; override the repo's
+# global "*.log" ignore rule for this directory only.
+!*.log

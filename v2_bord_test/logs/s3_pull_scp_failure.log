@@ -1,0 +1,2 @@
+scp: /data/smoke102/work/nonexistent_file.bin: No such file or directory
+PULL FAIL: scp root@<BOARD_IP>:/data/smoke102/work/nonexistent_file.bin

@@ -1,0 +1,4 @@
+$ python3 scripts/validate_config.py --deploy-name cam-service hostwork/cfg_used/s2_native_memprobe.pbtxt
+[FAIL] deploy-name: launched basename='cam-service' not in config targets ['memprobe']; heapprofd will not match this process and BLOCKING_INIT may hang
+[NOTE] runtime not verified by preflight: pass/fail above covers only static premises; readiness/injection/stop/flush still need runtime evidence
+exit=1

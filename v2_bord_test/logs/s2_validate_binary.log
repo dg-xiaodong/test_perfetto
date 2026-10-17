@@ -1,0 +1,2 @@
+[PASS] binary: <MEMPROBE_DIR>/memprobe_arm64 is a dynamic ELF (PT_INTERP present)
+[NOTE] runtime not verified by preflight: pass/fail above covers only static premises; readiness/injection/stop/flush still need runtime evidence

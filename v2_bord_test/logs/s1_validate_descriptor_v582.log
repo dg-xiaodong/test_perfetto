@@ -1,0 +1,6 @@
+$ python3 scripts/validate_config.py --descriptor-set <WORKSPACE>/trace_config_v58.2.desc <s1 cfg>
+[PASS] schema: parsed with supplied descriptor (runtime support NOT tested)
+[NOTE] runtime not verified by preflight: pass/fail above covers only static premises; readiness/injection/stop/flush still need runtime evidence
+exit=0
+
+# NOTE: descriptor is v58.2; board collector is tracebox v57.1. No v57.1 descriptor set was available locally -> collector-version schema = UNKNOWN.

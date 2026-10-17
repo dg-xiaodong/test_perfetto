@@ -1,0 +1,9 @@
+Warning: Permanently added '<BOARD_IP>' (ED25519) to the list of known hosts.
+bash: line 1: s1_workload.pid: Read-only file system
+tracebox_pid=2398
+DONE size_bytes=73088
+SCRIPT_RC=0
+--- workload pid/log ---
+cat: s1_workload.pid: No such file or directory
+cat: s1_workload.log: No such file or directory
+--- left procs ---

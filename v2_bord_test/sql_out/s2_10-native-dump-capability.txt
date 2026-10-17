@@ -1,0 +1,14 @@
+Loading trace: 0.00 MBLoading trace: 0.04 MB[107.189]     common_flags.cc:525 Trace loaded: 0.04 MB in 0.02s (2.1 MB/s)
+[107.189]            query.cc:191 Query execution time: 0 ms
+"name"
+"heap_profile"
+"heap_profile_allocation"
+
+"ts","ts_end","dur","upid","heap_name","alloc_rows"
+27766354030365,27766354030365,0,190,"libc.malloc",4
+
+"dumps","distinct_ts_end","zero_dur_dumps","first_ts_end","last_ts_end"
+1,1,1,27766354030365,27766354030365
+
+"activity_dumps","first_ts","last_ts","alloc_bytes","free_bytes"
+1,27766354030365,27766354030365,29360128,29360128

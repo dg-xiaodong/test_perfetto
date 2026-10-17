@@ -1,0 +1,20 @@
+Loading trace: 0.00 MBLoading trace: 0.07 MB[863.982]     common_flags.cc:525 Trace loaded: 0.07 MB in 0.02s (3.5 MB/s)
+Traceback (most recent call last):
+  File "stdin" line 4 col 1
+    select 'COUNTERS' k, ct.name, count(*) n, min(c.value) minv, max(c.value) maxv from counter c join counter_track ct using(track_
+    ^
+cannot join using column track_id - column not present in both tables
+"k","start_ts","end_ts","dur_s"
+"TRACE_BOUNDS",27646196027307,27660804887481,14.608860
+
+"k","upid","pid","name","start_ts","end_ts"
+"PROC",188,2398,"/data/smoke102/tracebox","[NULL]","[NULL]"
+"PROC",189,2399,"/data/smoke102/tracebox","[NULL]","[NULL]"
+"PROC",190,2403,"/data/smoke102/tracebox","[NULL]","[NULL]"
+"PROC",192,2407,"/data/smoke102/tracebox","[NULL]","[NULL]"
+"PROC",194,2411,"dd","[NULL]","[NULL]"
+"PROC",185,2387,"sh","[NULL]","[NULL]"
+"PROC",186,2388,"sh","[NULL]","[NULL]"
+
+"k","n","first_ts","last_ts"
+"SCHED_COUNTS",1532,27646196070182,27660804887481

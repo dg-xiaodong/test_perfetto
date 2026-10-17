@@ -1,0 +1,18 @@
+Loading trace: 0.00 MBLoading trace: 0.04 MB[107.149]     common_flags.cc:525 Trace loaded: 0.04 MB in 0.02s (2.0 MB/s)
+[107.149]            query.cc:191 Query execution time: 0 ms
+"callsite_id","parent_id","frame_name","mapping_name","cumulative_live_bytes_at_end","cumulative_allocated_bytes_in_window"
+0,"[NULL]","_start","/data/smoke102/app/memprobe",0,29360128
+1,0,"__libc_start_main","/usr/lib/libc.so.6",0,29360128
+2,1,"","/usr/lib/libc.so.6",0,29360128
+3,2,"main","/data/smoke102/app/memprobe",0,20971520
+4,3,"probe_churn_cycle","/data/smoke102/app/memprobe",0,20971520
+5,4,"malloc","/data/smoke102/libheapprofd_glibc_preload.so",0,20971520
+6,5,"","/data/smoke102/libheapprofd_glibc_preload.so",0,20971520
+7,6,"","/data/smoke102/libheapprofd_glibc_preload.so",0,20971520
+8,7,"","/data/smoke102/libheapprofd_glibc_preload.so",0,20971520
+9,2,"main","/data/smoke102/app/memprobe",0,8388608
+10,9,"probe_live_block","/data/smoke102/app/memprobe",0,8388608
+11,10,"malloc","/data/smoke102/libheapprofd_glibc_preload.so",0,8388608
+12,11,"","/data/smoke102/libheapprofd_glibc_preload.so",0,8388608
+13,12,"","/data/smoke102/libheapprofd_glibc_preload.so",0,8388608
+14,13,"","/data/smoke102/libheapprofd_glibc_preload.so",0,8388608

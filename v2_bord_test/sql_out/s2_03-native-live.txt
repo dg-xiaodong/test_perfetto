@@ -1,0 +1,4 @@
+Loading trace: 0.00 MBLoading trace: 0.04 MB[107.108]     common_flags.cc:525 Trace loaded: 0.04 MB in 0.02s (2.0 MB/s)
+[107.108]            query.cc:191 Query execution time: 0 ms
+"ts","value","series"
+27766354030365,0.000000,"UPID 190 | libc.malloc live estimate (MiB)"

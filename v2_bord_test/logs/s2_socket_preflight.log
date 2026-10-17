@@ -1,0 +1,30 @@
+Warning: Permanently added '<BOARD_IP>' (ED25519) to the list of known hosts.
+bg_rc=0
+2454
+query_rc=0
+[31mNot meant for machine consumption. Use --query-raw for scripts.[0m
+
+Service: Perfetto v57.1-c59f57dd4 (c59f57dd4d9c4ad37c44f0fee9dde060707534fa)
+Tracing sessions: 1 (started: 1)
+
+
+PRODUCER PROCESSES CONNECTED:
+
+ID     PID      UID      FLAGS  NAME                                       SDK
+==     ===      ===      =====  ====                                       ===
+1      2460     0               perfetto.traced_probes                     Perfetto v57.1-c59f57dd4 (c59f57dd4d9c4ad37c44f0fee9dde060707534fa)
+2      2463     0               perfetto.traced_perf                       Perfetto v57.1-c59f57dd4 (c59f57dd4d9c4ad37c44f0fee9dde060707534fa)
+
+
+DATA SOURCES REGISTERED:
+
+NAME                                     PRODUCER                     DETAILS
+===                                      ========                     ========
+android.aflags                           perfetto.traced_probes (1)   
+android.cpu_per_uid                      perfetto.traced_probes (1)   
+-rw------- 1 root root 16277 Jan  1 07:41 preflight.pftrace
+--- leftover ---
+--- shm ---
+total 0
+drwxrwxrwx  2 root root   40 Jan  1 00:00 .
+drwxr-xr-x 12 root root 6040 Jan  1 00:00 ..

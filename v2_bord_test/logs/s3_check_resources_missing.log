@@ -1,0 +1,6 @@
+[UNKNOWN] resources: cannot complete resource check: sql/12-cpu-spike-episodes.sql
+[NOTE] runtime not verified by preflight: pass/fail above covers only static premises; readiness/injection/stop/flush still need runtime evidence
+
+# note: the missing-resource check was run on a temporary copy of the frozen
+# candidate under hostwork/; the copy was deleted afterwards to avoid keeping a
+# second copy of the frozen skill in this test record.

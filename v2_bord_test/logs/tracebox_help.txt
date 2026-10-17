@@ -1,0 +1,54 @@
+Warning: Permanently added '<BOARD_IP>' (ED25519) to the list of known hosts.
+
+Usage: /data/smoke102/tracebox
+  --background     -d      : Exits immediately and continues in the background.
+                             Prints the PID of the bg process. The printed PID
+                             can used to gracefully terminate the tracing
+                             session by issuing a `kill -TERM $PRINTED_PID`.
+  --background-wait -D     : Like --background, but waits (up to 30s) for all
+                             data sources to be started before exiting. Exit
+                             code is zero if a successful acknowledgement is
+                             received, non-zero otherwise (error or timeout).
+  --notify-fd FD           : Like --background-wait, but instead of daemonizing
+                             and waiting for data sources to be started before
+                             exiting, writes status and closes FD after waiting
+                             for data sources to be started. Writes a zero
+                             byte if a successful acknowledgement is received,
+                             non-zero otherwise (error or timeout).
+  --clone TSID             : Creates a read-only clone of an existing tracing
+                             session, identified by its ID (see --query).
+  --clone-by-name NAME     : Creates a read-only clone of an existing tracing
+                             session, identified by its unique_session_name in
+                             the config.
+  --clone-for-bugreport    : Can only be used with --clone. It disables the
+                             trace_filter on the cloned session.
+  --config         -c      : /path/to/trace/config/file or - for stdin
+  --out            -o      : /path/to/out/trace/file or - for stdout
+                             If using CLONE_SNAPSHOT triggers, each snapshot
+                             will be saved in a new file with a counter suffix
+                             (e.g., file.0, file.1, file.2).
+  --no-clobber             : Do not overwrite an existing output file.
+  --txt                    : Parse config as pbtxt. Not for production use.
+                             Not a stable API.
+  --query [--long]         : Queries the service state and prints it as
+                             human-readable text. --long allows the output to
+                             extend past 80 chars.
+  --query-raw              : Like --query, but prints raw proto-encoded bytes
+                             of tracing_service_state.proto.
+  --add-note key[=value]   : Add user notes to trace. If "=value" is omitted,
+                             the value is the empty string.
+  --help           -h
+
+Light configuration flags: (only when NOT using -c/--config)
+  --time           -t      : Trace duration N[s,m,h] (default: 10s)
+  --buffer         -b      : Ring buffer size N[mb,gb] (default: 32mb)
+  --size           -s      : Max file size N[mb,gb]
+                            (default: in-memory ring-buffer only)
+  --app            -a      : Android (atrace) app name
+  FTRACE_GROUP/FTRACE_NAME : Record ftrace event (e.g. sched/sched_switch)
+  ATRACE_CAT               : Record ATRACE_CAT (e.g. wm) (Android only)
+
+Statsd-specific and other Android-only flags:
+=== perfetto --query ===
+[586.514]    perfetto_cmd.cc:1187 Could not connect to the traced socket /tmp/perfetto-consumer. Ensure traced is running or use tracebox. See https://perfetto.dev/docs/quickstart/linux-tracing.
+query_rc=1

@@ -1,0 +1,41 @@
+Warning: Permanently added '<BOARD_IP>' (ED25519) to the list of known hosts.
+== uname ==
+Linux buildroot 6.1.83-DR-PL5.1_V1.0.20 #3 SMP PREEMPT Mon Aug 24 21:03:38 CST 2026 aarch64 GNU/Linux
+== version ==
+LNX6.1.83_PL5.1_V1.0.20_20260824-2105
+== glibc ==
+GNU C Library (Arm) stable release version 2.35.
+== cpu/mem ==
+8
+MemTotal:        1336028 kB
+== mounts ==
+/dev/root / ext4 ro,relatime 0 0
+tmpfs /dev/shm tmpfs rw,relatime,mode=777 0 0
+tmpfs /tmp tmpfs rw,relatime 0 0
+tmpfs /data tmpfs rw,relatime 0 0
+/dev/block/platform/by-name/hbre /usr/hobot ext4 ro,noatime 0 0
+/dev/block/platform/by-name/app /app ext4 rw,relatime 0 0
+/dev/block/platform/by-name/userdata /userdata ext4 rw,relatime 0 0
+tracefs /sys/kernel/debug/tracing tracefs rw,relatime 0 0
+== tracefs ==
+/sys/kernel/debug/tracing
+1170
+nop
+== tools ==
+sh=/usr/bin/sh
+busybox=/usr/bin/busybox
+timeout=/usr/bin/timeout
+dd=/usr/bin/dd
+od=/usr/bin/od
+ldd=/usr/bin/ldd
+strace=/usr/bin/strace
+python3=none
+perfetto=none
+tracebox=none
+== uptime ==
+ 07:46:13 up  7:46,  0 users,  load average: 0.00, 0.03, 0.00
+== perfetto sockets ==
+srwxrwxrwx 1 root root 0 Jan  1 07:42 /tmp/perfetto-consumer
+srwxrwxrwx 1 root root 0 Jan  1 07:42 /tmp/perfetto-producer
+== procs ==
+(none above = clean)

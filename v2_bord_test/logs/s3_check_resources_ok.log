@@ -1,0 +1,4 @@
+$ python3 scripts/validate_config.py --check-resources
+[PASS] resources: 33 required files + 10 configs readable
+[NOTE] runtime not verified by preflight: pass/fail above covers only static premises; readiness/injection/stop/flush still need runtime evidence
+exit=0

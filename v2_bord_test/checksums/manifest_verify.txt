@@ -1,0 +1,3 @@
+# MANIFEST.json SHA-256 verification (frozen candidate @ 0fa17e08eb8b93a9944232e380c7ddb39666fcf2)
+listed=77 ok=77 missing=0 mismatch=0
+manifest_sha256: 6503943043a7a922bf31fbbf0e9175f7247056ef52c15de25007d0181572a719

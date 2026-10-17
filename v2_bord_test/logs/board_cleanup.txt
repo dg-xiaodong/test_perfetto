@@ -1,0 +1,26 @@
+Warning: Permanently added '<BOARD_IP>' (ED25519) to the list of known hosts.
+== before cleanup ==
+total 4064
+drwx------ 2 root root      60 Jan  1 07:41 app
+-rw------- 1 root root 1031440 Jan  1 07:39 libheapprofd_glibc_preload.so
+-rwx------ 1 root root    4270 Jan  1 07:39 linux_heapprofd_session.sh
+-rwx------ 1 root root    1080 Jan  1 07:39 linux_session_lib.sh
+-rwx------ 1 root root    1913 Jan  1 07:39 linux_trace_session.sh
+-rwx------ 1 root root   39248 Jan  1 07:39 memprobe_arm64
+-rwx------ 1 root root    2259 Jan  1 07:39 survey.sh
+-rwx------ 1 root root 3064072 Jan  1 07:39 tracebox
+drwx------ 2 root root     580 Jan  1 07:45 work
+tmpfs             668012  4352    663660   1% /data
+== after cleanup ==
+total 4
+drwxrwxrwt  2 root root   60 Jan  1 07:46 .
+drwxr-xr-x 22 root root 4096 Aug 24  2026 ..
+lrwxrwxrwx  1 root root   13 Jan  1 00:00 tee -> /userdata/tee
+tmpfs             668012     0    668012   0% /data
+== procs ==
+== procs_left_count ==
+0
+== stale sockets ==
+srwxrwxrwx 1 root root 0 Jan  1 07:42 /tmp/perfetto-consumer
+srwxrwxrwx 1 root root 0 Jan  1 07:42 /tmp/perfetto-producer
+0

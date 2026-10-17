@@ -1,0 +1,73 @@
+Warning: Permanently added '<BOARD_IP>' (ED25519) to the list of known hosts.
+== Platform ==
+Linux buildroot 6.1.83-DR-PL5.1_V1.0.20 #3 SMP PREEMPT Mon Aug 24 21:03:38 CST 2026 aarch64 GNU/Linux
+
+== Mounts and capture locations ==
+/dev/root / ext4 ro,relatime 0 0
+tmpfs /dev/shm tmpfs rw,relatime,mode=777 0 0
+tmpfs /tmp tmpfs rw,relatime 0 0
+tmpfs /data tmpfs rw,relatime 0 0
+Filesystem     1K-blocks  Used Available Use% Mounted on
+tmpfs             668012  4064    663948   1% /data
+Filesystem     1K-blocks  Used Available Use% Mounted on
+tmpfs             668012    12    668000   1% /tmp
+Filesystem     1K-blocks  Used Available Use% Mounted on
+tmpfs             668012     0    668012   0% /dev/shm
+
+== Tracefs ==
+/sys/kernel/debug/tracing
+current_tracer=nop
+tracing_on=1
+buffer_size_kb=1410
+trace_clock=[local] global counter uptime perf mono mono_raw boot tai
+raw_syscalls:sys_exit
+raw_syscalls:sys_enter
+oom:compact_retry
+oom:skip_task_reaping
+oom:finish_task_reaping
+oom:start_task_reaping
+oom:wake_reaper
+oom:mark_victim
+oom:reclaim_retry_zone
+oom:oom_score_adj_update
+vmscan:mm_vmscan_direct_reclaim_end
+vmscan:mm_vmscan_direct_reclaim_begin
+kmem:rss_stat
+compaction:mm_compaction_kcompactd_wake
+compaction:mm_compaction_wakeup_kcompactd
+compaction:mm_compaction_kcompactd_sleep
+compaction:mm_compaction_defer_reset
+compaction:mm_compaction_defer_compaction
+compaction:mm_compaction_deferred
+compaction:mm_compaction_suitable
+compaction:mm_compaction_finished
+compaction:mm_compaction_try_to_compact_pages
+compaction:mm_compaction_end
+compaction:mm_compaction_begin
+compaction:mm_compaction_migratepages
+compaction:mm_compaction_isolate_freepages
+compaction:mm_compaction_isolate_migratepages
+cma:cma_alloc_busy_retry
+cma:cma_alloc_finish
+cma:cma_alloc_start
+cma:cma_release
+
+== Memory ==
+MemTotal:        1336028 kB
+MemFree:         1024368 kB
+MemAvailable:    1110252 kB
+SwapTotal:             0 kB
+SwapFree:              0 kB
+AnonPages:          9032 kB
+Shmem:              4272 kB
+Slab:              82576 kB
+CmaTotal:         391168 kB
+CmaFree:          287912 kB
+
+== Perf policy (reading only) ==
+perf_event_paranoid=2
+kptr_restrict=0
+
+== Tool presence, NOT data-source registration ==
+
+Survey finished. No runtime settings were changed.

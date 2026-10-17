@@ -1,0 +1,7 @@
+Warning: Permanently added '<BOARD_IP>' (ED25519) to the list of known hosts.
+ERROR: duration_ms=10000 < OBSERVE_S=30s + 30s margin (min 60000)
+SCRIPT_RC=2
+--- files created? ---
+-rw------- 1 root root 43576 Jan  1 07:43 heap.pftrace
+-rw------- 1 root root  1731 Jan  1 07:45 s3_short_duration.pbtxt
+--- procs ---
