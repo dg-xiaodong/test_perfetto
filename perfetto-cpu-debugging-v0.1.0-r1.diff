@@ -1,0 +1,1089 @@
+diff -ruN a/perfetto-cpu-debugging/MANIFEST.json b/perfetto-cpu-debugging/MANIFEST.json
+--- a/perfetto-cpu-debugging/MANIFEST.json	2026-10-18 01:28:28.306612336 +0800
++++ b/perfetto-cpu-debugging/MANIFEST.json	2026-10-18 02:06:31.079172418 +0800
+@@ -1,58 +1,98 @@
+ {
+   "name": "perfetto-cpu-debugging",
+-  "version": "0.1.0",
+-  "status": "candidate",
+-  "source": "Official Perfetto CPU documentation; memory Skill v1.0.2 frozen reference",
++  "version": "0.1.0-r1",
++  "status": "candidate-r1",
++  "source": "Official Perfetto CPU documentation; memory Skill v1.0.2 frozen reference; v0.1.0 first-board feedback (cpu_v1_test)",
+   "verified": {
+-    "local_unit_tests_passed": 22,
+-    "sqlite_fixture": "executed",
++    "local_unit_tests_passed": 33,
++    "sqlite_fixture": "executed (incl. new inventory split + frequency gate)",
+     "shell_syntax": "executed",
+     "four_config_static_structure": "executed",
++    "frequency_vs_overview_diff": "executed (default configs now differ)",
++    "real_trace_inventory_sql_v57.1": "executed (cpu_v1_test/cpu.pftrace)",
++    "real_trace_inventory_sql_v58.2": "executed (same trace, identical rows)",
++    "real_trace_frequency_gate_v57.1": "executed (UNKNOWN expected on scheduling route)",
++    "real_trace_frequency_gate_v58.2": "executed",
+     "official_collector_schema": "not_executed",
+-    "real_trace_processor": "not_executed_for_new_cpu_sql",
++    "real_trace_processor": "executed for inventory/frequency-gate only (not for 01..08 SQL)",
+     "x5_cpu_sampling_or_frequency": "not_executed",
+     "perfetto_ui": "not_executed"
+   },
+   "files": {
+     "AGENT_HANDOFF.md": "60e2e44ed1c28c6e0635070812e5a7c433f9651be0f95457028c61688fffb35e",
+-    "PROVENANCE.md": "10fa8a1984ca894e6f9685dee1d442a68ef38054443919bd785fdb560b4e6a70",
+-    "README.md": "26b20cc90170d66b3598d68184beddd4987aa2bd6670b698cfa0491feff4466e",
+-    "SKILL.md": "352986f523b17c0dcfe081479ce26618798c40da78c985dedc0e704ab602cc83",
+-    "TEST_REPORT.md": "2d80f7872977146afea98cb249734f3c8327f81d0095b5c2b70fd61eaae3cac8",
+-    "configs/cpu-frequency.pbtxt": "2f18c8abc7324c0429c923e24870472cc74a4050b3398e10607e87ea3d9c2c0d",
++    "PROVENANCE.md": "f88a42dabd7966205476f2f6b20dc1e11e8e8b86c68532eb3f0d703f55ced2ad",
++    "README.md": "6ff89425230aad250a4a5d508667f0917a8b697a4e9b3e10e603e1a4ea71abb5",
++    "SKILL.md": "0c6ca5f27a0a16571d6ab0cefa190ee45881cd8aaf46b52998934dbb669e37b9",
++    "TEST_REPORT.md": "b99cb7807f6ac6a3fd5485a1729e8133e43b15ee5f1b2f97e5514625cf02cc63",
++    "configs/cpu-frequency.pbtxt": "d5f3f70ac7368011613e22c822f59b072e9df2baba4bdda449b865cb812e31bc",
+     "configs/cpu-overview.pbtxt": "2f18c8abc7324c0429c923e24870472cc74a4050b3398e10607e87ea3d9c2c0d",
+     "configs/cpu-profiling.pbtxt": "3ed54e0d38553b37d2fd8c22df17d53f4e3fe0cdde8e9aea3957fba489ae9620",
+     "configs/cpu-scheduling.pbtxt": "94cda0a43ba4be7ea4cec3c88bba185d65302148ee912869f144e2947248a8bf",
+     "examples/cpu_probe.c": "78172c203c79cc54899f65ef871f749bc753dc0338cb2b5aefc283e70405f395",
+     "references/00-routing.md": "3d76b0fbd9b32d6450d72b1db0b316ed1c2e7033f29e9d1df0943175b3ceac12",
+     "references/01-scheduling.md": "76d393dcba4e5c302f5ecaaf00ae015d0e977262329ec37b0f54af292b166ab1",
+-    "references/02-frequency.md": "13822c8988afe5424b008a419955574f2b2b16ebd9fb7f1af94458808133e103",
++    "references/02-frequency.md": "b1a465713a085b1452489e8041dd41796bb54228fafd57bcd1201e63df3eb38a",
+     "references/03-profiling.md": "3692e9c7a8905a8ebeb017201466133a5d3d07d0ef5074a1d8997f6c1f0831d4",
+-    "references/04-platforms.md": "2f3734e5bd64c61a96380387e79c21d9a1c26d382df3bd60093f5c78f3926ada",
++    "references/04-platforms.md": "587148d433febc7fed729213408f1db92e9803142b2d368228953541c6052a8e",
+     "references/05-quality.md": "1289ba15607e2dc73b54939d781fa0671dcc6fbe0da743aa3b9108441398651a",
+     "references/06-ui.md": "127982c99007c33d66afd02309ac6131247fee2125910c1041c133b1cdf0d120",
+     "references/sources.md": "950953f02f058fc370a39d03ebdcad09012b0ecff796e0d7909f1de434b8d716",
+     "scripts/host_pull.sh": "220a641784a6c101db38823080893b96ef93801230c046b346a3bb16d213205b",
+     "scripts/linux_session_lib.sh": "09e32bb47439efbf4f0c03d329841a3bf4c1e2005429d5d6183c27650e6a778c",
+     "scripts/linux_trace_session.sh": "e5d959ad9ebde94abc0f0029fc4da789b8fa81bfefa1c2d8e830f0a122a9b0e7",
+-    "scripts/make_config.py": "df04401ab43d6921b2012844a2ee4bd41cdab36aae3c05b12d1aa00304153181",
++    "scripts/make_config.py": "3ab266d7350652357f861df4f4082cec71bc456fca9d46761864bbb18ebbf787",
+     "scripts/survey.sh": "7275e899b388d6d6bef2d8278e3c3159d1b48e5ee810defdb0424739acbdbb4b",
+     "scripts/validate_config.py": "f671c239231883227a6b77a580b216b4ebc4979cc87b04f558188f05bf7e7f45",
+-    "sql/00-inventory.sql": "dd59d38d551b24a422825a2381bb33da5141e9f326a724647229eedeb262c3f4",
++    "sql/00-inventory.sql": "6f6f7101ad20bc0b378d62987fac1a754b2b973ceb5df8ccb638c6345d1a6c3e",
++    "sql/00a-trace-bounds.sql": "a7ab69e129d88ec60d1df5381feeb1086c33ca737d176fd9741180aef1b55398",
++    "sql/00b-thread-states.sql": "a052504bdd8ea558836d90113e31dde059e987bf5b5156e7a29a4b1ff2da411d",
++    "sql/00c-counter-tracks.sql": "0138484dde8dde8a08d641e0b21bd67dbeb75580eca61189abcdb706520c9d71",
++    "sql/00d-stats.sql": "8cf31e5c6a38b00a589aaffa774f60e8ef86bed49ee1fdb75de4a02480dc6cf0",
+     "sql/01-cpu-usage.sql": "400ba79fb16f09c7bfbb63f04440c242bc5471c637e88f443b9711b20dcb4737",
+     "sql/02-thread-states.sql": "3d89ede586cceb83e1b6b17dfe62ae2dd5033a42a005e377a3d4acc5b7a1a8be",
+     "sql/03-runnable-latency.sql": "e287b367e3522882ee3f088b1b74d074289e4016c0481854847ee40fab0b663e",
+-    "sql/04-cpu-frequency.sql": "4d033bb1da093487dbca566839bad6110e5efdd9bba98148beea0fcd6ab9297d",
++    "sql/04-cpu-frequency.sql": "1852385df5c9e8d38b368f997f46ff1206923a770078199c7d1b8ea15e02c8d5",
++    "sql/04a-frequency-inventory.sql": "e2d58f97170e43719484a008f846fba2ea340522ca2f461e2aa2a2620432a5b8",
+     "sql/05-cpu-time-buckets.sql": "dacfd62fd0a798ef683cfc1814660415d84c06cbdd5fc2726a3125cb388543a3",
+     "sql/06-cpu-spike-episodes.sql": "c3f87f59414981654bf068ef9c70401a312f12a9a21473896bcc37f823d063e9",
+     "sql/07-perf-samples.sql": "b92f2df88c1003caaff42479df07a66d56dd66a863ffbf18ee2382de848f1cc9",
+     "sql/08-core-busy.sql": "b2be1305816bef2b9f41a905e857126a054e48686ba3dd950e6d41f8c8ad56fd",
+-    "tests/local_test_run.txt": "ebd7797d3ea65a7a82df6674236db4aa3ab00ed3a0e15c8e1432de6647ce0c50",
+-    "tests/test_configs.py": "f5d6f567c21755eb200f3202fb887f7a384cdcf3b6b7eee32315bb49478a418c",
++    "tests/local_test_run.txt": "6bcb101ce477144aced476c955135f373ff5b723c0114f84152363fde84a94dd",
++    "tests/real_trace_regression/run_regression.sh": "b24186b6f141d2b21a6e0251d9312ff6e4a271445ceb266fceff3de0c219234b",
++    "tests/real_trace_regression/tp-v57.1/00-inventory.txt": "4bcf4409de727ee7fe7357c1402a75ea94d078721b3328a729590dc2bfc925e9",
++    "tests/real_trace_regression/tp-v57.1/00a-trace-bounds.txt": "e87ad26315b5b88ddc1265d56890fa90053ed3478ea494ad56c14fb730e7a1f6",
++    "tests/real_trace_regression/tp-v57.1/00b-thread-states.txt": "481c7ca9d43007c793cdcb015c3aef1736d2697a7477bc25c9fdefe6e07c1647",
++    "tests/real_trace_regression/tp-v57.1/00c-counter-tracks.txt": "b31d364dbe1e8637fe6398a1308ce6187f1c5b11351af24be2e69346f6acafb1",
++    "tests/real_trace_regression/tp-v57.1/00d-stats.txt": "de1fcdb42e4ff69e9230519c2fa643034be9786a3bcf72ea1e6febb651359e0b",
++    "tests/real_trace_regression/tp-v57.1/04-cpu-frequency.txt": "0dca74d83cf424fee7463504201678c3e10ebafa4d0662c577a2a804bcc2f204",
++    "tests/real_trace_regression/tp-v57.1/04a-frequency-inventory.txt": "031a3eb54cf25b1433bcc83ad40aef331e2738f3a29fbc81fa249e06c4c91485",
++    "tests/real_trace_regression/tp-v57.1/summary.txt": "d3dda554e93863f1fc3e8cba638a95cfe65ab34cfb06a315bd28776cf1606673",
++    "tests/real_trace_regression/tp-v57.1/tp_version.txt": "047a27b3758c006ed9d03a17ad080441d48ec5b4f808047094b80085048bc209",
++    "tests/real_trace_regression/tp-v57.1/trace_identity.txt": "86540fa795f57193c3bc4596dcf5474cbc584581d57e4afe091e33b499152e4c",
++    "tests/real_trace_regression/tp-v58.2/00-inventory.txt": "4bcf4409de727ee7fe7357c1402a75ea94d078721b3328a729590dc2bfc925e9",
++    "tests/real_trace_regression/tp-v58.2/00a-trace-bounds.txt": "e87ad26315b5b88ddc1265d56890fa90053ed3478ea494ad56c14fb730e7a1f6",
++    "tests/real_trace_regression/tp-v58.2/00b-thread-states.txt": "481c7ca9d43007c793cdcb015c3aef1736d2697a7477bc25c9fdefe6e07c1647",
++    "tests/real_trace_regression/tp-v58.2/00c-counter-tracks.txt": "b31d364dbe1e8637fe6398a1308ce6187f1c5b11351af24be2e69346f6acafb1",
++    "tests/real_trace_regression/tp-v58.2/00d-stats.txt": "de1fcdb42e4ff69e9230519c2fa643034be9786a3bcf72ea1e6febb651359e0b",
++    "tests/real_trace_regression/tp-v58.2/04-cpu-frequency.txt": "0dca74d83cf424fee7463504201678c3e10ebafa4d0662c577a2a804bcc2f204",
++    "tests/real_trace_regression/tp-v58.2/04a-frequency-inventory.txt": "031a3eb54cf25b1433bcc83ad40aef331e2738f3a29fbc81fa249e06c4c91485",
++    "tests/real_trace_regression/tp-v58.2/summary.txt": "d3dda554e93863f1fc3e8cba638a95cfe65ab34cfb06a315bd28776cf1606673",
++    "tests/real_trace_regression/tp-v58.2/tp_version.txt": "5b9bafda7473d76619a42ac820879d34087d268dad6cb4942e12d5c7f5171ce2",
++    "tests/real_trace_regression/tp-v58.2/trace_identity.txt": "86540fa795f57193c3bc4596dcf5474cbc584581d57e4afe091e33b499152e4c",
++    "tests/test_configs.py": "687f388995cbff5e989ca18092e9c8e6de6e820e6af9ffdcc958cbbf47764720",
+     "tests/test_shell.py": "07f5a4d086ba4defe5b768022f323a623309443fa6a81416a0ba530a71a4adea",
+-    "tests/test_sql.py": "6bc1b665d8c52fdd98c8c14da8467f20dd389e5f12e7099b85814bee65fbbad5"
++    "tests/test_sql.py": "bc6aaac64be3446314d80223570df0123f173bda673d4b03bf0f7886fe56d58a"
+   },
+   "local_fix": {
+     "SKILL.md": "v0.1.0 candidate: description re-quoted so YAML frontmatter parses (unquoted colon+space made the whole skill invisible to DSH skill-filesystem). Body unchanged."
++  },
++  "regression": {
++    "real_trace": "cpu_v1_test/cpu.pftrace (sha256 ba40ba562ab097ea1651e5a2897c741ed15d41da34b40bfbfe80ce9c863e0501)",
++    "tp_versions": [
++      "v57.1-c59f57dd4",
++      "v58.2-add693d8b"
++    ],
++    "inventory_files": "00, 00a..00d, 04a, 04",
++    "result": "7/7 PASS on both versions, identical output"
+   }
+ }
+diff -ruN a/perfetto-cpu-debugging/PROVENANCE.md b/perfetto-cpu-debugging/PROVENANCE.md
+--- a/perfetto-cpu-debugging/PROVENANCE.md	2026-10-17 17:23:30.000000000 +0800
++++ b/perfetto-cpu-debugging/PROVENANCE.md	2026-10-18 02:06:15.378518304 +0800
+@@ -10,3 +10,11 @@
+ All other scripts and documentation in this Candidate were authored for the CPU Skill. References: `references/sources.md`.
+ 
+ Do not imply Memory Skill's prior X5 runs tested all of this CPU Candidate.
++
++## v0.1.0-r1 变更来源
++
++- 输入：首次 X5 上板测试 `cpu_v1_test`（`dg-xiaodong/test_perfetto`），报告 §8 的四条问题。
++- 范围：仅 inventory SQL 兼容性、frequency/overview 路由区分、频率数据验收、使用文档；
++  未改复用自 Memory Skill v1.0.2 的三个 shell 脚本（SHA-256 保持
++  `09e32bb4…` / `e5d959ad…` / `220a6417…`），未改 CPU 时间桶/episode 算法。
++- 未新增板端数据；真实 trace 回归只读使用 `cpu_v1_test/cpu.pftrace`。
+diff -ruN a/perfetto-cpu-debugging/README.md b/perfetto-cpu-debugging/README.md
+--- a/perfetto-cpu-debugging/README.md	2026-10-17 17:23:28.000000000 +0800
++++ b/perfetto-cpu-debugging/README.md	2026-10-18 02:06:26.317326411 +0800
+@@ -1,4 +1,4 @@
+-# perfetto-cpu-debugging — v0.1.0 Candidate
++# perfetto-cpu-debugging — v0.1.0-r1 Candidate
+ 
+ 独立可安装的 Perfetto CPU 调试 Agent Skill（通用 Linux 优先，重点面向 RDK X5；包含 Android 适配提示）。目标为 **CPU 时间 → 调度状态/唤醒 → 频率/Idle → CPU 采样热点**，按需使用而不是默认全开。
+ 
+@@ -26,7 +26,8 @@
+ ```sh
+ python3 scripts/make_config.py overview --events available_events.txt --duration-ms 15000 > cpu.pbtxt
+ python3 scripts/make_config.py scheduling --events available_events.txt > sched.pbtxt
+-python3 scripts/make_config.py frequency --events available_events.txt > freq.pbtxt
++python3 scripts/make_config.py frequency --events available_events.txt > freq.pbtxt   # 轻量：轮询+power，不含 sched
++python3 scripts/make_config.py frequency --events available_events.txt --with-sched > freq_sched.pbtxt
+ python3 scripts/make_config.py profiling --events available_events.txt --target demo_svc --frequency-hz 100 > perf.pbtxt
+ python3 scripts/validate_config.py --check-resources
+ python3 scripts/validate_config.py cpu.pbtxt
+@@ -40,7 +41,13 @@
+ 
+ ### 3. 分析（主机或 Perfetto UI）
+ 
+-先执行 `sql/00-inventory.sql`，找到目标 UPID，再修改 `sql/01..03/05..07` 的 `-1 AS target_upid`。默认 `-1` 安全返回空结果，不等于 0 CPU。
++先执行 `sql/00-inventory.sql`（单条 SQL）找到目标 UPID；再按需跑 `00a-trace-bounds.sql`、
++`00b-thread-states.sql`、`00c-counter-tracks.sql`、`00d-stats.sql`。每个文件只含一条 SELECT 且必须
++**单独执行**（v57.1/v58.2 的 `query -f` 不支持一个文件多结果集）。然后修改 `sql/01..03/05..07` 的
++`-1 AS target_upid`。默认 `-1` 安全返回空结果，不等于 0 CPU。
++
++频率问题先跑 `sql/04a-frequency-inventory.sql`：无 `cpufreq` 轨道/无样本会直接给出 `UNKNOWN` 判定，
++`sql/04-cpu-frequency.sql` 此时返回空行，**不得**当成 0 MHz。
+ 
+ `sql/08` 提供每核近似 busy 比例；`sql/05` 是每线程 CPU 时间桶，`sql/06` 是整个进程的 CPU spike episode。它们继承自已在 X5 Trace 上验证的 Memory Skill v1.0.2 算法，并继续使用区间交集计算。
+ 
+diff -ruN a/perfetto-cpu-debugging/SKILL.md b/perfetto-cpu-debugging/SKILL.md
+--- a/perfetto-cpu-debugging/SKILL.md	2026-10-18 01:28:26.342631318 +0800
++++ b/perfetto-cpu-debugging/SKILL.md	2026-10-18 02:06:26.317206650 +0800
+@@ -3,7 +3,7 @@
+ description: "Use for Linux/Android/RDK CPU performance diagnostics with Perfetto: high CPU usage, periodic CPU spikes, slow or blocked threads, runnable scheduling latency, CPU frequency changes, native CPU callstack hotspots, profiling configurations, PerfettoSQL and trace validation."
+ ---
+ 
+-# Perfetto CPU 调试（v0.1.0 Candidate）
++# Perfetto CPU 调试（v0.1.0-r1 Candidate）
+ 
+ 目标：把“CPU 高 / 线程没及时执行 / 频率异常 / 哪个函数耗时”转成**最小必要采集 → 实际证据 → 有界结论**。默认中文。
+ 
+@@ -13,7 +13,7 @@
+ |---|---|---|
+ | CPU 占用高、某核满载、周期性尖峰 | `overview` / `scheduling`：sched_switch → CPU 时间桶、线程、spike | [调度](references/01-scheduling.md) |
+ | CPU 不高但任务延迟、疑似调度不及时 | `scheduling`：sched_switch + sched_waking，thread_state 中 Runnable/阻塞分开 | [调度](references/01-scheduling.md) |
+-| 怀疑降频、DVFS、大小核或 idle | `frequency`：power/cpu_frequency（有则采）+ cpufreq 轮询 | [频率](references/02-frequency.md) |
++| 怀疑降频、DVFS、大小核或 idle | `frequency`（**轻量**）：cpufreq 轮询 + `power/cpu_frequency`/`cpu_idle`（有则采），默认**不含 sched**；需要调度归属时显式 `--with-sched` | [频率](references/02-frequency.md) |
+ | 想定位 CPU 热点函数、采样调用栈 | `profiling`：linux.perf（条件可用），必要时加 sched | [Profiling](references/03-profiling.md) |
+ 
+ 所有路线都读取 [平台执行](references/04-platforms.md)、[验收和停止条件](references/05-quality.md)、[UI](references/06-ui.md)。官方来源见 [索引](references/sources.md)。
+@@ -24,7 +24,10 @@
+ - 主机：`python3 scripts/make_config.py <route> --events available_events.txt --duration-ms 15000 > cpu.pbtxt`；profile 路线需 `--target ACTUAL_CMDLINE_BASENAME`。
+ - 主机：`python3 scripts/validate_config.py --check-resources`；`python3 scripts/validate_config.py cpu.pbtxt`。若有**对应板端采集器版本**的 descriptor，增加 `--descriptor-set /abs/trace_config.desc`。静态 PASS 不等于运行条件、实际数据 PASS。
+ - Linux/X5 板端按 [04-platforms](references/04-platforms.md) 使用完整的采集启动、结束、Flush、SCP 流程。不要改变全局 `perf_event_paranoid` / `kptr_restrict`、其他 tracing 会话或生产业务。
+-- 从 Trace 首先运行 `sql/00-inventory.sql` 找实际 UPID、`sched_slice` 与 stats。替换 SQL 中 `target_upid=-1`；只按**真实 trace**的纳秒时间轴解释结果。
++- 从 Trace 先做清点，每个文件一条 SQL、单独执行（v57.1/v58.2 的 `query -f` 不支持一次多结果集）：
++  `00-inventory.sql`（找 UPID）→ `00a-trace-bounds.sql`（范围）→ `00b-thread-states.sql`（实际 state 码）
++  → `00c-counter-tracks.sql`（采到哪些 counter）→ `00d-stats.sql`（非零非 info，即 data loss/错误）。
++  替换 SQL 中 `target_upid=-1`；只按**真实 trace**的纳秒时间轴解释结果。
+ 
+ ## 3. 关键口径
+ 
+@@ -32,6 +35,7 @@
+ - `Running` 才消耗 CPU；`R`/`R+` 为 **Runnable 等待**（不等于真正运行）；`S`/`D` 为等待/阻塞，不可全归责为调度器。
+ - 使用桶与 sched 区间**求交集**，不能把整段 `dur` 计入开始桶；长间隔和跨桶窗口须正确裁剪。
+ - `power/cpu_frequency` 是**变化事件**，短 trace 无事件不等于频率为零；优先结合 `cpufreq_period_ms` 轮询。频率与慢同窗不直接构成降频因果。
++- 频率结论前先跑 `sql/04a-frequency-inventory.sql`：无 `cpufreq` 轨道或无样本 → **UNKNOWN**（scheduling 路由不采频率属正常），不得读成 0 MHz；`cpufreq` 原始值是 kHz，展示 MHz 需 /1000。
+ - `linux.perf` 是**采样**，必须检查运行权限、数据源、`perf_sample`、符号。样本数不是某函数精确执行次数或 CPU 毫秒；Profiler 本身可能影响性能。
+ - 没有业务打点/日志，不能用 Runnable 时间直接当业务延迟，也不能仅凭 CPU 高就断言卡顿根因。
+ 
+diff -ruN a/perfetto-cpu-debugging/TEST_REPORT.md b/perfetto-cpu-debugging/TEST_REPORT.md
+--- a/perfetto-cpu-debugging/TEST_REPORT.md	2026-10-17 17:23:28.000000000 +0800
++++ b/perfetto-cpu-debugging/TEST_REPORT.md	2026-10-18 02:06:15.378412297 +0800
+@@ -21,3 +21,41 @@
+ ## 使用与发布说明
+ 
+ 这是可交付、可供 Agent 测试的**v0.1.0 Candidate**，而不是可承诺全平台通过的 Stable Release。下一步只做最小 CPU-bound、线程唤醒、频率和 `linux.perf` 能力 smoke，按采集器版本核对字段。不要为了“全量测试”主动执行长时间压力、改变系统策略或重启生产服务。
++
++## v0.1.0-r1 定点修复验证（2026-10-18）
++
++依据：首次 X5 上板报告 `cpu_v1_test`（GitHub `dg-xiaodong/test_perfetto`）。只处理四项，不扩展功能。
++
++### 修改
++
++1. `sql/00-inventory.sql` 拆为单语句 `00 / 00a / 00b / 00c / 00d`，兼容 `query -f`（v57.1 与 v58.2）。
++2. `scripts/make_config.py frequency` 改为**轻量**路线（默认不采 sched，`--with-sched` 显式加回）；
++   `overview` 仍为综合路线；缺 power 事件时自动退化为纯轮询并打印 NOTE。
++3. 新增 `sql/04a-frequency-inventory.sql` 频率数据验收门（无轨道/无样本 → UNKNOWN，禁止读成 0 MHz）；
++   `sql/04-cpu-frequency.sql` 暴露 `raw_unit` 并注明 kHz→MHz。
++4. 文档同步：`SKILL.md`、`references/02-frequency.md`、`references/04-platforms.md`、`README.md`。
++   （第 4 项“报告证据表述”落在外部测试记录 `cpu_v1_test/REPORT.md`，不进本包。）
++
++### 已执行
++
++- `python3 -m unittest discover -s tests -v` → **33 passed / 0 failed**（原 22 + 新增 11；
++  新增覆盖：单语句约束、inventory 五个文件、频率门 4 种判定、frequency/overview 配置差异、
++  `--with-sched`、无 power 事件退化为轮询、非法参数组合）。
++- `sh -n scripts/*.sh` → 全部通过。
++- `scripts/validate_config.py --check-resources` 与四份静态配置结构预检 → PASS。
++- **真实 trace 回归**（`cpu_v1_test/cpu.pftrace`，sha256 `ba40ba56…3e0501`，只读，不重新采集）：
++  TP **v57.1** 与 **v58.2** 各 7/7 PASS，两版本输出逐字节一致：
++  `00-inventory`(30 行，目标进程 cpu_ms=2684.71)、`00a`(1 行)、`00b`(7 行)、
++  `00c`(0 行)、`00d`(0 行)、`04a`(1 行)、`04`(0 行)。
++  `04a` 在该 scheduling 路由 trace 上输出
++  `UNKNOWN: no cpufreq counter track -> frequency not collected (do NOT read as 0 MHz)`。
++  原始输出归档在 `tests/real_trace_regression/tp-v57.1/` 与 `tp-v58.2/`，复跑脚本
++  `tests/real_trace_regression/run_regression.sh`。
++
++### 未执行 / 不可推定
++
++- 未重新上板采集；未在**带 cpufreq 数据的真实 trace** 上跑 `04`（当前无此 trace，频率时间线只用
++  SQLite 正反例验证）。
++- 未做官方 collector descriptor schema 验证；未做 Perfetto UI 自动化。
++- 未对 `01..08` 其它 SQL 做真实 TP 回归（仅 inventory 与频率门做了）。
++- X5 上 CPU 频率、`linux.perf` 的 producer/权限/符号能力仍为 UNKNOWN。
+diff -ruN a/perfetto-cpu-debugging/configs/cpu-frequency.pbtxt b/perfetto-cpu-debugging/configs/cpu-frequency.pbtxt
+--- a/perfetto-cpu-debugging/configs/cpu-frequency.pbtxt	2026-10-17 17:19:02.000000000 +0800
++++ b/perfetto-cpu-debugging/configs/cpu-frequency.pbtxt	2026-10-18 02:04:35.850782192 +0800
+@@ -6,9 +6,6 @@
+ 
+ data_sources { config { name: "linux.ftrace"
+     ftrace_config { buffer_size_kb: 1024 drain_period_ms: 250
+-      ftrace_events: "sched/sched_switch"
+-      ftrace_events: "sched/sched_waking"
+-      ftrace_events: "sched/sched_wakeup_new"
+       ftrace_events: "power/cpu_frequency"
+       ftrace_events: "power/cpu_idle"
+     }
+diff -ruN a/perfetto-cpu-debugging/references/02-frequency.md b/perfetto-cpu-debugging/references/02-frequency.md
+--- a/perfetto-cpu-debugging/references/02-frequency.md	2026-10-17 17:20:56.000000000 +0800
++++ b/perfetto-cpu-debugging/references/02-frequency.md	2026-10-18 02:05:30.255915875 +0800
+@@ -2,6 +2,15 @@
+ 
+ 官方依据：<https://perfetto.dev/docs/data-sources/cpu-freq>。
+ 
++## 采集路线（v0.1.0-r1）
++
++- `scripts/make_config.py frequency`：**轻量**路线，默认只做 `linux.sys_stats` 的 cpufreq 轮询 + 可用的
++  `power/cpu_frequency` / `power/cpu_idle`；**默认不含 sched**（不采 `sched_switch`）。需要把频率和
++  具体线程/CPU 时间对齐时，显式加 `--with-sched`。
++- `scripts/make_config.py overview`：综合路线，sched + power + 轮询一起采，用于还不知道问题类型时定位。
++- 板端事件能力必须先用 `sh scripts/survey.sh --events` 核实：缺 `power/*` 时 generator 会自动退化为
++  **纯轮询**配置（会打印 NOTE），不假设 X5 一定有全部 power 事件。
++
+ ## 选择
+ 
+ - `power/cpu_frequency`：**频率变化时**才产生 event，因此短 trace 缺样本很正常。
+@@ -11,6 +20,21 @@
+ 
+ ## 验证和分析
+ 
+-`sql/04-cpu-frequency.sql` 查询 `counter` + `cpu_counter_track` 的 `cpufreq/cpuidle`。`cpufreq` 通常使用 kHz，展示 MHz 时除以 1000。以实际单位和字段为准。显示空行时先核查 producer 支持、sysfs、trace 长度和 `stats`，不能推断 CPU 频率为零。
++## 数据验收（先做这一步）
++
++1. 先跑 `sql/04a-frequency-inventory.sql`（单条 SQL）。它输出 `freq_tracks/freq_cpus/freq_units/freq_samples`
++   和 `verdict`：
++   - `UNKNOWN: no cpufreq counter track`：该 trace 没采频率（scheduling 路由属正常情况）→ 频率 **UNKNOWN**，
++     **不得**解释为 0 MHz；
++   - `UNKNOWN: ... no samples`：有轨道无样本，同样 UNKNOWN；
++   - `WEAK: single sample`：只有初始值，无趋势；
++   - `OK`：有样本，且必须再确认样本落在分析窗口内、覆盖足够时间。
++2. 只有 `OK/WEAK` 才继续跑 `sql/04-cpu-frequency.sql` 出时间线；空结果 = 未采集，不是 0 MHz。
++
++## 单位
++
++- `cpufreq` 原始 counter 值是 **kHz**（`power/cpu_frequency` 与 sysfs `scaling_cur_freq` 同单位）；
++  `sql/04-cpu-frequency.sql` 用 `value/1000.0` 输出 MHz，并保留 `raw_unit`/`raw_value` 便于核对。
++- `cpuidle` 的值是**状态深度**，`4294967295` 表示离开 idle，不能当深度或频率。
+ 
+ 频率下降不等于热限制或性能瓶颈；必须结合 Running/idle、实际任务延迟，必要时平台温度、功率/thermal 限制事实。避免简单“频率低 → 用户卡顿”的因果断言。
+diff -ruN a/perfetto-cpu-debugging/references/04-platforms.md b/perfetto-cpu-debugging/references/04-platforms.md
+--- a/perfetto-cpu-debugging/references/04-platforms.md	2026-10-17 17:17:04.000000000 +0800
++++ b/perfetto-cpu-debugging/references/04-platforms.md	2026-10-18 02:05:30.255959808 +0800
+@@ -38,7 +38,14 @@
+ 
+ ## TP 与 UI
+ 
+-在【主机】运行已确认的 `trace_processor_shell --help`，以本机版本支持的语法调用（例：`trace_processor_shell query -f sql/00-inventory.sql captures/cpu.pftrace`），或在 Perfetto UI 的 Query(SQL) 运行。不同工具 CLI 可能不同，不把最新版的参数套到旧版本。
++在【主机】运行已确认的 `trace_processor_shell --help`，以本机版本支持的语法调用（v57.1/v58.2 均为
++`trace_processor_shell query -f <单个 .sql> <trace>`），或在 Perfetto UI 的 Query(SQL) 运行。
++
++**一次一个文件**：v57.1/v58.2 的 `query -f` 遇到一个文件里的多条 SELECT 会报
++`Result rows were returned for multiples queries` 或只输出最后一个结果集，所以清点拆成
++`sql/00-inventory.sql`、`00a-trace-bounds.sql`、`00b-thread-states.sql`、`00c-counter-tracks.sql`、
++`00d-stats.sql` 五个单语句文件；频率另用 `sql/04a-frequency-inventory.sql` 做数据验收。
++不同工具 CLI 可能不同，不把最新版的参数套到旧版本。
+ 
+ ## Android
+ 
+diff -ruN a/perfetto-cpu-debugging/scripts/make_config.py b/perfetto-cpu-debugging/scripts/make_config.py
+--- a/perfetto-cpu-debugging/scripts/make_config.py	2026-10-17 17:22:38.000000000 +0800
++++ b/perfetto-cpu-debugging/scripts/make_config.py	2026-10-18 02:05:09.813877215 +0800
+@@ -55,12 +55,21 @@
+         raise ValueError('buffer_kb must be 1024..131072 KiB')
+     if args.no_sched and args.route in ('overview', 'scheduling'):
+         raise ValueError('--no-sched only applies to frequency or profiling routes')
++    if args.no_sched and args.with_sched:
++        raise ValueError('--no-sched and --with-sched are mutually exclusive')
++    if args.with_sched and args.route not in ('frequency', 'profiling'):
++        raise ValueError('--with-sched only applies to frequency or profiling routes')
+     events = available_events(args.events)
+     pieces = [f'duration_ms: {args.duration_ms}',
+               f'buffers {{ size_kb: {args.buffer_kb} fill_policy: RING_BUFFER }}',
+               'data_sources { config { name: "linux.process_stats" '
+               'process_stats_config { scan_all_processes_on_start: true proc_stats_poll_ms: 1000 } } }']
+-    wants_sched = args.route in ('overview', 'scheduling', 'frequency', 'profiling') and not args.no_sched
++    # Route intent (v0.1.0-r1): frequency is a LIGHT route. It polls cpufreq via
++    # sysfs and only adds ftrace power events; sched events are opt-in there.
++    # overview stays the comprehensive route (sched + power + polling).
++    wants_sched = args.route in ('overview', 'scheduling') or (
++        args.route == 'profiling' and not args.no_sched) or (
++        args.route == 'frequency' and args.with_sched)
+     if wants_sched:
+         ev = ['sched/sched_switch']
+         check_event(ev[0], events, required=True)
+@@ -74,12 +83,36 @@
+         pieces.append('data_sources { config { name: "linux.ftrace"\n'
+                       f'    ftrace_config {{ buffer_size_kb: {args.ftrace_kb} '
+                       f'drain_period_ms: {args.drain_ms}\n{strings}\n    }}\n  }} }}')
++        if args.route == 'frequency' and args.with_sched:
++            print('NOTE: frequency route with --with-sched adds sched events '
++                  '(larger trace; use it only for on-CPU/Runnable attribution)', file=sys.stderr)
++    elif args.route == 'frequency':
++        # No sched: still collect frequency/idle *change* events when the board
++        # actually exposes them; polling below covers the initial value.
++        ev = []
++        for opt in ('power/cpu_frequency', 'power/cpu_idle'):
++            if check_event(opt, events): ev.append(opt)
++        if ev:
++            strings = '\n'.join(f'      ftrace_events: {quoted(x)}' for x in ev)
++            pieces.append('data_sources { config { name: "linux.ftrace"\n'
++                          f'    ftrace_config {{ buffer_size_kb: {args.ftrace_kb} '
++                          f'drain_period_ms: {args.drain_ms}\n{strings}\n    }}\n  }} }}')
++        if events is None:
++            print('NOTE: frequency route: power event support not verified (no --events); '
++                  'run survey.sh --events on the target first', file=sys.stderr)
++        elif not ev:
++            print('NOTE: frequency route: no power/cpu_frequency or power/cpu_idle on target; '
++                  'polling-only config (no frequency-change events)', file=sys.stderr)
++        if args.with_sched:
++            print('NOTE: frequency route with --with-sched adds sched events '
++                  '(larger trace; use it only for on-CPU/Runnable attribution)', file=sys.stderr)
++        else:
++            print('NOTE: frequency route omits sched events by default (light capture); '
++                  'add --with-sched only if you need on-CPU/Runnable attribution', file=sys.stderr)
+     if args.route in ('overview', 'frequency'):
+         # Initial values via sysfs poll; changes via optional ftrace above.
+         pieces.append('data_sources { config { name: "linux.sys_stats" '
+                       f'sys_stats_config {{ cpufreq_period_ms: {args.poll_ms} }} }} }}')
+-        if args.no_sched:
+-            print('NOTE: --no-sched selected; no on-CPU time/sched latency analysis', file=sys.stderr)
+     if args.route == 'profiling':
+         if not args.target:
+             raise ValueError('profiling route needs --target ACTUAL_PROCESS_BASENAME')
+@@ -108,7 +141,10 @@
+     p.add_argument('--ftrace-kb', type=int, default=1024)
+     p.add_argument('--drain-ms', type=int, default=250)
+     p.add_argument('--no-waking', action='store_true')
+-    p.add_argument('--no-sched', action='store_true')
++    p.add_argument('--no-sched', action='store_true',
++                   help='frequency/profiling only: omit sched events (frequency is already light by default)')
++    p.add_argument('--with-sched', action='store_true',
++                   help='frequency only: also collect sched events for on-CPU attribution')
+     a = p.parse_args()
+     if a.platform == 'android':
+         print('NOTE: Android variant is a recipe, not API-level tested; check actual permissions and tool build.', file=sys.stderr)
+diff -ruN a/perfetto-cpu-debugging/sql/00-inventory.sql b/perfetto-cpu-debugging/sql/00-inventory.sql
+--- a/perfetto-cpu-debugging/sql/00-inventory.sql	2026-10-17 17:12:24.000000000 +0800
++++ b/perfetto-cpu-debugging/sql/00-inventory.sql	2026-10-18 02:04:14.435704612 +0800
+@@ -1,13 +1,20 @@
+--- Inventory: execute first, confirm target UPID and available data. No guessing by PID/name.
+-SELECT start_ts,end_ts,(end_ts-start_ts)/1e9 AS duration_s FROM trace_bounds;
+-SELECT p.upid,p.pid,p.name AS process_name,COUNT(DISTINCT s.id) AS running_slices,
+-       ROUND(SUM(CASE WHEN s.dur>0 THEN s.dur ELSE 0 END)/1e6,2) AS cpu_ms
+-FROM process p JOIN thread th ON th.upid=p.upid
+-LEFT JOIN sched_slice s ON s.utid=th.utid
+-GROUP BY p.upid,p.pid,p.name
+-HAVING running_slices>0 ORDER BY cpu_ms DESC LIMIT 30;
+-SELECT state,COUNT(*) AS slices FROM thread_state GROUP BY state ORDER BY slices DESC;
+-SELECT name,COUNT(*) AS tracks FROM cpu_counter_track GROUP BY name;
+-SELECT name,value,severity FROM stats WHERE value<>0 AND severity <> 'info' ORDER BY name;
+--- If perf_sample table doesn't exist in this TP build, skip this independent statement.
+--- SELECT COUNT(*) AS samples FROM perf_sample;
++-- 00-inventory.sql — step 1/5: find the target process and its UPID.
++--
++-- One SELECT per file on purpose: Trace Processor v57.1 and v58.2 reject a
++-- multi-result-set file passed to `query -f`, so the old combined inventory is
++-- split into 00 (this file) + 00a..00d. Execute each file separately:
++--   trace_processor_shell query -f sql/00-inventory.sql <trace>.pftrace
++--
++-- Capability is unchanged: 00 process ranking, 00a bounds, 00b thread states,
++-- 00c counter/data-source presence, 00d stats/data-loss.
++SELECT p.upid, p.pid, p.name AS process_name,
++       COUNT(DISTINCT th.utid) AS threads,
++       COUNT(s.id) AS running_slices,
++       ROUND(SUM(CASE WHEN s.dur > 0 THEN s.dur ELSE 0 END) / 1e6, 2) AS cpu_ms
++FROM process p
++JOIN thread th ON th.upid = p.upid
++LEFT JOIN sched_slice s ON s.utid = th.utid
++GROUP BY p.upid, p.pid, p.name
++HAVING COUNT(s.id) > 0
++ORDER BY cpu_ms DESC
++LIMIT 30;
+diff -ruN a/perfetto-cpu-debugging/sql/00a-trace-bounds.sql b/perfetto-cpu-debugging/sql/00a-trace-bounds.sql
+--- a/perfetto-cpu-debugging/sql/00a-trace-bounds.sql	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/sql/00a-trace-bounds.sql	2026-10-18 02:04:14.436450925 +0800
+@@ -0,0 +1,4 @@
++-- 00a — step 2/5: trace time range in ns and seconds.
++-- Run separately (single SELECT): query -f sql/00a-trace-bounds.sql <trace>.pftrace
++SELECT start_ts, end_ts, (end_ts - start_ts) / 1e9 AS duration_s
++FROM trace_bounds;
+diff -ruN a/perfetto-cpu-debugging/sql/00b-thread-states.sql b/perfetto-cpu-debugging/sql/00b-thread-states.sql
+--- a/perfetto-cpu-debugging/sql/00b-thread-states.sql	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/sql/00b-thread-states.sql	2026-10-18 02:04:14.437116327 +0800
+@@ -0,0 +1,6 @@
++-- 00b — step 3/5: which thread_state codes actually exist in this trace.
++-- Run separately (single SELECT): query -f sql/00b-thread-states.sql <trace>.pftrace
++SELECT state, COUNT(*) AS slices
++FROM thread_state
++GROUP BY state
++ORDER BY slices DESC;
+diff -ruN a/perfetto-cpu-debugging/sql/00c-counter-tracks.sql b/perfetto-cpu-debugging/sql/00c-counter-tracks.sql
+--- a/perfetto-cpu-debugging/sql/00c-counter-tracks.sql	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/sql/00c-counter-tracks.sql	2026-10-18 02:04:14.437688403 +0800
+@@ -0,0 +1,7 @@
++-- 00c — step 4/5: which CPU counters were actually collected.
++-- An empty result for 'cpufreq' means frequency data is UNKNOWN (not 0 MHz).
++-- Run separately (single SELECT): query -f sql/00c-counter-tracks.sql <trace>.pftrace
++SELECT name, COUNT(*) AS tracks
++FROM cpu_counter_track
++GROUP BY name
++ORDER BY tracks DESC;
+diff -ruN a/perfetto-cpu-debugging/sql/00d-stats.sql b/perfetto-cpu-debugging/sql/00d-stats.sql
+--- a/perfetto-cpu-debugging/sql/00d-stats.sql	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/sql/00d-stats.sql	2026-10-18 02:04:14.438580567 +0800
+@@ -0,0 +1,8 @@
++-- 00d — step 5/5: non-zero stats that are not severity=info (data loss / errors).
++-- Empty result = no reported data loss. severity rows that exist with value=0
++-- are stat *definitions*, not observed loss; check `value`.
++-- Run separately (single SELECT): query -f sql/00d-stats.sql <trace>.pftrace
++SELECT name, value, severity
++FROM stats
++WHERE value <> 0 AND severity <> 'info'
++ORDER BY name;
+diff -ruN a/perfetto-cpu-debugging/sql/04-cpu-frequency.sql b/perfetto-cpu-debugging/sql/04-cpu-frequency.sql
+--- a/perfetto-cpu-debugging/sql/04-cpu-frequency.sql	2026-10-17 17:12:24.000000000 +0800
++++ b/perfetto-cpu-debugging/sql/04-cpu-frequency.sql	2026-10-18 02:04:19.744224250 +0800
+@@ -1,11 +1,17 @@
+--- Frequency and idle raw counters. cpufreq is typically kHz; convert to MHz.
+--- Event-only streams may lack initial value; prefer linux.sys_stats cpufreq polling.
+--- cpuidle 4294967295 means leaving idle (NOT an idle state depth).
+-SELECT ct.cpu,ct.name AS kind,c.ts,
++-- 04-cpu-frequency.sql — frequency / idle raw counters as a timeline.
++--
++-- PRECONDITION: run 04a-frequency-inventory.sql first. An empty result here
++-- means the counter was NOT COLLECTED (typical for the scheduling route) and
++-- must be reported as UNKNOWN — never as "0 MHz".
++-- cpufreq is typically kHz; convert to MHz by /1000. cpuidle 4294967295 means
++-- leaving idle (NOT an idle state depth).
++SELECT ct.cpu, ct.name AS kind, ct.unit AS raw_unit, c.ts,
+        c.value AS raw_value,
+-       CASE WHEN ct.name='cpufreq' THEN c.value/1000.0 END AS freq_mhz,
+-       CASE WHEN ct.name='cpuidle' AND c.value=4294967295 THEN 'not-idle'
+-            WHEN ct.name='cpuidle' THEN 'idle-state'
++       CASE WHEN ct.name = 'cpufreq' THEN c.value / 1000.0 END AS freq_mhz,
++       CASE WHEN ct.name = 'cpuidle' AND c.value = 4294967295 THEN 'not-idle'
++            WHEN ct.name = 'cpuidle' THEN 'idle-state'
+             ELSE 'frequency' END AS meaning
+-FROM counter c JOIN cpu_counter_track ct ON ct.id=c.track_id
+-WHERE ct.name IN ('cpufreq','cpuidle') ORDER BY ct.cpu,c.ts;
++FROM counter c
++JOIN cpu_counter_track ct ON ct.id = c.track_id
++WHERE ct.name IN ('cpufreq', 'cpuidle')
++ORDER BY ct.cpu, c.ts;
+diff -ruN a/perfetto-cpu-debugging/sql/04a-frequency-inventory.sql b/perfetto-cpu-debugging/sql/04a-frequency-inventory.sql
+--- a/perfetto-cpu-debugging/sql/04a-frequency-inventory.sql	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/sql/04a-frequency-inventory.sql	2026-10-18 02:04:19.743514402 +0800
+@@ -0,0 +1,45 @@
++-- 04a — frequency acceptance gate. RUN THIS BEFORE 04-cpu-frequency.sql.
++--
++-- Why: the scheduling route does not collect CPU frequency, so an empty result
++-- from 04-cpu-frequency.sql is EXPECTED there and means UNKNOWN — it is never
++-- evidence that the CPU ran at 0 MHz. Only a cpufreq counter track WITH samples
++-- inside the analysis window supports a frequency statement.
++--
++-- Unit: cpufreq raw counter values are kHz in this data source; the timeline SQL
++-- divides by 1000 to print MHz. cpuidle values are state depths, except
++-- 4294967295 which means "left idle" (not a depth).
++--
++-- Run separately (single SELECT):
++--   trace_processor_shell query -f sql/04a-frequency-inventory.sql <trace>.pftrace
++WITH ft AS (
++  SELECT COUNT(*) AS tracks,
++         COUNT(DISTINCT cpu) AS cpus,
++         GROUP_CONCAT(DISTINCT unit) AS units
++  FROM cpu_counter_track
++  WHERE name = 'cpufreq'
++),
++fs AS (
++  SELECT COUNT(*) AS samples, MIN(c.ts) AS first_ts, MAX(c.ts) AS last_ts
++  FROM counter c
++  WHERE c.track_id IN (SELECT id FROM cpu_counter_track WHERE name = 'cpufreq')
++),
++it AS (
++  SELECT COUNT(*) AS tracks FROM cpu_counter_track WHERE name = 'cpuidle'
++)
++SELECT ft.tracks AS freq_tracks,
++       ft.cpus AS freq_cpus,
++       ft.units AS freq_units,
++       fs.samples AS freq_samples,
++       fs.first_ts,
++       fs.last_ts,
++       it.tracks AS cpuidle_tracks,
++       CASE
++         WHEN ft.tracks = 0
++           THEN 'UNKNOWN: no cpufreq counter track -> frequency not collected (do NOT read as 0 MHz)'
++         WHEN fs.samples = 0
++           THEN 'UNKNOWN: cpufreq track exists but no samples in this trace'
++         WHEN fs.samples = 1
++           THEN 'WEAK: single cpufreq sample (initial value only, no trend)'
++         ELSE 'OK: freq samples present; raw unit is kHz (/1000 for MHz); confirm window coverage'
++       END AS verdict
++FROM ft CROSS JOIN fs CROSS JOIN it;
+diff -ruN a/perfetto-cpu-debugging/tests/local_test_run.txt b/perfetto-cpu-debugging/tests/local_test_run.txt
+--- a/perfetto-cpu-debugging/tests/local_test_run.txt	2026-10-17 17:22:54.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/local_test_run.txt	2026-10-18 02:06:15.973740386 +0800
+@@ -1,27 +1,54 @@
+-test_all_four_templates_nonempty (test_configs.ConfigTests.test_all_four_templates_nonempty) ... ok
+-test_frequency_bounds (test_configs.ConfigTests.test_frequency_bounds) ... ok
+-test_generation_four_routes (test_configs.ConfigTests.test_generation_four_routes) ... ok
+-test_missing_required_sched_fails_without_partial_stdout (test_configs.ConfigTests.test_missing_required_sched_fails_without_partial_stdout) ... ok
+-test_name_required_and_injection_rejected (test_configs.ConfigTests.test_name_required_and_injection_rejected) ... ok
+-test_no_sched_frequency_keeps_polling (test_configs.ConfigTests.test_no_sched_frequency_keeps_polling) ... ok
+-test_no_unknown_events_in_static_aware_profile (test_configs.ConfigTests.test_no_unknown_events_in_static_aware_profile) ... ok
+-test_required_sched_route_cannot_silently_omit_sched (test_configs.ConfigTests.test_required_sched_route_cannot_silently_omit_sched) ... ok
+-test_structural_validator (test_configs.ConfigTests.test_structural_validator) ... ok
+-test_validation_and_missing_resource (test_configs.ConfigTests.test_validation_and_missing_resource) ... ok
+-test_legacy_script_hashes_match_frozen_memory_release (test_shell.ShellTests.test_legacy_script_hashes_match_frozen_memory_release) ... ok
+-test_shell_syntax (test_shell.ShellTests.test_shell_syntax) ... ok
+-test_200ms_not_false_spike_at_150 (test_sql.CpuSQLTests.test_200ms_not_false_spike_at_150) ... ok
+-test_350ms_crossing_only_right_bucket_spikes (test_sql.CpuSQLTests.test_350ms_crossing_only_right_bucket_spikes) ... ok
+-test_bucket_splits_across_boundary (test_sql.CpuSQLTests.test_bucket_splits_across_boundary) ... ok
+-test_freq_state_semantics (test_sql.CpuSQLTests.test_freq_state_semantics) ... ok
+-test_no_upid_no_rows (test_sql.CpuSQLTests.test_no_upid_no_rows) ... ok
+-test_per_core_busy_filters_idle (test_sql.CpuSQLTests.test_per_core_busy_filters_idle) ... ok
+-test_quiet_gap_separates_episodes (test_sql.CpuSQLTests.test_quiet_gap_separates_episodes) ... ok
+-test_runnable_longest (test_sql.CpuSQLTests.test_runnable_longest) ... ok
+-test_thread_states_running_vs_runnable (test_sql.CpuSQLTests.test_thread_states_running_vs_runnable) ... ok
+-test_window_clipping (test_sql.CpuSQLTests.test_window_clipping) ... ok
++# host test run for v0.1.0-r1 (regenerated 2026-10-18; no board access needed)
++# python: 3.10.12
++
++$ python3 -m unittest discover -s tests -v
++
++test_all_four_templates_nonempty (test_configs.ConfigTests) ... ok
++test_frequency_bounds (test_configs.ConfigTests) ... ok
++test_frequency_polling_only_when_power_events_absent (test_configs.ConfigTests) ... ok
++test_frequency_route_is_light_and_differs_from_overview (test_configs.ConfigTests) ... ok
++test_frequency_with_sched_is_opt_in (test_configs.ConfigTests) ... ok
++test_generation_four_routes (test_configs.ConfigTests) ... ok
++test_missing_required_sched_fails_without_partial_stdout (test_configs.ConfigTests) ... ok
++test_name_required_and_injection_rejected (test_configs.ConfigTests) ... ok
++test_no_sched_frequency_keeps_polling (test_configs.ConfigTests) ... ok
++test_no_unknown_events_in_static_aware_config (test_configs.ConfigTests) ... ok
++test_required_sched_route_cannot_silently_omit_sched (test_configs.ConfigTests) ... ok
++test_static_frequency_config_differs_from_overview (test_configs.ConfigTests) ... ok
++test_structural_validator (test_configs.ConfigTests) ... ok
++test_validation_and_missing_resource (test_configs.ConfigTests) ... ok
++test_legacy_script_hashes_match_frozen_memory_release (test_shell.ShellTests) ... ok
++test_shell_syntax (test_shell.ShellTests) ... ok
++test_200ms_not_false_spike_at_150 (test_sql.CpuSQLTests) ... ok
++test_350ms_crossing_only_right_bucket_spikes (test_sql.CpuSQLTests) ... ok
++test_bucket_splits_across_boundary (test_sql.CpuSQLTests) ... ok
++test_freq_state_semantics (test_sql.CpuSQLTests) ... ok
++test_no_upid_no_rows (test_sql.CpuSQLTests) ... ok
++test_per_core_busy_filters_idle (test_sql.CpuSQLTests) ... ok
++test_quiet_gap_separates_episodes (test_sql.CpuSQLTests) ... ok
++test_runnable_longest (test_sql.CpuSQLTests) ... ok
++test_thread_states_running_vs_runnable (test_sql.CpuSQLTests) ... ok
++test_window_clipping (test_sql.CpuSQLTests) ... ok
++test_frequency_gate_ok_and_weak (test_sql.InventoryAndFrequencyGateTests) ... ok
++test_frequency_gate_unknown_track_without_samples (test_sql.InventoryAndFrequencyGateTests) ... ok
++test_frequency_gate_unknown_without_track (test_sql.InventoryAndFrequencyGateTests) ... ok
++test_frequency_timeline_empty_without_track (test_sql.InventoryAndFrequencyGateTests) ... ok
++test_inventory_companion_files (test_sql.InventoryAndFrequencyGateTests) ... ok
++test_inventory_files_are_single_statement (test_sql.InventoryAndFrequencyGateTests) ... ok
++test_inventory_process_ranking (test_sql.InventoryAndFrequencyGateTests) ... ok
+ 
+ ----------------------------------------------------------------------
+-Ran 22 tests in 15.519s
++Ran 33 tests in 0.542s
+ 
+ OK
++
++$ shell syntax
++sh -n scripts/host_pull.sh: exit=0 
++sh -n scripts/linux_session_lib.sh: exit=0 
++sh -n scripts/linux_trace_session.sh: exit=0 
++sh -n scripts/survey.sh: exit=0 
++
++$ python3 scripts/validate_config.py --check-resources
++[PASS] resources: 25 essential files + 4 configs
++[NOTE] runtime event support, perf privileges, data, and flush NOT checked
++
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/run_regression.sh b/perfetto-cpu-debugging/tests/real_trace_regression/run_regression.sh
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/run_regression.sh	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/run_regression.sh	2026-10-18 02:06:26.317376542 +0800
+@@ -0,0 +1,25 @@
++#!/bin/sh
++# Run the inventory / frequency-gate SQL against a real trace with the given TP.
++# Usage: run_regression.sh TRACE TP_BINARY OUTDIR [ORIGIN_LABEL]
++# ORIGIN_LABEL is recorded in the output (defaults to the TRACE argument, which may be
++# an absolute host path); the trace itself is not bundled.
++set -eu
++TRACE=${1:?trace path}
++TP=${2:?trace_processor_shell path}
++OUT=${3:?output dir}
++ORIGIN=${4:-$TRACE}
++SQLDIR=$(CDPATH= cd -- "$(dirname -- "$0")/../../sql" && pwd)
++mkdir -p "$OUT"
++"$TP" --version > "$OUT/tp_version.txt" 2>&1
++{ echo "trace: $ORIGIN"; sha256sum "$TRACE" | sed "s|$TRACE|$ORIGIN|"; } > "$OUT/trace_identity.txt"
++for f in 00-inventory 00a-trace-bounds 00b-thread-states 00c-counter-tracks 00d-stats 04a-frequency-inventory 04-cpu-frequency; do
++  out="$OUT/$f.txt"
++  if "$TP" query -f "$SQLDIR/$f.sql" "$TRACE" > "$out" 2> "$out.err"; then
++    rows=$(awk '/^"/{p=1} p' "$out" | tail -n +2 | wc -l)
++    echo "PASS $f rows=$rows" >> "$OUT/summary.txt"
++  else
++    echo "FAIL $f exit=$? $(tail -1 "$out.err")" >> "$OUT/summary.txt"
++  fi
++  rm -f "$out.err"
++done
++cat "$OUT/summary.txt"
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00-inventory.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00-inventory.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00-inventory.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00-inventory.txt	2026-10-18 02:06:26.357800987 +0800
+@@ -0,0 +1,31 @@
++"upid","pid","process_name","threads","running_slices","cpu_ms"
++0,0,"[NULL]",1,1201,152976.170000
++185,12042,"./cpu_spike_fixture",3,200,2684.710000
++189,12061,"/userdata/cpu-diag-1018-013326/tracebox-arm64",2,80,366.530000
++186,12047,"sh",1,20,18.150000
++192,12068,"sleep",1,2,9.990000
++12,14,"rcu_preempt",1,260,6.700000
++86,156,"kworker/3:1",1,153,4.450000
++155,577,"/usr/sbin/ptp4l",1,3,4.200000
++87,158,"sugov:0",1,71,3.780000
++200,12076,"sleep",1,3,3.520000
++203,12079,"sleep",1,3,3.480000
++197,12073,"sleep",1,2,3.450000
++209,12085,"sleep",1,2,3.440000
++206,12082,"sleep",1,2,3.410000
++193,12069,"sleep",1,2,3.390000
++204,12080,"sleep",1,2,3.380000
++194,12070,"sleep",1,2,3.370000
++195,12071,"sleep",1,2,3.370000
++207,12083,"sleep",1,2,3.350000
++210,12086,"sleep",1,2,3.330000
++198,12074,"sleep",1,2,3.320000
++201,12077,"sleep",1,2,3.320000
++208,12084,"sleep",1,2,3.070000
++196,12072,"sleep",1,2,3.020000
++205,12081,"sleep",1,2,3.020000
++199,12075,"sleep",1,2,2.990000
++202,12078,"sleep",1,2,2.990000
++145,430,"/usr/sbin/ntpd",2,19,2.940000
++211,12087,"sleep",1,1,2.480000
++85,153,"kworker/0:6",1,43,2.220000
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00a-trace-bounds.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00a-trace-bounds.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00a-trace-bounds.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00a-trace-bounds.txt	2026-10-18 02:06:26.397800637 +0800
+@@ -0,0 +1,2 @@
++"start_ts","end_ts","duration_s"
++40999908716300,41019591699934,19.682984
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00b-thread-states.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00b-thread-states.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00b-thread-states.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00b-thread-states.txt	2026-10-18 02:06:26.433800321 +0800
+@@ -0,0 +1,8 @@
++"state","slices"
++"Running",1248
++"R",1219
++"S",651
++"I",435
++"D",135
++"Z",20
++"R+",8
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00c-counter-tracks.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00c-counter-tracks.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00c-counter-tracks.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00c-counter-tracks.txt	2026-10-18 02:06:26.481799901 +0800
+@@ -0,0 +1 @@
++"name","tracks"
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00d-stats.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00d-stats.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00d-stats.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/00d-stats.txt	2026-10-18 02:06:26.525799516 +0800
+@@ -0,0 +1 @@
++"name","value","severity"
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/04-cpu-frequency.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/04-cpu-frequency.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/04-cpu-frequency.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/04-cpu-frequency.txt	2026-10-18 02:06:26.593798920 +0800
+@@ -0,0 +1 @@
++"cpu","kind","raw_unit","ts","raw_value","freq_mhz","meaning"
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/04a-frequency-inventory.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/04a-frequency-inventory.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/04a-frequency-inventory.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/04a-frequency-inventory.txt	2026-10-18 02:06:26.561799200 +0800
+@@ -0,0 +1,2 @@
++"freq_tracks","freq_cpus","freq_units","freq_samples","first_ts","last_ts","cpuidle_tracks","verdict"
++0,0,"[NULL]",0,"[NULL]","[NULL]",0,"UNKNOWN: no cpufreq counter track -> frequency not collected (do NOT read as 0 MHz)"
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/summary.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/summary.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/summary.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/summary.txt	2026-10-18 02:06:26.597798885 +0800
+@@ -0,0 +1,7 @@
++PASS 00-inventory rows=30
++PASS 00a-trace-bounds rows=1
++PASS 00b-thread-states rows=7
++PASS 00c-counter-tracks rows=0
++PASS 00d-stats rows=0
++PASS 04a-frequency-inventory rows=1
++PASS 04-cpu-frequency rows=0
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/tp_version.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/tp_version.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/tp_version.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/tp_version.txt	2026-10-18 02:06:26.325322382 +0800
+@@ -0,0 +1,2 @@
++Perfetto v57.1-c59f57dd4 (c59f57dd4d9c4ad37c44f0fee9dde060707534fa)
++Trace Processor RPC API version: 14
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/trace_identity.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/trace_identity.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/trace_identity.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v57.1/trace_identity.txt	2026-10-18 02:06:26.326752688 +0800
+@@ -0,0 +1,2 @@
++trace: dg-xiaodong/test_perfetto:cpu_v1_test/cpu.pftrace
++ba40ba562ab097ea1651e5a2897c741ed15d41da34b40bfbfe80ce9c863e0501  dg-xiaodong/test_perfetto:cpu_v1_test/cpu.pftrace
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00-inventory.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00-inventory.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00-inventory.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00-inventory.txt	2026-10-18 02:06:26.645798464 +0800
+@@ -0,0 +1,31 @@
++"upid","pid","process_name","threads","running_slices","cpu_ms"
++0,0,"[NULL]",1,1201,152976.170000
++185,12042,"./cpu_spike_fixture",3,200,2684.710000
++189,12061,"/userdata/cpu-diag-1018-013326/tracebox-arm64",2,80,366.530000
++186,12047,"sh",1,20,18.150000
++192,12068,"sleep",1,2,9.990000
++12,14,"rcu_preempt",1,260,6.700000
++86,156,"kworker/3:1",1,153,4.450000
++155,577,"/usr/sbin/ptp4l",1,3,4.200000
++87,158,"sugov:0",1,71,3.780000
++200,12076,"sleep",1,3,3.520000
++203,12079,"sleep",1,3,3.480000
++197,12073,"sleep",1,2,3.450000
++209,12085,"sleep",1,2,3.440000
++206,12082,"sleep",1,2,3.410000
++193,12069,"sleep",1,2,3.390000
++204,12080,"sleep",1,2,3.380000
++194,12070,"sleep",1,2,3.370000
++195,12071,"sleep",1,2,3.370000
++207,12083,"sleep",1,2,3.350000
++210,12086,"sleep",1,2,3.330000
++198,12074,"sleep",1,2,3.320000
++201,12077,"sleep",1,2,3.320000
++208,12084,"sleep",1,2,3.070000
++196,12072,"sleep",1,2,3.020000
++205,12081,"sleep",1,2,3.020000
++199,12075,"sleep",1,2,2.990000
++202,12078,"sleep",1,2,2.990000
++145,430,"/usr/sbin/ntpd",2,19,2.940000
++211,12087,"sleep",1,1,2.480000
++85,153,"kworker/0:6",1,43,2.220000
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00a-trace-bounds.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00a-trace-bounds.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00a-trace-bounds.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00a-trace-bounds.txt	2026-10-18 02:06:26.681798149 +0800
+@@ -0,0 +1,2 @@
++"start_ts","end_ts","duration_s"
++40999908716300,41019591699934,19.682984
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00b-thread-states.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00b-thread-states.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00b-thread-states.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00b-thread-states.txt	2026-10-18 02:06:26.725797764 +0800
+@@ -0,0 +1,8 @@
++"state","slices"
++"Running",1248
++"R",1219
++"S",651
++"I",435
++"D",135
++"Z",20
++"R+",8
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00c-counter-tracks.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00c-counter-tracks.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00c-counter-tracks.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00c-counter-tracks.txt	2026-10-18 02:06:26.765797413 +0800
+@@ -0,0 +1 @@
++"name","tracks"
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00d-stats.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00d-stats.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00d-stats.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/00d-stats.txt	2026-10-18 02:06:26.809797028 +0800
+@@ -0,0 +1 @@
++"name","value","severity"
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/04-cpu-frequency.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/04-cpu-frequency.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/04-cpu-frequency.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/04-cpu-frequency.txt	2026-10-18 02:06:26.889796327 +0800
+@@ -0,0 +1 @@
++"cpu","kind","raw_unit","ts","raw_value","freq_mhz","meaning"
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/04a-frequency-inventory.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/04a-frequency-inventory.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/04a-frequency-inventory.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/04a-frequency-inventory.txt	2026-10-18 02:06:26.853796643 +0800
+@@ -0,0 +1,2 @@
++"freq_tracks","freq_cpus","freq_units","freq_samples","first_ts","last_ts","cpuidle_tracks","verdict"
++0,0,"[NULL]",0,"[NULL]","[NULL]",0,"UNKNOWN: no cpufreq counter track -> frequency not collected (do NOT read as 0 MHz)"
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/summary.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/summary.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/summary.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/summary.txt	2026-10-18 02:06:26.893796292 +0800
+@@ -0,0 +1,7 @@
++PASS 00-inventory rows=30
++PASS 00a-trace-bounds rows=1
++PASS 00b-thread-states rows=7
++PASS 00c-counter-tracks rows=0
++PASS 00d-stats rows=0
++PASS 04a-frequency-inventory rows=1
++PASS 04-cpu-frequency rows=0
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/tp_version.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/tp_version.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/tp_version.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/tp_version.txt	2026-10-18 02:06:26.607120285 +0800
+@@ -0,0 +1,2 @@
++Perfetto v58.2-add693d8b (add693d8b338ba9599dbcbc3e300b1ab8c000897)
++Trace Processor RPC API version: 14
+diff -ruN a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/trace_identity.txt b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/trace_identity.txt
+--- a/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/trace_identity.txt	1970-01-01 08:00:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/real_trace_regression/tp-v58.2/trace_identity.txt	2026-10-18 02:06:26.608264406 +0800
+@@ -0,0 +1,2 @@
++trace: dg-xiaodong/test_perfetto:cpu_v1_test/cpu.pftrace
++ba40ba562ab097ea1651e5a2897c741ed15d41da34b40bfbfe80ce9c863e0501  dg-xiaodong/test_perfetto:cpu_v1_test/cpu.pftrace
+diff -ruN a/perfetto-cpu-debugging/tests/test_configs.py b/perfetto-cpu-debugging/tests/test_configs.py
+--- a/perfetto-cpu-debugging/tests/test_configs.py	2026-10-17 17:22:38.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/test_configs.py	2026-10-18 02:05:03.680272130 +0800
+@@ -33,13 +33,15 @@
+                 if route=='profiling':
+                     self.assertIn('name: "linux.perf"',r.stdout)
+                     self.assertIn('target_cmdline: "worker_app"',r.stdout)
+-                if route=='frequency': self.assertIn('cpufreq_period_ms: 500',r.stdout)
++                if route=='frequency':
++                    self.assertIn('cpufreq_period_ms: 500',r.stdout)
+ 
+-    def test_no_unknown_events_in_static_aware_profile(self):
++    def test_no_unknown_events_in_static_aware_config(self):
++        # frequency --with-sched: only events the board actually reports may appear.
+         with tempfile.TemporaryDirectory() as t:
+             event=pathlib.Path(t)/'events.txt'
+             event.write_text('sched:sched_switch\npower:cpu_frequency\n')
+-            r=cmd('frequency','--events',str(event))
++            r=cmd('frequency','--events',str(event),'--with-sched')
+             self.assertEqual(r.returncode,0,r.stderr)
+             self.assertIn('sched/sched_switch',r.stdout)
+             self.assertIn('power/cpu_frequency',r.stdout)
+@@ -65,14 +67,63 @@
+         self.assertNotEqual(cmd('frequency','--poll-ms','5').returncode,0)
+ 
+     def test_no_sched_frequency_keeps_polling(self):
++        # --no-sched drops sched only; frequency/idle change events + polling stay.
+         r=cmd('frequency','--no-sched')
+         self.assertEqual(r.returncode,0)
+-        self.assertNotIn('linux.ftrace',r.stdout)
++        self.assertNotIn('sched/sched_switch',r.stdout)
++        self.assertIn('power/cpu_frequency',r.stdout)
+         self.assertIn('cpufreq_period_ms',r.stdout)
+ 
+     def test_required_sched_route_cannot_silently_omit_sched(self):
+         self.assertNotEqual(cmd('scheduling','--no-sched').returncode,0)
+         self.assertNotEqual(cmd('overview','--no-sched').returncode,0)
++        self.assertNotEqual(cmd('overview','--with-sched').returncode,0)
++        self.assertNotEqual(cmd('scheduling','--with-sched').returncode,0)
++        self.assertNotEqual(cmd('frequency','--no-sched','--with-sched').returncode,0)
++
++    def test_frequency_route_is_light_and_differs_from_overview(self):
++        with tempfile.TemporaryDirectory() as t:
++            e=pathlib.Path(t)/'events.txt'
++            e.write_text('sched:sched_switch\nsched:sched_waking\n'
++                         'power:cpu_frequency\npower:cpu_idle\n')
++            freq=cmd('frequency','--events',str(e),'--duration-ms','15000')
++            over=cmd('overview','--events',str(e),'--duration-ms','15000')
++            self.assertEqual((freq.returncode,over.returncode),(0,0))
++            self.assertNotEqual(freq.stdout,over.stdout,
++                                'frequency and overview must not generate identical configs')
++            # light route: no sched events, still polls cpufreq, keeps power change events
++            self.assertNotIn('sched/sched_switch',freq.stdout)
++            self.assertNotIn('sched/sched_waking',freq.stdout)
++            self.assertIn('power/cpu_frequency',freq.stdout)
++            self.assertIn('power/cpu_idle',freq.stdout)
++            self.assertIn('cpufreq_period_ms: 500',freq.stdout)
++            # comprehensive route keeps sched
++            self.assertIn('sched/sched_switch',over.stdout)
++
++    def test_frequency_with_sched_is_opt_in(self):
++        r=cmd('frequency','--with-sched')
++        self.assertEqual(r.returncode,0,r.stderr)
++        self.assertIn('sched/sched_switch',r.stdout)
++        self.assertIn('cpufreq_period_ms',r.stdout)
++        self.assertIn('--with-sched',r.stderr)  # user is told sched was added
++
++    def test_frequency_polling_only_when_power_events_absent(self):
++        with tempfile.TemporaryDirectory() as t:
++            e=pathlib.Path(t)/'events.txt'; e.write_text('sched:sched_switch\n')
++            r=cmd('frequency','--events',str(e))
++            self.assertEqual(r.returncode,0,r.stderr)
++            self.assertNotIn('linux.ftrace',r.stdout)
++            self.assertIn('cpufreq_period_ms: 500',r.stdout)
++            self.assertIn('polling-only',r.stderr)
++
++    def test_static_frequency_config_differs_from_overview(self):
++        freq=(ROOT/'configs/cpu-frequency.pbtxt').read_text()
++        over=(ROOT/'configs/cpu-overview.pbtxt').read_text()
++        self.assertNotEqual(freq,over)
++        self.assertNotIn('sched/sched_switch',freq)
++        self.assertIn('power/cpu_frequency',freq)
++        self.assertIn('cpufreq_period_ms',freq)
++        self.assertIn('sched/sched_switch',over)
+ 
+     def test_validation_and_missing_resource(self):
+         r=subprocess.run([sys.executable,str(VAL),'--check-resources'],capture_output=True,text=True)
+diff -ruN a/perfetto-cpu-debugging/tests/test_sql.py b/perfetto-cpu-debugging/tests/test_sql.py
+--- a/perfetto-cpu-debugging/tests/test_sql.py	2026-10-17 17:20:00.000000000 +0800
++++ b/perfetto-cpu-debugging/tests/test_sql.py	2026-10-18 02:04:48.898336403 +0800
+@@ -25,8 +25,10 @@
+           INSERT INTO thread VALUES(1,21,'worker',7),(2,22,'other',8);
+           CREATE TABLE sched_slice(id INTEGER PRIMARY KEY,ts INT,dur INT,utid INT,cpu INT);
+           CREATE TABLE thread_state(utid INT,ts INT,dur INT,state TEXT,io_wait INT,blocked_function TEXT,waker_utid INT,irq_context INT);
+-          CREATE TABLE cpu_counter_track(id INT,name TEXT,cpu INT);
++          CREATE TABLE cpu_counter_track(id INT,name TEXT,cpu INT,unit TEXT);
+           CREATE TABLE counter(track_id INT,ts INT,value REAL);
++          CREATE TABLE process(upid INT,pid INT,name TEXT);
++          CREATE TABLE stats(name TEXT,value INT,severity TEXT);
+         ''')
+     def tearDown(self):self.db.close()
+     def add(self,ts,dur,utid=1):
+@@ -76,13 +78,15 @@
+         self.assertEqual(rows[0][5],20)
+ 
+     def test_freq_state_semantics(self):
+-        self.db.execute("INSERT INTO cpu_counter_track VALUES(1,'cpufreq',0)")
+-        self.db.execute("INSERT INTO cpu_counter_track VALUES(2,'cpuidle',0)")
++        self.db.execute("INSERT INTO cpu_counter_track VALUES(1,'cpufreq',0,'kHz')")
++        self.db.execute("INSERT INTO cpu_counter_track VALUES(2,'cpuidle',0,'')")
+         self.db.execute('INSERT INTO counter VALUES(1,100,1200000)')
+         self.db.execute('INSERT INTO counter VALUES(2,200,4294967295)')
+         rows=self.db.execute((ROOT/'sql/04-cpu-frequency.sql').read_text()).fetchall()
+-        self.assertEqual(rows[0][4],1200.0)
+-        self.assertEqual(rows[1][5],'not-idle')
++        self.assertEqual(rows[0][5],1200.0)          # kHz -> MHz
++        self.assertEqual(rows[0][6],'frequency')
++        self.assertEqual(rows[1][6],'not-idle')
++        self.assertEqual(rows[0][2],'kHz')           # raw unit exposed
+ 
+     def test_per_core_busy_filters_idle(self):
+         self.add(0,1000000000)
+@@ -95,4 +99,98 @@
+         self.add(100000000,200000000)
+         self.assertEqual(self.db.execute(sql('01-cpu-usage.sql',upid=-1)).fetchall(),[])
+ 
++class InventoryAndFrequencyGateTests(unittest.TestCase):
++    """Regression for v0.1.0-r1 fixes 1 (single-statement inventory) and 3 (freq gate)."""
++
++    FULL_SCHEMA = """
++      CREATE TABLE trace_bounds(start_ts INT,end_ts INT);
++      INSERT INTO trace_bounds VALUES(0,4000000000);
++      CREATE TABLE process(upid INT,pid INT,name TEXT);
++      INSERT INTO process VALUES(7,700,'worker_app'),(8,800,'other_app');
++      CREATE TABLE thread(utid INT,tid INT,name TEXT,upid INT);
++      INSERT INTO thread VALUES(1,21,'worker',7),(2,22,'other',8);
++      CREATE TABLE sched_slice(id INTEGER PRIMARY KEY,ts INT,dur INT,utid INT,cpu INT);
++      INSERT INTO sched_slice VALUES(1,0,300000000,1,1),(2,1000000000,50000000,2,2);
++      CREATE TABLE thread_state(utid INT,ts INT,dur INT,state TEXT,io_wait INT,blocked_function TEXT,waker_utid INT,irq_context INT);
++      INSERT INTO thread_state VALUES(1,0,300000000,'Running',NULL,NULL,NULL,NULL);
++      INSERT INTO thread_state VALUES(1,300000000,700000000,'S',NULL,NULL,NULL,NULL);
++      CREATE TABLE cpu_counter_track(id INT,name TEXT,cpu INT,unit TEXT);
++      CREATE TABLE counter(track_id INT,ts INT,value REAL);
++      CREATE TABLE stats(name TEXT,value INT,severity TEXT);
++    """
++
++    def db(self):
++        d=sqlite3.connect(':memory:'); d.executescript(self.FULL_SCHEMA); return d
++
++    def run_sql(self, d, name):
++        return d.execute((ROOT/'sql'/name).read_text()).fetchall()
++
++    def test_inventory_files_are_single_statement(self):
++        import re
++        for p in sorted((ROOT/'sql').glob('*.sql')):
++            with self.subTest(sql=p.name):
++                t=p.read_text()
++                t=re.sub(r'--[^\n]*','',t)                 # line comments
++                t=re.sub(r'/\*.*?\*/','',t,flags=re.S)     # block comments
++                t=re.sub(r"'(?:[^']|'')*'","''",t)           # string literals
++                body=t.strip().rstrip(';').strip()
++                self.assertEqual(body.count(';'),0,
++                                 f'{p.name}: multi-statement file breaks query -f on TP v57.1/v58.2')
++                self.assertNotEqual(body,'',f'{p.name}: empty SQL')
++
++    def test_inventory_process_ranking(self):
++        d=self.db()
++        rows=self.run_sql(d,'00-inventory.sql')
++        self.assertEqual(len(rows),2)
++        self.assertEqual(rows[0][0],7)          # upid
++        self.assertEqual(rows[0][5],300.0)      # cpu_ms
++        d.close()
++
++    def test_inventory_companion_files(self):
++        d=self.db()
++        self.assertEqual(self.run_sql(d,'00a-trace-bounds.sql')[0][2],4.0)
++        self.assertIn(('Running',1),self.run_sql(d,'00b-thread-states.sql'))
++        self.assertEqual(self.run_sql(d,'00c-counter-tracks.sql'),[])
++        d.execute("INSERT INTO stats VALUES('traced_buf_dropped',5,'error')")
++        d.execute("INSERT INTO stats VALUES('traced_buf_abi_violations',0,'error')")
++        d.execute("INSERT INTO stats VALUES('x',7,'info')")
++        rows=self.run_sql(d,'00d-stats.sql')
++        self.assertEqual(rows,[('traced_buf_dropped',5,'error')])
++        d.close()
++
++    def test_frequency_gate_unknown_without_track(self):
++        d=self.db()
++        row=self.run_sql(d,'04a-frequency-inventory.sql')[0]
++        self.assertEqual(row[0],0)                 # freq_tracks
++        self.assertTrue(row[7].startswith('UNKNOWN'),row[7])
++        self.assertIn('0 MHz',row[7])              # explicitly forbids the misread
++        d.close()
++
++    def test_frequency_gate_unknown_track_without_samples(self):
++        d=self.db()
++        d.execute("INSERT INTO cpu_counter_track VALUES(1,'cpufreq',0,'kHz')")
++        row=self.run_sql(d,'04a-frequency-inventory.sql')[0]
++        self.assertEqual((row[0],row[3]),(1,0))
++        self.assertTrue(row[7].startswith('UNKNOWN'),row[7])
++        d.close()
++
++    def test_frequency_gate_ok_and_weak(self):
++        d=self.db()
++        d.execute("INSERT INTO cpu_counter_track VALUES(1,'cpufreq',0,'kHz')")
++        d.execute('INSERT INTO counter VALUES(1,100,1200000)')
++        row=self.run_sql(d,'04a-frequency-inventory.sql')[0]
++        self.assertTrue(row[7].startswith('WEAK'),row[7])
++        d.execute('INSERT INTO counter VALUES(1,600,1800000)')
++        row=self.run_sql(d,'04a-frequency-inventory.sql')[0]
++        self.assertEqual((row[0],row[1],row[2],row[3]),(1,1,'kHz',2))
++        self.assertTrue(row[7].startswith('OK'),row[7])
++        self.assertEqual((row[4],row[5]),(100,600))   # first/last sample ts
++        d.close()
++
++    def test_frequency_timeline_empty_without_track(self):
++        d=self.db()
++        self.assertEqual(self.run_sql(d,'04-cpu-frequency.sql'),[])
++        d.close()
++
++
+ if __name__=='__main__':unittest.main()

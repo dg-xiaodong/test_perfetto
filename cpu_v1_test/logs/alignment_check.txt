@@ -1,0 +1,16 @@
+fixture ticks archived : 10 (idx 0..9)
+trace episodes archived: 7
+
+ep  fixture_tick_start_ns  trace_episode_start_ns  delta_us  span_ms   cpu_ms
+ 0         41001238186300          41001238157759     -28.5    300.2    300.2
+ 1         41004238200885          41004238165677     -35.2    300.2    300.2
+ 2         41007238184803          41007238162136     -22.7    300.2    300.2
+ 3         41010238176638          41010238153805     -22.8    300.2    300.2
+ 4         41013238184181          41013238163389     -20.8    300.2    300.2
+ 5         41016238184057          41016238160974     -23.1    300.2    300.2
+ 6         41019238190351          41019238167517     -22.8    300.2    300.2
+
+episode gaps (ms) : 3000.0, 3000.0, 3000.0, 3000.0, 3000.0, 3000.0
+delta range (us)  : -35.2 .. -20.8
+interpretation    : negative delta = slice started before the fixture printed its marker;
+                    magnitude is the wake->printf->flush cost, not clock skew.

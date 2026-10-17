@@ -107,8 +107,15 @@ trace_processor_shell query -f sql/04-spike-episodes.sql cpu.pftrace
 | bg-light | 583.3 ms | 7.1 ms / 192 段 | 19008.9 ms | 0.050 ms |
 
 - 每次尖峰前，线程是 **S（睡）→ 被唤醒 → R 约 76–84 µs → Running 300.2 ms**；waker 归属：`swapper`(utid 0，空闲/定时器上下文) 7 次，另 1 次为尖峰内部抢占（waker 为空）。
-- Runnable 等待 <0.1 ms ⇒ **不是调度延迟、不是 CPU 饥饿、不是锁竞争**；尖峰是线程自己跑满 300 ms 计算造成的。
-- 与测试程序对齐（`logs/fixture.log` 与 §5.5）：trace 起跳点比程序自己打印的 `tick_start` **早 21–35 µs**，正好是"被调度上 CPU → printf 落盘"的开销，两者同一时基。
+- 调度数据能证明的是：尖峰期间该线程**连续 on-CPU 计算 300 ms**；进入运行态前的 Runnable 等待仅 76–84 µs；窗口内没有 `D`（不可中断睡眠）状态，也没有超过 84 µs 的运行排队。因此可以排除「CPU 被别的任务抢走」和「调度器排队造成延迟」这两类原因。
+- 但调度数据**不能独立排除所有锁/同步问题**：mutex/futex 争用通常体现为 `S` 而不是 `R`，且 `thread_state` 不记录「阻塞在哪把锁」（本 trace 的 `blocked_function` 为空）；线程在持锁状态下自旋或做 300 ms 计算，在 sched 视图里同样是 `Running`。要判定锁等待需要 futex/lock ftrace 事件、业务打点或 `linux.perf` 采样，本 trace 均未采集，故「是否存在锁等待」属于 **UNKNOWN**，不是「已排除」。
+- 结合测试程序源码（`cpu_spike_fixture.cpp`）可以进一步约束：尖峰线程的忙循环只做整数 LCG 迭代 + `std::chrono::steady_clock` 读时间判退出，**不取锁、不 sleep、不做 I/O 或堆分配**；结果只通过 relaxed `std::atomic::fetch_add` 汇总。这与 trace 里「无 D 状态、无长 Runnable、连续 Running 300 ms」一致，说明本轮的尖峰是**周期性 CPU 密集计算**，而不是阻塞或锁自旋。
+- 「周期性计算负载」本身如何被验证（不是只信代码注释）：
+  1. 程序按 `t0 + (idx+1)*period_ms` 计算下一 tick 的绝对时间并 `sleep` 到点，每个 tick 打印起止 `CLOCK_MONOTONIC` 时间戳；
+  2. 程序自报 10 个 tick 的燃烧时长 `dur_ms` 为 **300.081–300.120 ms**；
+  3. trace 中 7 个 episode 的 span 全为 **300.2 ms**、相邻间隔全为 **3000.0 ms**；
+  4. 两者时间轴对齐（见下一条），因此「每 3 s 一次、每次约 300 ms 的计算」在被观测窗口内确实发生了。
+- 与测试程序对齐（`logs/fixture.log` 与 §5.5）：trace 起跳点比程序自己打印的 `tick_start` **早 20.8–35.2 µs**，正好是「被调度上 CPU → printf 落盘」的开销，两者同一时基。该差值可由归档文件独立复算：`python3 logs/check_alignment.py`，输出存档在 `logs/alignment_check.txt`（只读 `logs/fixture.log` + `sql_out/04-spike-episodes.txt`，不重新采集、不补造数据）。
 - 采集开销自曝：本会话 `tracebox-arm64` 自身 366.5 ms（1.9% 单核），未污染结论。
 
 ### 5.4 反例保护（本轮特意加入 `bg-light`）
@@ -119,16 +126,30 @@ trace_processor_shell query -f sql/04-spike-episodes.sql cpu.pftrace
 
 | 校验 | 结果 |
 |---|---|
-| trace 时间轴 vs 程序 CLOCK_MONOTONIC | 7 个 tick 偏差 −20.8…−35.2 µs（应为负，printf 在调度之后） |
+| trace 时间轴 vs 程序 CLOCK_MONOTONIC | 7 个 tick 偏差 −20.8…−35.2 µs（应为负，printf 在调度之后）；复算脚本 `logs/check_alignment.py`，输出 `logs/alignment_check.txt` |
 | 程序自报 tick 周期 vs trace episode 间隔 | 3000.0 ms vs 3000.0 ms |
 | 程序自报 300 ms 燃烧 vs trace 区间 | 300.084–300.120 ms vs 300.2 ms（+0.1 ms 为调度/统计粒度） |
 | 进程总 CPU vs 线程求和 | 2101.4 + 583.3 = 2684.7 ms，与 §5.2 各核 busy 一致 |
+
+### 5.6 证据可复核性（本轮修复补充）
+
+| 报告中的数字 | 由哪个归档文件复算 |
+|---|---|
+| 每线程 CPU 时间、时长、核 | `sql_out/01-thread-cpu.txt`、`sql_out/04-spike-episodes.txt`（原始 TP 输出，未改动） |
+| 线程状态 Running/R/S 与最长 Runnable 等待 | `sql_out/02-thread-states.txt`、`sql_out/03-runnable-latency.txt` |
+| 每核 busy 比例 | `sql_out/06-core-busy.txt` |
+| 无 data loss | `sql_out/09-quality.txt`（value>0 的 error/data_loss 为 0） |
+| tick 自报时长 300.081–300.120 ms | `logs/fixture.log`（10 个 tick 的 `tick_end` 行） |
+| trace 与程序时间轴偏差 20.8–35.2 µs | `python3 logs/check_alignment.py` → `logs/alignment_check.txt` |
+| 采集是否正常结束 | `logs/cpu.status` = `DONE size_bytes=102853` |
+
+未改动历史 `cpu.pftrace` 与 `sql_out/*` 原始输出；`logs/check_alignment.py`、`logs/alignment_check.txt` 为 r1 依据归档文件新增的**派生物**，不含新采集。
 
 ## 6. 结论
 
 1. **尖峰线程**：`spike-worker`（pid 12042 / tid 12044，utid 206）。
 2. **尖峰特征**：每 3000 ms 一次，每次连续 ~300.2 ms 满占 **1 个逻辑核（CPU1，100%）**；采集窗口内 7 次，累计 2101.4 ms（窗口内 10.7% 单核、1.3% SoC）。
-3. **原因**：Perfetto 调度数据足以解释到"线程自身连续 on-CPU 计算 300 ms，唤醒延迟仅 ~80 µs，不是被调度器/锁耽误"。**函数级归因（具体在算哪段代码）以及是否伴随降频，本轮数据不支持**，需要 `linux.perf` 采样或 `power/cpu_frequency` + `sys_stats` 才能回答 —— 按最小证据原则未扩大采集。
+3. **原因**：Perfetto 调度数据足以解释到「线程自身连续 on-CPU 计算 300 ms，进运行态前只等 ~80 µs，因此不是调度排队或 CPU 被抢占」。但**不能据此宣称已排除锁/同步问题**（sched 数据看不到锁，见 §5.3），也无法给出函数级归因或频率结论——前者要 `linux.perf` 采样，后者要 `power/cpu_frequency` + `sys_stats`；按最小证据原则本轮未扩大采集，这两项均为 **UNKNOWN**。
 
 ## 7. 局限与最小下一步
 

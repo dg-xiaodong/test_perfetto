@@ -1,0 +1,54 @@
+# host test run for v0.1.0-r1 (regenerated 2026-10-18; no board access needed)
+# python: 3.10.12
+
+$ python3 -m unittest discover -s tests -v
+
+test_all_four_templates_nonempty (test_configs.ConfigTests) ... ok
+test_frequency_bounds (test_configs.ConfigTests) ... ok
+test_frequency_polling_only_when_power_events_absent (test_configs.ConfigTests) ... ok
+test_frequency_route_is_light_and_differs_from_overview (test_configs.ConfigTests) ... ok
+test_frequency_with_sched_is_opt_in (test_configs.ConfigTests) ... ok
+test_generation_four_routes (test_configs.ConfigTests) ... ok
+test_missing_required_sched_fails_without_partial_stdout (test_configs.ConfigTests) ... ok
+test_name_required_and_injection_rejected (test_configs.ConfigTests) ... ok
+test_no_sched_frequency_keeps_polling (test_configs.ConfigTests) ... ok
+test_no_unknown_events_in_static_aware_config (test_configs.ConfigTests) ... ok
+test_required_sched_route_cannot_silently_omit_sched (test_configs.ConfigTests) ... ok
+test_static_frequency_config_differs_from_overview (test_configs.ConfigTests) ... ok
+test_structural_validator (test_configs.ConfigTests) ... ok
+test_validation_and_missing_resource (test_configs.ConfigTests) ... ok
+test_legacy_script_hashes_match_frozen_memory_release (test_shell.ShellTests) ... ok
+test_shell_syntax (test_shell.ShellTests) ... ok
+test_200ms_not_false_spike_at_150 (test_sql.CpuSQLTests) ... ok
+test_350ms_crossing_only_right_bucket_spikes (test_sql.CpuSQLTests) ... ok
+test_bucket_splits_across_boundary (test_sql.CpuSQLTests) ... ok
+test_freq_state_semantics (test_sql.CpuSQLTests) ... ok
+test_no_upid_no_rows (test_sql.CpuSQLTests) ... ok
+test_per_core_busy_filters_idle (test_sql.CpuSQLTests) ... ok
+test_quiet_gap_separates_episodes (test_sql.CpuSQLTests) ... ok
+test_runnable_longest (test_sql.CpuSQLTests) ... ok
+test_thread_states_running_vs_runnable (test_sql.CpuSQLTests) ... ok
+test_window_clipping (test_sql.CpuSQLTests) ... ok
+test_frequency_gate_ok_and_weak (test_sql.InventoryAndFrequencyGateTests) ... ok
+test_frequency_gate_unknown_track_without_samples (test_sql.InventoryAndFrequencyGateTests) ... ok
+test_frequency_gate_unknown_without_track (test_sql.InventoryAndFrequencyGateTests) ... ok
+test_frequency_timeline_empty_without_track (test_sql.InventoryAndFrequencyGateTests) ... ok
+test_inventory_companion_files (test_sql.InventoryAndFrequencyGateTests) ... ok
+test_inventory_files_are_single_statement (test_sql.InventoryAndFrequencyGateTests) ... ok
+test_inventory_process_ranking (test_sql.InventoryAndFrequencyGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 33 tests in 0.542s
+
+OK
+
+$ shell syntax
+sh -n scripts/host_pull.sh: exit=0 
+sh -n scripts/linux_session_lib.sh: exit=0 
+sh -n scripts/linux_trace_session.sh: exit=0 
+sh -n scripts/survey.sh: exit=0 
+
+$ python3 scripts/validate_config.py --check-resources
+[PASS] resources: 25 essential files + 4 configs
+[NOTE] runtime event support, perf privileges, data, and flush NOT checked
+
