@@ -47,23 +47,29 @@ class ValidatorTests(unittest.TestCase):
 
 
 class PreflightTests(unittest.TestCase):
-    """Static preflight: resources, deploy-name, ELF PT_INTERP. No protobuf needed."""
+    """Static preflight: resources, deploy-name, ELF PT_INTERP. No protobuf needed.
+
+    Exit convention: 0=PASS, 1=FAIL, 2=UNKNOWN/incomplete.
+    """
     @classmethod
     def setUpClass(cls):
         import importlib.util
         spec=importlib.util.spec_from_file_location('validator',ROOT/'scripts/validate_config.py')
         cls.m=importlib.util.module_from_spec(spec); spec.loader.exec_module(cls.m)
 
-    def _elf(self, ptype, path):
+    def _elf(self, ptype, path, phnum=1, phoff=64, truncate=False):
         import struct
         ident=b'\x7fELF'+bytes([2,1,1,0])+b'\x00'*8
         hdr=bytearray(64); hdr[:16]=ident
-        struct.pack_into('<Q',hdr,0x20,64)      # e_phoff
-        struct.pack_into('<H',hdr,0x36,56)      # e_phentsize
-        struct.pack_into('<H',hdr,0x38,1)       # e_phnum
-        ph=bytearray(56); struct.pack_into('<I',ph,0,ptype)  # p_type
-        path.write_bytes(bytes(hdr)+bytes(ph)); return path
+        struct.pack_into('<Q',hdr,0x20,phoff)
+        struct.pack_into('<H',hdr,0x36,56)
+        struct.pack_into('<H',hdr,0x38,phnum)
+        ph=bytearray(56); struct.pack_into('<I',ph,0,ptype)
+        data=bytes(hdr)+bytes(ph)
+        if truncate: data=data[:60]
+        path.write_bytes(data); return path
 
+    # ---- resources ----
     def test_resources_complete(self):
         self.assertEqual(self.m.check_resources(ROOT)[0],'PASS')
 
@@ -72,42 +78,81 @@ class PreflightTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             d=pathlib.Path(d); shutil.copy(ROOT/'SKILL.md',d/'SKILL.md')
             st,detail=self.m.check_resources(d)
-        self.assertEqual(st,'FAIL'); self.assertIn('references/02-native.md',detail)
+        self.assertEqual(st,'UNKNOWN'); self.assertIn('references/02-native.md',detail)
 
-    def test_deploy_name_match(self):
-        cfg='heapprofd_config {\n  process_cmdline: "memprobe"\n}\n'
-        st,_=self.m.check_deploy_name(cfg,'/data/memprobe')
+    def test_resources_empty_config_is_not_ok(self):
+        import tempfile, shutil
+        with tempfile.TemporaryDirectory() as d:
+            d=pathlib.Path(d)
+            for rel in self.m.REQUIRED:
+                src=ROOT/rel
+                if not src.is_file(): continue
+                (d/rel).parent.mkdir(parents=True,exist_ok=True); shutil.copy(src,d/rel)
+            (d/'configs').mkdir(exist_ok=True)
+            for i in range(10):
+                (d/'configs'/f'c{i}.pbtxt').write_text('',encoding='utf-8')  # empty -> unreadable content
+            st,detail=self.m.check_resources(d)
+        self.assertEqual(st,'UNKNOWN'); self.assertIn('empty/unreadable',detail)
+
+    # ---- deploy name ----
+    def test_deploy_name_match_same_line(self):
+        st,_=self.m.check_deploy_name('heapprofd_config { process_cmdline: "memprobe" }','/data/memprobe')
+        self.assertEqual(st,'PASS')
+
+    def test_deploy_name_match_multiple_targets(self):
+        cfg='heapprofd_config {\n process_cmdline: "a"\n process_cmdline: "memprobe"\n}\n'
+        st,detail=self.m.check_deploy_name(cfg,'memprobe')
+        self.assertEqual(st,'PASS'); self.assertIn('memprobe',detail)
+
+    def test_deploy_name_normalizes_paths(self):
+        st,_=self.m.check_deploy_name('process_cmdline: "/data/memprobe"','./memprobe')
         self.assertEqual(st,'PASS')
 
     def test_deploy_name_mismatch(self):
-        st,detail=self.m.check_deploy_name('linear {\n  process_cmdline: "memprobe"\n}\n','memprobe_arm64')
+        st,detail=self.m.check_deploy_name('linear { process_cmdline: "memprobe" }','memprobe_arm64')
         self.assertEqual(st,'FAIL'); self.assertIn('BLOCKING_INIT',detail)
 
     def test_deploy_name_not_heapprofd(self):
-        st,_=self.m.check_deploy_name('duration_ms: 1000','memprobe')
-        self.assertEqual(st,'UNKNOWN')
+        self.assertEqual(self.m.check_deploy_name('duration_ms: 1000','memprobe')[0],'UNKNOWN')
 
+    def test_deploy_name_glob_is_unknown(self):
+        st,detail=self.m.check_deploy_name('process_cmdline: "memprobe*"','memprobe')
+        self.assertEqual(st,'UNKNOWN'); self.assertIn('glob',detail)
+
+    # ---- binary ----
     def test_binary_dynamic(self):
         import tempfile
         with tempfile.TemporaryDirectory() as d:
-            p=self._elf(3,pathlib.Path(d)/'dyn'); st,_=self.m.check_binary(p)
+            st,_=self.m.check_binary(self._elf(3,pathlib.Path(d)/'dyn'))
         self.assertEqual(st,'PASS')
 
     def test_binary_static(self):
         import tempfile
         with tempfile.TemporaryDirectory() as d:
-            p=self._elf(1,pathlib.Path(d)/'st'); st,_=self.m.check_binary(p)
+            st,_=self.m.check_binary(self._elf(1,pathlib.Path(d)/'st'))
         self.assertEqual(st,'FAIL')
 
     def test_binary_not_elf(self):
         import tempfile
         with tempfile.TemporaryDirectory() as d:
             p=pathlib.Path(d)/'x'; p.write_bytes(b'hello')
-            st,_=self.m.check_binary(p)
-        self.assertEqual(st,'UNKNOWN')
+            self.assertEqual(self.m.check_binary(p)[0],'UNKNOWN')
 
+    def test_binary_truncated_elf_is_unknown_not_crash(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            p=self._elf(3,pathlib.Path(d)/'t',phnum=10,phoff=64,truncate=True)
+            self.assertEqual(self.m.check_binary(p)[0],'UNKNOWN')
+
+    def test_binary_no_phdr_is_unknown(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            p=self._elf(3,pathlib.Path(d)/'n',phnum=0)
+            self.assertEqual(self.m.check_binary(p)[0],'UNKNOWN')
+
+    # ---- exit codes ----
     def test_main_exit_codes(self):
-        import sys, unittest.mock as mock, tempfile
+        import sys, unittest.mock as mock
         cfg=ROOT/'configs/native.pbtxt'
         with mock.patch.object(sys,'argv',['v','--check-resources']):
             self.assertEqual(self.m.main(),0)
@@ -115,5 +160,13 @@ class PreflightTests(unittest.TestCase):
             self.assertEqual(self.m.main(),1)
         with mock.patch.object(sys,'argv',['v']):
             self.assertEqual(self.m.main(),2)
+
+    def test_main_unknown_is_exit_2(self):
+        import sys, tempfile, unittest.mock as mock
+        with tempfile.TemporaryDirectory() as d:
+            cfg=pathlib.Path(d)/'c.pbtxt'; cfg.write_text('duration_ms: 1',encoding='utf-8')
+            with mock.patch.object(sys,'argv',['v',str(cfg),'--deploy-name','memprobe']):
+                self.assertEqual(self.m.main(),2)
+
 
 if __name__ == '__main__': unittest.main()

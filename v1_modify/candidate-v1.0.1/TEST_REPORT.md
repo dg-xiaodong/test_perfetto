@@ -40,8 +40,14 @@ gcc在`-Wall -Wextra -Werror`下构建memprobe通过；heap模式使用1MiB/1ms/
 
 新增测试：`test_targets.py`（候选发现/路径名/歧义）、`test_dump_capability.py`（可见 dump/零宽窗口/v57.1 降级）、`test_validator.py` 的 `PreflightTests`（资源完整性、deploy-name、ELF PT_INTERP、退出码）。
 
-- 本地单测：**51 项通过**（`python3 -m unittest discover -s tests`）。
+- 本地单测：**58 项通过**（`python3 -m unittest discover -s tests`；含 2026-10-17 预检修复新增用例）。
 - 真实 TP 回归（v58.2 + X5 A/B 真实 trace）：候选查询各返回 2 行、唯一 data-bearing；`sql/10` 在 A 报 `dumps=1/dur=0`、B 报 `dumps=6/dur=0`；`sql/03` 在 B 得到 `8,8,8,0,0,0`。
 - 未执行：Perfetto UI 检查、X5 现场采集（本轮不要求）、独立 Agent A/B（材料见 `tests/agent_ab/`）。
 - 预检脚本只证明静态前提；**运行期就绪/注入/停止/flush 仍需运行期证据**（notify-fd 字节、trace 内容、stats/日志）。
 
+## 2026-10-17 修订（定点修复）
+
+- `scripts/validate_config.py`：支持同行/多目标/路径归一化；glob、无 cmdline、非 ELF、截断 ELF 判 UNKNOWN（rc=2）；configs 检查可读且非空；运行期未验证改为 `[NOTE]`，不影响退出码。
+- `references/02-native.md`：上界证据**不得**断言"实际持有与预期不符"。
+- `tests/agent_ab/rubric.md`：符号无数据接受 UNKNOWN；UNKNOWN 后禁用 interval 推断"不符"；重新评分 6/9 vs 8/9。
+- 真实 TP 回归脚本 `verify/tp_check.py` 加固断言并新增故障注入测试（8 例）。

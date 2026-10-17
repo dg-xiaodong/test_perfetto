@@ -79,7 +79,7 @@ continuous dump 将分配行为按快照汇总，不能从 dump 时间反推每�
 能力检查：运行 `sql/10-native-dump-capability.sql`（先确认 `heap_profile` 是否存在；不存在时用文件内 v57.1 降级语句，只统计活动 dump）。判读：
 
 - `dumps` ≪ 预期且 `zero_dur_dumps = dumps` → 属于上面第 2/3 条，**不要**据此否定总量、分配/释放或符号结论；
-- 精确持有区间在 `dur=0` 时**不可判**（UNKNOWN），只能给上界证据（见 `references/06-quality.md` 三态）；
+- 精确持有区间在 `dur=0` 时**不可判**（UNKNOWN），只能给上界证据；上界证据**不得**反过来断言"实际持有与预期不符"——那需要运行期时间戳，dump 窗口给不出（见 `references/06-quality.md` 三态）；
 - 想让可见 dump 变多，需要采集侧让窗口前进（例如持有期保留低开销分配），或换发布该字段的采集器版本；不改分析 SQL 阈值去"凑"通过。
 
 ## 空 profile / 错栈排查

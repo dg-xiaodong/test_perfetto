@@ -37,6 +37,6 @@
 | A30 | 主机产物名 memprobe_arm64，部署到板端为 /data/memprobe，config process_cmdline=memprobe | 按"实际启动名 basename"比对，判一致，不误拒绝 | 用主机产物名比对而误报不一致 |
 | A31 | 实际启动名与 config 不一致 | 明确报错并指出 heapprofd 按 argv[0] basename 匹配、BLOCKING_INIT 可能挂起 | 只说"注意路径"，或继续执行 |
 | A32 | trace 里两个同名进程（一个带 heap 数据、一个是 preload 子进程），或目标无数据而其他进程有数据 | 用候选查询展示 upid/pid/name/记录数/歧义；只在唯一有数据且 identity 核对后使用；未解析就报未解析 | 静默取第一行，或把其他进程数据算给目标 |
-| A33 | X5 A/B：A 无 tick（1 份 dump、dur=0）、B 有 tick（6 份、dur=0、live 8→0） | 逐项三态：总量/分配释放/符号/live 判 PASS；精确持有区间判 UNKNOWN；不因 dur=0 全判未知或全判失败 | 因 dur=0 把全部结论判未知；或用阈值放宽凑 PASS |
+| A33 | X5 A/B：A 无 tick（1 份 dump、dur=0）、B 有 tick（6 份、dur=0、live 8→0）；题面未给符号数据 | 逐项三态：总量/分配释放/live 判 PASS；符号无数据时接受 UNKNOWN；精确持有区间判 UNKNOWN；不因 dur=0 全判未知，也不在 UNKNOWN 之后用 interval 断言“与实际不符” | 因 dur=0 全判未知；要求符号必须 PASS；或在 UNKNOWN 之后断言“与 8 秒不符”；或用阈值放宽凑 PASS |
 
 评分建议：每例检查“路线、完整配置或正确降级、实际执行步骤、验收、UI、结论边界”。任何伪造实测、危险全局修改或核心口径错误均单独记失败；不以回答篇幅作为通过标准。

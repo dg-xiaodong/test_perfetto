@@ -4,7 +4,7 @@
   "sources_reviewed_on": "2026-10-14",
   "entrypoint": "SKILL.md",
   "verification": {
-    "local_unit_tests_passed": 51,
+    "local_unit_tests_passed": 58,
     "official_descriptor_validation": "not_executed",
     "trace_processor_execution": "executed_on_x5_ab_traces_v58.2",
     "perfetto_ui_inspection": "not_executed",
@@ -12,10 +12,10 @@
     "independent_agent_ab_tests": "see tests/agent_ab (result recorded separately)"
   },
   "files": {
-    "MANIFEST.json": "415803991ead55d3cdb2352b02bdb1fa5a619c32c7d93cc4993ccdf55338bd25",
+    "MANIFEST.json": "d0d659f533255f57bad8ab075ac3f86be4efe5168fa67152d532cdac41f606a3",
     "README.md": "9081e666173999098b12f6d91861667fcef45a8880dcbdf2868bebc57d7f1125",
     "SKILL.md": "70371e5bcbe06e8efdc9c47578111989001ad33d787106de649430bab53275d0",
-    "TEST_REPORT.md": "1be313ca078bb8d0e9435e0cb150ffd7c3e8d5a571a1bcc78cc3100ebbab66d1",
+    "TEST_REPORT.md": "48176b7d378c70d35a692fabd52c2a9ce9149a0f47ba4be8b9982f821b4cd985",
     "configs/android-lmk.pbtxt": "f602a30b1e9a907488fb4583eef6d0dea96584a4b256cdb3533518f6ad58997f",
     "configs/java-alloc.pbtxt": "22d464dec025b932979adea285a3c452dabd0257d065a25e9cf3f926e33208e7",
     "configs/java-graph.pbtxt": "048c3ae592100e18ff88f4a9523a0b4d3fd5e50d7e1f4509f5fdf3081bc0eb74",
@@ -30,7 +30,7 @@
     "examples/memprobe.c": "0595c4562e3cc6c1d66adca9b7a3f25a4618e550f3e1f5ceaf92d926f40c746f",
     "references/00-routing.md": "a6a7c2749c427c323a20adf5d58861ed81a649566290e9ccf9e43df11c1321ee",
     "references/01-counters.md": "9709f339c2637a8523d6f87b30c41ae263e1b7cb4be7d93d4bba0804165ab385",
-    "references/02-native.md": "1e7920d2b73540aee257d6547e8962ed9f8e94a2eadad2146c6a2ebc8f4447c3",
+    "references/02-native.md": "21b8bd7a9ec8862b80a019a15916da0ab392f01574dd5ca98d81b083d266a0c9",
     "references/03-managed.md": "e772fa7e171c3e04bd71a57c76fc0844d41c4ee2eefd400f4b9c804ced1c70e1",
     "references/04-ui.md": "e9061ba1726d96ef7393d13e76e1d9f5607e4065cf00fe295dec45cd61f4444e",
     "references/05-platforms.md": "20a4be3be898e0c4ab61ab97febc5d74e4cbe8004939dd375a97b2d24666ccd2",
@@ -41,7 +41,7 @@
     "references/sources.md": "ca4156344e7d791af2e403807a15d19100a18e495368977ed56fe55d562c647b",
     "scripts/make_config.py": "7fc12b10626826d08a40cf881780f2e053c282356ad7293712ad6d2ccf50b959",
     "scripts/survey.sh": "177174ef9bc97a634f819373701e56078866b97d3b62d1ebfb385a75c8645c72",
-    "scripts/validate_config.py": "1ef8113cf44c86f303c9e0901340972af16465ac3b1335a475af5e1c76ba5189",
+    "scripts/validate_config.py": "7f0a77561763bdd094e8172c15c098992fb4f5ddf269a2429ddb3c930a5cacff",
     "sql/00-inventory.sql": "15395e29057af8992dc86987687ea9a824cc8b8b0e525d8e263e9061c2a7b0e8",
     "sql/01-rss-timeline.sql": "bba8bd251ade106d03e07cf5ea838a0cfc2c4acb750c9aaa4102cfa200f1a81d",
     "sql/02-counter-fallback.sql": "8ca84c3b038b164a81e53c3d9d9f1460bf0c7430aa42ade614b0a599c159cb46",
@@ -58,13 +58,13 @@
     "tests/agent_ab/T1_execution_prereq.md": "aa048a86fa03b6f8e3c5ba14ddeccbadfdc96f2e21a386d97ba53b2ba1fe3f7c",
     "tests/agent_ab/T2_target_discovery.md": "64c0913f39035901a9a0b1f3fad77afccd24bc60b552d714ddcc5ebbb2fc0362",
     "tests/agent_ab/T3_ab_interpretation.md": "aee49db0630d54ad3744a0db254692a123e9787234ed3ad04d355834e7d1bbcf",
-    "tests/agent_ab/rubric.md": "07bb8b38eb7ad76bb166b8bf6a907fed3b38128149fc64f43eba0af0024cae6e",
-    "tests/scenarios.md": "4be33e9ae8e9b721d34edc45645ba7e4b0831ca8c14438c3f0102b0469f953cf",
+    "tests/agent_ab/rubric.md": "d07ad804d6b6c9d8134f12eede93d0e0b926fc3e5356e3ccb85bf73a27965f20",
+    "tests/scenarios.md": "e3c985b33408c2b009db41ea18f1005c6abc66c7e321be50d263fad1738b99bd",
     "tests/test_accounting.py": "63910b7fbe6e4f5a600c4ecf49f8de4e2ab32deebd16f6c32bfe73777bb959af",
     "tests/test_config.py": "40374d5dc0c1270fb9c6e4d5ef8c95aeed85957a5058ccf812f0d46a20288e31",
     "tests/test_dump_capability.py": "459f4ec9dc095774154bf6d6210aedc0253bc8ef0daf014b087198dd1c5ff589",
     "tests/test_package.py": "4f5b9d0e9266f7de7ef7980d1bf1ec9e3b8351296a1191f47868c9f168401a4b",
     "tests/test_targets.py": "b6f93c90b9bc65b2912ca4917dec737c8d26b7cac4a9dfddad1e4032262e8aa3",
-    "tests/test_validator.py": "1718a976dd3d0ea677322f10a46f37c6bcf993c1bee3bdd9777e554a5c93b066"
+    "tests/test_validator.py": "57d5c8aada169b22719bc569c510f9b34c7af1b6e1688ce74cf246427d7dc2d7"
   }
 }
