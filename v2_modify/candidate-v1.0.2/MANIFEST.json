@@ -5,7 +5,7 @@
   "entrypoint": "SKILL.md",
   "manifest_self": "not hashed (self-referential); CHANGES.diff excluded",
   "verification": {
-    "local_unit_tests_passed": 73,
+    "local_unit_tests_passed": 76,
     "official_descriptor_validation": "not_executed",
     "trace_processor_execution": "executed_on_local_trace_v58.2_for_sql_11_12",
     "perfetto_ui_inspection": "not_executed",
@@ -16,7 +16,7 @@
   "files": {
     "README.md": "3cd55a70993821262a86a146fd78da189f60b8938326ad4c4aa353926d9b8d29",
     "SKILL.md": "9f8f3a5677178fbc6099e16bfbf80668fe6c6dd1a82ffa9d377239f8c19f1521",
-    "TEST_REPORT.md": "8710bc1fcc9ee52c31631e1656f5f83255777f81a3115e47c7ecd4ff28598a25",
+    "TEST_REPORT.md": "921354c345d24121c5d1aac3c63dfcc5434b8ff0566402c6f5b3321d8ed77073",
     "configs/android-lmk.pbtxt": "f602a30b1e9a907488fb4583eef6d0dea96584a4b256cdb3533518f6ad58997f",
     "configs/java-alloc.pbtxt": "22d464dec025b932979adea285a3c452dabd0257d065a25e9cf3f926e33208e7",
     "configs/java-graph.pbtxt": "048c3ae592100e18ff88f4a9523a0b4d3fd5e50d7e1f4509f5fdf3081bc0eb74",
@@ -46,7 +46,7 @@
     "scripts/linux_trace_session.sh": "e5d959ad9ebde94abc0f0029fc4da789b8fa81bfefa1c2d8e830f0a122a9b0e7",
     "scripts/make_config.py": "7fc12b10626826d08a40cf881780f2e053c282356ad7293712ad6d2ccf50b959",
     "scripts/survey.sh": "177174ef9bc97a634f819373701e56078866b97d3b62d1ebfb385a75c8645c72",
-    "scripts/validate_config.py": "98c2f8f6e41be205f67095e43aabd48ffddf98983799ad0fcdbb2f9c4eb0b35f",
+    "scripts/validate_config.py": "42986643841c8228fd680067d6b6385d5afe605602af546b611998e194773019",
     "sql/00-inventory.sql": "15395e29057af8992dc86987687ea9a824cc8b8b0e525d8e263e9061c2a7b0e8",
     "sql/01-rss-timeline.sql": "bba8bd251ade106d03e07cf5ea838a0cfc2c4acb750c9aaa4102cfa200f1a81d",
     "sql/02-counter-fallback.sql": "8ca84c3b038b164a81e53c3d9d9f1460bf0c7430aa42ade614b0a599c159cb46",
@@ -78,6 +78,7 @@
     "tests/agent_v102/results/v102_B2.md": "2c278fa44ce89f3d0f98254fe54b5722ace90bcd303d01b34de134ebf0dd180e",
     "tests/agent_v102/results/v102_B3.md": "cc56f3a3478b8fc841036018774d5c39a078faa56688b83dfa130f25839d002e",
     "tests/agent_v102/rubric.md": "4e6d9ea6001e00297ffa9bb75043c2cc4e83600d3b9478887255183804aee127",
+    "tests/check_resources_v102.txt": "b455af675bd47f23b4392c8640bea5c3d2fa74080b4a1a60d2a4991298b43833",
     "tests/mock_linux_sessions.sh": "dc7e0a1d7cb5773d60d9d358c69bf37729f5c0a95923ea9d68dab5955c9f5eb6",
     "tests/scenarios.md": "4f6f4717b8afc2329d53ee9dd352456d35bcaa33fe67dd12a8e898b55bc3ccdf",
     "tests/test_accounting.py": "63910b7fbe6e4f5a600c4ecf49f8de4e2ab32deebd16f6c32bfe73777bb959af",
@@ -88,7 +89,7 @@
     "tests/test_package.py": "4f5b9d0e9266f7de7ef7980d1bf1ec9e3b8351296a1191f47868c9f168401a4b",
     "tests/test_release_preflight.py": "8609283e86c6c7f67b7b132bb703ba91fcbd3235a7d9f9fb670cb42c5c270343",
     "tests/test_targets.py": "b6f93c90b9bc65b2912ca4917dec737c8d26b7cac4a9dfddad1e4032262e8aa3",
-    "tests/test_validator.py": "c6c32b804ca57e9d5e9522f45ad0c01fcbbf3cd97abf4195142f2f77082bbd7e",
+    "tests/test_validator.py": "536dcdcbb930bdef4893a4739ce849ddaa4d5b6b98c9e60f4600e8250b79acda",
     "tests/tp_cpu_sql_v58.2.txt": "3fa3daf77536bff8161f6e1d6b3e0e8b3dc1ca94eeba478bf8a54f8a26263c60"
   }
 }

@@ -32,7 +32,10 @@ REQUIRED = [
     'sql/03-native-live.sql', 'sql/04-native-callstacks.sql', 'sql/05-native-global-summary.sql',
     'sql/06-art-snapshots.sql', 'sql/07-kernel-events.sql', 'sql/08-pprof.sql',
     'sql/10-native-dump-capability.sql',
+    'sql/11-cpu-time-buckets.sql', 'sql/12-cpu-spike-episodes.sql',
     'scripts/survey.sh', 'scripts/make_config.py', 'scripts/validate_config.py',
+    'scripts/linux_session_lib.sh', 'scripts/linux_trace_session.sh',
+    'scripts/linux_heapprofd_session.sh', 'scripts/host_pull.sh',
     'tests/scenarios.md',
 ]
 MIN_CONFIGS = 10

@@ -73,6 +73,26 @@ class PreflightTests(unittest.TestCase):
     def test_resources_complete(self):
         self.assertEqual(self.m.check_resources(ROOT)[0],'PASS')
 
+    def test_new_v102_resources_required(self):
+        import tempfile, shutil
+        new_resources = [
+            'scripts/linux_session_lib.sh',
+            'scripts/linux_trace_session.sh',
+            'scripts/linux_heapprofd_session.sh',
+            'scripts/host_pull.sh',
+            'sql/11-cpu-time-buckets.sql',
+            'sql/12-cpu-spike-episodes.sql',
+        ]
+        for rel in new_resources:
+            with tempfile.TemporaryDirectory() as d:
+                root = pathlib.Path(d) / 'pkg'
+                shutil.copytree(ROOT, root,
+                                ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
+                (root / rel).unlink()
+                st, detail = self.m.check_resources(root)
+            self.assertNotEqual(st, 'PASS', f'{rel} removed but check passed')
+            self.assertIn(rel, detail)
+
     def test_resources_missing(self):
         import tempfile, shutil
         with tempfile.TemporaryDirectory() as d:

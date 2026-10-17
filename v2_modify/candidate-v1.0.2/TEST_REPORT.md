@@ -64,12 +64,14 @@ gcc在`-Wall -Wextra -Werror`下构建memprobe通过；heap模式使用1MiB/1ms/
 
 ### 实际执行
 
-- `python3 -m unittest discover -s tests -v`：**75 项通过，0 失败，0 跳过**。
+- `python3 -m unittest discover -s tests -v`：**76 项通过，0 失败，0 跳过**。
   新增 `tests/test_cpu_sql.py`（6 项：跨桶 200 ms=100+100、150 ms 不假 spike、
   350 ms 正确 spike、安静间隔两段、窗口裁剪、UPID 过滤）与
   `tests/test_linux_scripts.py`（2 项：`sh -n`、mock tracebox 的普通/heapprofd
   生命周期、超时保留、时长不足拒绝与 pull 失败传播）与
-  `tests/test_release_preflight.py`（2 项：目标名/时长生成匹配、目标名不匹配拒绝）。
+  `tests/test_release_preflight.py`（2 项：目标名/时长生成匹配、目标名不匹配拒绝），
+  以及 `test_validator.py::test_new_v102_resources_required`（逐一移除 6 个新增核心资源，
+  资源检查都必须非 PASS）。
 - 新增 SQL 在主机 Perfetto v58.2 Trace Processor 上对本地 trace（非 `worker_app`）执行：
   `sql/11` 输出目标 UPID 的 1 s CPU 桶；`sql/12` 在阈值 50 ms 时输出一个 11 s episode。
   记录见 `tests/tp_cpu_sql_v58.2.txt`，包含 TP 版本、trace/SQL 哈希、命令、退出码和原始输出。
@@ -98,5 +100,7 @@ gcc在`-Wall -Wextra -Werror`下构建memprobe通过；heap模式使用1MiB/1ms/
 3. `tests/tp_cpu_sql_v58.2.txt` 替换为真实执行记录：TP 版本、trace/SQL sha256、命令、
    `sql/11`/`sql/12` 原始输出与退出码（均 rc=0）。
 
-实际测试：`python3 -m unittest discover -s tests` -> **75 项通过，0 失败**。
+实际测试：`python3 -m unittest discover -s tests` -> **76 项通过，0 失败**。
+`--check-resources` 现在检查 33 个必需文件；移除 `scripts/linux_trace_session.sh` 的反例
+返回 `UNKNOWN`、退出码 2。原始记录见 `tests/check_resources_v102.txt`。
 未执行：真实板端、v57.1 descriptor、Perfetto UI、真实 heapprofd producer/flush、性能因果。

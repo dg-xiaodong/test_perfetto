@@ -1,6 +1,6 @@
 diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/MANIFEST.json v2_modify/candidate-v1.0.2/MANIFEST.json
 --- v1_modify/candidate-v1.0.1/MANIFEST.json	2026-10-17 19:51:10.354125213 +0800
-+++ v2_modify/candidate-v1.0.2/MANIFEST.json	2026-10-17 21:32:01.167908591 +0800
++++ v2_modify/candidate-v1.0.2/MANIFEST.json	2026-10-17 21:40:06.879743450 +0800
 @@ -1,21 +1,22 @@
  {
    "name": "perfetto-memory-debugging",
@@ -12,7 +12,7 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +  "manifest_self": "not hashed (self-referential); CHANGES.diff excluded",
    "verification": {
 -    "local_unit_tests_passed": 65,
-+    "local_unit_tests_passed": 73,
++    "local_unit_tests_passed": 76,
      "official_descriptor_validation": "not_executed",
 -    "trace_processor_execution": "executed_on_x5_ab_traces_v58.2",
 +    "trace_processor_execution": "executed_on_local_trace_v58.2_for_sql_11_12",
@@ -30,11 +30,11 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 -    "TEST_REPORT.md": "5943218ec00b0f56e0a7598033e6ea407464f89f1346449fca7807d01eddacfe",
 +    "README.md": "3cd55a70993821262a86a146fd78da189f60b8938326ad4c4aa353926d9b8d29",
 +    "SKILL.md": "9f8f3a5677178fbc6099e16bfbf80668fe6c6dd1a82ffa9d377239f8c19f1521",
-+    "TEST_REPORT.md": "8710bc1fcc9ee52c31631e1656f5f83255777f81a3115e47c7ecd4ff28598a25",
++    "TEST_REPORT.md": "921354c345d24121c5d1aac3c63dfcc5434b8ff0566402c6f5b3321d8ed77073",
      "configs/android-lmk.pbtxt": "f602a30b1e9a907488fb4583eef6d0dea96584a4b256cdb3533518f6ad58997f",
      "configs/java-alloc.pbtxt": "22d464dec025b932979adea285a3c452dabd0257d065a25e9cf3f926e33208e7",
      "configs/java-graph.pbtxt": "048c3ae592100e18ff88f4a9523a0b4d3fd5e50d7e1f4509f5fdf3081bc0eb74",
-@@ -33,12 +34,16 @@
+@@ -33,15 +34,19 @@
      "references/02-native.md": "21b8bd7a9ec8862b80a019a15916da0ab392f01574dd5ca98d81b083d266a0c9",
      "references/03-managed.md": "e772fa7e171c3e04bd71a57c76fc0844d41c4ee2eefd400f4b9c804ced1c70e1",
      "references/04-ui.md": "e9061ba1726d96ef7393d13e76e1d9f5607e4065cf00fe295dec45cd61f4444e",
@@ -52,7 +52,11 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +    "scripts/linux_trace_session.sh": "e5d959ad9ebde94abc0f0029fc4da789b8fa81bfefa1c2d8e830f0a122a9b0e7",
      "scripts/make_config.py": "7fc12b10626826d08a40cf881780f2e053c282356ad7293712ad6d2ccf50b959",
      "scripts/survey.sh": "177174ef9bc97a634f819373701e56078866b97d3b62d1ebfb385a75c8645c72",
-     "scripts/validate_config.py": "98c2f8f6e41be205f67095e43aabd48ffddf98983799ad0fcdbb2f9c4eb0b35f",
+-    "scripts/validate_config.py": "98c2f8f6e41be205f67095e43aabd48ffddf98983799ad0fcdbb2f9c4eb0b35f",
++    "scripts/validate_config.py": "42986643841c8228fd680067d6b6385d5afe605602af546b611998e194773019",
+     "sql/00-inventory.sql": "15395e29057af8992dc86987687ea9a824cc8b8b0e525d8e263e9061c2a7b0e8",
+     "sql/01-rss-timeline.sql": "bba8bd251ade106d03e07cf5ea838a0cfc2c4acb750c9aaa4102cfa200f1a81d",
+     "sql/02-counter-fallback.sql": "8ca84c3b038b164a81e53c3d9d9f1460bf0c7430aa42ade614b0a599c159cb46",
 @@ -52,6 +57,8 @@
      "sql/07-kernel-events.sql": "3b26b7cae2bd0df32adbb1db502a0f6b8647a1aea981c12d7b390fdae9aef795",
      "sql/08-pprof.sql": "b310d8d3a67ef5184ecf246e779118c64820516d69341d91abbb155334296abf",
@@ -62,7 +66,7 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
      "tests/agent_ab/R1_old_skill_raw.md": "8e6929511ac44756a5410d5fb7660dedcdde426bf9de33739c2ffa03bdd5bdee",
      "tests/agent_ab/R2_candidate_skill_raw.md": "1cd39fea552aecab7d64ce01b8fe758ca2b17dd86ca1491dc744728cd000454c",
      "tests/agent_ab/README.md": "38db587bd6f4a42ed5cdede91c4bae457e43dd233a719d8ed8960abbfeb18dc7",
-@@ -59,12 +66,29 @@
+@@ -59,12 +66,30 @@
      "tests/agent_ab/T2_target_discovery.md": "64c0913f39035901a9a0b1f3fad77afccd24bc60b552d714ddcc5ebbb2fc0362",
      "tests/agent_ab/T3_ab_interpretation.md": "aee49db0630d54ad3744a0db254692a123e9787234ed3ad04d355834e7d1bbcf",
      "tests/agent_ab/rubric.md": "d07ad804d6b6c9d8134f12eede93d0e0b926fc3e5356e3ccb85bf73a27965f20",
@@ -79,6 +83,7 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +    "tests/agent_v102/results/v102_B2.md": "2c278fa44ce89f3d0f98254fe54b5722ace90bcd303d01b34de134ebf0dd180e",
 +    "tests/agent_v102/results/v102_B3.md": "cc56f3a3478b8fc841036018774d5c39a078faa56688b83dfa130f25839d002e",
 +    "tests/agent_v102/rubric.md": "4e6d9ea6001e00297ffa9bb75043c2cc4e83600d3b9478887255183804aee127",
++    "tests/check_resources_v102.txt": "b455af675bd47f23b4392c8640bea5c3d2fa74080b4a1a60d2a4991298b43833",
 +    "tests/mock_linux_sessions.sh": "dc7e0a1d7cb5773d60d9d358c69bf37729f5c0a95923ea9d68dab5955c9f5eb6",
 +    "tests/scenarios.md": "4f6f4717b8afc2329d53ee9dd352456d35bcaa33fe67dd12a8e898b55bc3ccdf",
      "tests/test_accounting.py": "63910b7fbe6e4f5a600c4ecf49f8de4e2ab32deebd16f6c32bfe73777bb959af",
@@ -90,7 +95,7 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +    "tests/test_release_preflight.py": "8609283e86c6c7f67b7b132bb703ba91fcbd3235a7d9f9fb670cb42c5c270343",
      "tests/test_targets.py": "b6f93c90b9bc65b2912ca4917dec737c8d26b7cac4a9dfddad1e4032262e8aa3",
 -    "tests/test_validator.py": "c6c32b804ca57e9d5e9522f45ad0c01fcbbf3cd97abf4195142f2f77082bbd7e"
-+    "tests/test_validator.py": "c6c32b804ca57e9d5e9522f45ad0c01fcbbf3cd97abf4195142f2f77082bbd7e",
++    "tests/test_validator.py": "536dcdcbb930bdef4893a4739ce849ddaa4d5b6b98c9e60f4600e8250b79acda",
 +    "tests/tp_cpu_sql_v58.2.txt": "3fa3daf77536bff8161f6e1d6b3e0e8b3dc1ca94eeba478bf8a54f8a26263c60"
    }
  }
@@ -177,8 +182,8 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
  实操示例见 [完整演练](references/08-worked-examples.md)，回归场景见 [tests/scenarios.md](tests/scenarios.md)。
 diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/TEST_REPORT.md v2_modify/candidate-v1.0.2/TEST_REPORT.md
 --- v1_modify/candidate-v1.0.1/TEST_REPORT.md	2026-10-17 19:51:10.354319093 +0800
-+++ v2_modify/candidate-v1.0.2/TEST_REPORT.md	2026-10-17 21:30:54.437865292 +0800
-@@ -56,3 +56,47 @@
++++ v2_modify/candidate-v1.0.2/TEST_REPORT.md	2026-10-17 21:40:02.623496699 +0800
+@@ -56,3 +56,51 @@
  
  - `scripts/validate_config.py`：`process_cmdline` 改为**结构感知解析**——跳过注释与字符串、按整词匹配标识符、只接受 `heapprofd_config` 块内字段；括号/字符串不闭合或字段在块外 → UNKNOWN(rc=2)；归一化按 `NormalizeCmdLine`（截断首个 `@` 后取 basename）。
  - `verify/tp_check.py`：Live 结果校验 `ts/value/series` 三列、ts 为整数且严格递增、ts 与 dump 轴一致；新增 5 个故障注入反例。
@@ -190,12 +195,14 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +
 +### 实际执行
 +
-+- `python3 -m unittest discover -s tests -v`：**75 项通过，0 失败，0 跳过**。
++- `python3 -m unittest discover -s tests -v`：**76 项通过，0 失败，0 跳过**。
 +  新增 `tests/test_cpu_sql.py`（6 项：跨桶 200 ms=100+100、150 ms 不假 spike、
 +  350 ms 正确 spike、安静间隔两段、窗口裁剪、UPID 过滤）与
 +  `tests/test_linux_scripts.py`（2 项：`sh -n`、mock tracebox 的普通/heapprofd
 +  生命周期、超时保留、时长不足拒绝与 pull 失败传播）与
-+  `tests/test_release_preflight.py`（2 项：目标名/时长生成匹配、目标名不匹配拒绝）。
++  `tests/test_release_preflight.py`（2 项：目标名/时长生成匹配、目标名不匹配拒绝），
++  以及 `test_validator.py::test_new_v102_resources_required`（逐一移除 6 个新增核心资源，
++  资源检查都必须非 PASS）。
 +- 新增 SQL 在主机 Perfetto v58.2 Trace Processor 上对本地 trace（非 `worker_app`）执行：
 +  `sql/11` 输出目标 UPID 的 1 s CPU 桶；`sql/12` 在阈值 50 ms 时输出一个 11 s episode。
 +  记录见 `tests/tp_cpu_sql_v58.2.txt`，包含 TP 版本、trace/SQL 哈希、命令、退出码和原始输出。
@@ -224,7 +231,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +3. `tests/tp_cpu_sql_v58.2.txt` 替换为真实执行记录：TP 版本、trace/SQL sha256、命令、
 +   `sql/11`/`sql/12` 原始输出与退出码（均 rc=0）。
 +
-+实际测试：`python3 -m unittest discover -s tests` -> **75 项通过，0 失败**。
++实际测试：`python3 -m unittest discover -s tests` -> **76 项通过，0 失败**。
++`--check-resources` 现在检查 33 个必需文件；移除 `scripts/linux_trace_session.sh` 的反例
++返回 `UNKNOWN`、退出码 2。原始记录见 `tests/check_resources_v102.txt`。
 +未执行：真实板端、v57.1 descriptor、Perfetto UI、真实 heapprofd producer/flush、性能因果。
 diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/references/05-platforms.md v2_modify/candidate-v1.0.2/references/05-platforms.md
 --- v1_modify/candidate-v1.0.1/references/05-platforms.md	2026-10-17 19:51:10.354739233 +0800
@@ -681,6 +690,20 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +fi
 +echo "DONE size_bytes=$SIZE" > "$OUT.status"
 +cat "$OUT.status"
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/scripts/validate_config.py v2_modify/candidate-v1.0.2/scripts/validate_config.py
+--- v1_modify/candidate-v1.0.1/scripts/validate_config.py	2026-10-17 19:51:10.355172352 +0800
++++ v2_modify/candidate-v1.0.2/scripts/validate_config.py	2026-10-17 21:39:09.892724659 +0800
+@@ -32,7 +32,10 @@
+     'sql/03-native-live.sql', 'sql/04-native-callstacks.sql', 'sql/05-native-global-summary.sql',
+     'sql/06-art-snapshots.sql', 'sql/07-kernel-events.sql', 'sql/08-pprof.sql',
+     'sql/10-native-dump-capability.sql',
++    'sql/11-cpu-time-buckets.sql', 'sql/12-cpu-spike-episodes.sql',
+     'scripts/survey.sh', 'scripts/make_config.py', 'scripts/validate_config.py',
++    'scripts/linux_session_lib.sh', 'scripts/linux_trace_session.sh',
++    'scripts/linux_heapprofd_session.sh', 'scripts/host_pull.sh',
+     'tests/scenarios.md',
+ ]
+ MIN_CONFIGS = 10
 diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/sql/11-cpu-time-buckets.sql v2_modify/candidate-v1.0.2/sql/11-cpu-time-buckets.sql
 --- v1_modify/candidate-v1.0.1/sql/11-cpu-time-buckets.sql	1970-01-01 08:00:00.000000000 +0800
 +++ v2_modify/candidate-v1.0.2/sql/11-cpu-time-buckets.sql	2026-10-17 20:50:38.635757500 +0800
@@ -975,6 +998,23 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +
 +伪造实测、混用无对齐时间戳、把 dump 当逐次 malloc、把采样 count 当准确次数、
 +仅凭 profiler 成功断言因果、未标明未执行项。
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/check_resources_v102.txt v2_modify/candidate-v1.0.2/tests/check_resources_v102.txt
+--- v1_modify/candidate-v1.0.1/tests/check_resources_v102.txt	1970-01-01 08:00:00.000000000 +0800
++++ v2_modify/candidate-v1.0.2/tests/check_resources_v102.txt	2026-10-17 21:39:57.865404343 +0800
+@@ -0,0 +1,13 @@
++# v1.0.2 resource check evidence
++
++$ python3 scripts/validate_config.py --check-resources
++[PASS] resources: 33 required files + 10 configs readable
++[NOTE] runtime not verified by preflight: pass/fail above covers only static premises; readiness/injection/stop/flush still need runtime evidence
++EXIT_CODE=0
++
++# Counterexample: copy the package, remove scripts/linux_trace_session.sh, rerun
++$ rm scripts/linux_trace_session.sh
++$ python3 scripts/validate_config.py --check-resources
++[UNKNOWN] resources: cannot complete resource check: scripts/linux_trace_session.sh
++[NOTE] runtime not verified by preflight: pass/fail above covers only static premises; readiness/injection/stop/flush still need runtime evidence
++EXIT_CODE=2
 diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/mock_linux_sessions.sh v2_modify/candidate-v1.0.2/tests/mock_linux_sessions.sh
 --- v1_modify/candidate-v1.0.1/tests/mock_linux_sessions.sh	1970-01-01 08:00:00.000000000 +0800
 +++ v2_modify/candidate-v1.0.2/tests/mock_linux_sessions.sh	2026-10-17 21:28:34.932105097 +0800
@@ -1275,6 +1315,36 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +
 +if __name__ == '__main__':
 +    unittest.main()
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/test_validator.py v2_modify/candidate-v1.0.2/tests/test_validator.py
+--- v1_modify/candidate-v1.0.1/tests/test_validator.py	2026-10-17 19:51:10.355795138 +0800
++++ v2_modify/candidate-v1.0.2/tests/test_validator.py	2026-10-17 21:39:17.311551504 +0800
+@@ -73,6 +73,26 @@
+     def test_resources_complete(self):
+         self.assertEqual(self.m.check_resources(ROOT)[0],'PASS')
+ 
++    def test_new_v102_resources_required(self):
++        import tempfile, shutil
++        new_resources = [
++            'scripts/linux_session_lib.sh',
++            'scripts/linux_trace_session.sh',
++            'scripts/linux_heapprofd_session.sh',
++            'scripts/host_pull.sh',
++            'sql/11-cpu-time-buckets.sql',
++            'sql/12-cpu-spike-episodes.sql',
++        ]
++        for rel in new_resources:
++            with tempfile.TemporaryDirectory() as d:
++                root = pathlib.Path(d) / 'pkg'
++                shutil.copytree(ROOT, root,
++                                ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
++                (root / rel).unlink()
++                st, detail = self.m.check_resources(root)
++            self.assertNotEqual(st, 'PASS', f'{rel} removed but check passed')
++            self.assertIn(rel, detail)
++
+     def test_resources_missing(self):
+         import tempfile, shutil
+         with tempfile.TemporaryDirectory() as d:
 diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/tp_cpu_sql_v58.2.txt v2_modify/candidate-v1.0.2/tests/tp_cpu_sql_v58.2.txt
 --- v1_modify/candidate-v1.0.1/tests/tp_cpu_sql_v58.2.txt	1970-01-01 08:00:00.000000000 +0800
 +++ v2_modify/candidate-v1.0.2/tests/tp_cpu_sql_v58.2.txt	2026-10-17 21:30:01.871967906 +0800
