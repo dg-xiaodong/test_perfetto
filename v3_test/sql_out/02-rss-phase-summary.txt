@@ -1,0 +1,8 @@
+Loading trace: 0.00 MBLoading trace: 0.09 MB[755.728]     common_flags.cc:525 Trace loaded: 0.09 MB in 0.02s (4.0 MB/s)
+[755.728]            query.cc:191 Query execution time: 0 ms
+"phase","rss_samples","rss_min_mib","rss_max_mib","rss_avg_mib","sys_samples","memavail_min_mib","memavail_max_mib","anonpages_min_mib","anonpages_max_mib"
+"A_hold  ",6,34.191000,34.191000,34.191000,6,1043.836000,1043.836000,43.891000,43.977000
+"A_idle  ",5,2.305000,2.305000,2.305000,5,1076.344000,1076.348000,11.980000,12.008000
+"B_hold  ",6,34.270000,34.270000,34.270000,6,1044.355000,1044.355000,43.949000,43.984000
+"B_idle  ",5,2.305000,2.305000,2.305000,5,1076.102000,1076.805000,11.984000,11.984000
+"baseline",5,1.867000,1.867000,1.867000,5,1075.828000,1076.320000,11.590000,11.922000

@@ -1,0 +1,16 @@
+uname: Linux buildroot 6.1.83-DR-PL5.1_V1.0.20 #3 SMP PREEMPT Mon Aug 24 21:03:38 CST 2026 aarch64 GNU/Linux
+version: LNX6.1.83_PL5.1_V1.0.20_20260824-2105
+nproc: 8
+MemTotal:        1336028 kB
+MemAvailable:    1121820 kB
+tracefs: tracefs on /sys/kernel/debug/tracing type tracefs (rw,relatime)
+events: 1170
+1
+tracing_on: 0
+buffer_size_kb: 7
+mounts:
+/dev/root on / type ext4 (ro,relatime)
+tmpfs on /data type tmpfs (rw,relatime)
+/dev/block/platform/by-name/userdata on /userdata type ext4 (rw,relatime)
+df:
+tmpfs           653M  4.1M  649M   1% /data

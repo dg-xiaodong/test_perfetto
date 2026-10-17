@@ -1,0 +1,19 @@
+heapprofd raw ProfilePacket dump records (target pid 3127) — extracted with host traceconv v58.2 from traces/heap.pftrace
+Each row is one process_dumps entry in the trace packets. All 9 entries carry the SAME internal
+window_end timestamp; only the last one was emitted after free(), hence self_freed>0.
+
+ #        packet_ts          dump_ts from_startup heap_samples  self_allocated   self_freed
+ 1   30394714685951   30389703749949         true            1        33554432            0
+ 2   30394714797493   30389703749949         true            1        33554432            0
+ 3   30399720322453   30389703749949         true            1        33554432            0
+ 4   30404725874789   30389703749949         true            1        33554432            0
+ 5   30409731408667   30389703749949         true            1        33554432            0
+ 6   30414732173377   30389703749949         true            1        33554432            0
+ 7   30419737718380   30389703749949         true            1        33554432            0
+ 8   30424743236799   30389703749949         true            1        33554432            0
+ 9   30429748767759   30389703749949         true            1        33554432     33554432
+
+total process_dumps: 9  distinct internal dump_ts: 1  distinct packet_ts: 9
+Analysis consequence (v58.2 Trace Processor): heap_profile dedup key (upid, window_end, heap_name)
+collapses these 9 dumps into ONE visible row with dur=0; heap_profile_allocation keeps the deltas:
+  +33554432 at window_end (first dump) and -33554432 at the same ts (last dump).

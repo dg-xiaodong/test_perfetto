@@ -1,0 +1,48 @@
+[31mNot meant for machine consumption. Use --query-raw for scripts.[0m
+
+Service: Perfetto v57.1-c59f57dd4 (c59f57dd4d9c4ad37c44f0fee9dde060707534fa)
+Tracing sessions: 1 (started: 1)
+
+
+PRODUCER PROCESSES CONNECTED:
+
+ID     PID      UID      FLAGS  NAME                                       SDK
+==     ===      ===      =====  ====                                       ===
+1      3130     0               android.heapprofd                          Perfetto v57.1-c59f57dd4 (c59f57dd4d9c4ad37c44f0fee9dde060707534fa)
+2      3121     0               perfetto.traced_probes                     Perfetto v57.1-c59f57dd4 (c59f57dd4d9c4ad37c44f0fee9dde060707534fa)
+3      3138     0               perfetto.traced_perf                       Perfetto v57.1-c59f57dd4 (c59f57dd4d9c4ad37c44f0fee9dde060707534fa)
+
+
+DATA SOURCES REGISTERED:
+
+NAME                                     PRODUCER                     DETAILS
+===                                      ========                     ========
+android.aflags                           perfetto.traced_probes (2)   
+android.cpu_per_uid                      perfetto.traced_probes (2)   
+android.game_interventions               perfetto.traced_probes (2)   
+android.heapprofd                        android.heapprofd (1)        
+android.kernel_wakelocks                 perfetto.traced_probes (2)   
+android.log                              perfetto.traced_probes (2)   
+android.packages_list                    perfetto.traced_probes (2)   
+android.polled_state                     perfetto.traced_probes (2)   
+android.power                            perfetto.traced_probes (2)   
+android.system_property                  perfetto.traced_probes (2)   
+android.user_list                        perfetto.traced_probes (2)   
+linux.frozen_ftrace                      perfetto.traced_probes (2)   
+linux.ftrace                             perfetto.traced_probes (2)   
+linux.inode_file_map                     perfetto.traced_probes (2)   
+linux.perf                               perfetto.traced_perf (3)     
+linux.process_stats                      perfetto.traced_probes (2)   
+linux.sys_stats                          perfetto.traced_probes (2)   
+linux.sysfs_power                        perfetto.traced_probes (2)   
+linux.system_info                        perfetto.traced_probes (2)   
+linux.systemd_journald                   perfetto.traced_probes (2)   
+perfetto.metatrace                       perfetto.traced_probes (2)   
+perfetto.metatrace                       perfetto.traced_perf (3)     
+
+
+TRACING SESSIONS:
+
+ID      UID     STATE      BUF (#) KB   DUR (s)   #DS  STARTED  NAME
+===     ===     =====      ==========   =======   ===  =======  ====
+1       0       STARTED    (3) 45056    90        4    08:26:24 

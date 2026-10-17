@@ -1,0 +1,6 @@
+#!/bin/sh
+# Test-harness wrapper (NOT part of the frozen skill).
+# The frozen scripts/host_pull.sh calls bare `scp`; this board uses password
+# auth and has no sftp subsystem, so scp needs sshpass + legacy protocol.
+# Usage: export SSHPASS='<board password>'; PATH=$THIS_DIR/bin:$PATH sh scripts/host_pull.sh ...
+exec sshpass -e /usr/bin/scp -O -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$@"

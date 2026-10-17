@@ -1,0 +1,10 @@
+00-inventory rc=0
+01-rss-timeline rc=0
+02-rss-phase-summary rc=0
+03-native-live rc=0
+04-native-callstacks rc=0
+10-native-dump-capability rc=0
+20-rss-ftrace-detail rc=0
+21-phase-coverage rc=0
+22-quality rc=0
+23-crosscheck rc=0

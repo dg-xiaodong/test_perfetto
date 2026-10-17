@@ -1,0 +1,23 @@
+Capture command (host -> board, single joint trace)
+===================================================
+host$ sshpass -p <BOARD_PASSWORD> ssh root@<BOARD_IP> 'cd /data/perf102v2 && \
+  WORK=/data/perf102v2/work TRACEBOX=/data/perf102v2/bin/tracebox OBSERVE_S=45 \
+  sh /data/perf102v2/scripts/linux_heapprofd_session.sh \
+     /data/perf102v2/cfg/memphase-joint.pbtxt \
+     /data/perf102v2/bin/libheapprofd_glibc_preload.so \
+     /data/perf102v2/app ./memphase /data/perf102v2/work/memphase.log'
+
+Frozen script (unmodified): candidate-v1.0.2/scripts/linux_heapprofd_session.sh
+Frozen lib    (unmodified): candidate-v1.0.2/scripts/linux_session_lib.sh
+collector: tracebox v57.1-c59f57dd4 (ARM64)
+preload  : libheapprofd_glibc_preload.so (same build series, v57.1)
+observe  : OBSERVE_S=45 s (app needs 27 s + tail; session kills app, then stops/flushes trace)
+
+Observed console (logs/capture_console.txt):
+  tracebox_pid=3116
+  DONE size_bytes=89233
+SSH rc = 0.  The frozen script writes heap.status = "DONE size_bytes=89233".
+No rc=6 (target died early), no rc=7 (tracebox stop failure), no rc=8 (missing output).
+
+SECURITY: 公开副本已脱敏。板端 SSH 口令与板端 IP 不在此文件中记录；
+复现时请使用自己的环境变量/私密配置，不要提交真实凭据。

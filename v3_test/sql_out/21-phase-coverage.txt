@@ -1,0 +1,5 @@
+Loading trace: 0.00 MBLoading trace: 0.09 MB[755.985]     common_flags.cc:525 Trace loaded: 0.09 MB in 0.02s (4.4 MB/s)
+[755.985]            query.cc:191 Query execution time: 0 ms
+"phase","alloc_rows","positive_bytes","negative_bytes","net_bytes"
+"A malloc 32MiB",2,33554432,33554432,0
+"B mmap   32MiB",0,0,0,0

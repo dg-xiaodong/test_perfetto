@@ -1,0 +1,25 @@
+Loading trace: 0.00 MBLoading trace: 0.09 MB[755.590]     common_flags.cc:525 Trace loaded: 0.09 MB in 0.02s (4.2 MB/s)
+[755.591]            query.cc:191 Query execution time: 0 ms
+"start_ts","end_ts","dur_s"
+30385076047696,30434027803845,48.951756
+
+"upid","pid","name","alloc_rows","dumps","data_bearing"
+186,3127,"./memphase",2,1,1
+188,3130,"./memphase",0,0,0
+
+"data_source","rows","min_mib","max_mib"
+"linux.process_stats: 目标进程 mem.rss 采样",47,1.867188,34.269531
+"linux.sys_stats: MemAvailable 采样",50,1043.835938,1076.804688
+"linux.ftrace: kmem/rss_stat 事件",879,"[NULL]","[NULL]"
+"android.heapprofd: heap_profile dump 行",1,"[NULL]","[NULL]"
+
+"name","value"
+"traced_data_sources_registered",21
+"traced_data_sources_seen",4
+"traced_producers_connected",2
+
+"name","idx","severity","source","value"
+"heapprofd_client_disconnected",3127,"info","trace",1
+"heapprofd_last_profile_timestamp",3127,"info","trace",30431519138469
+"heapprofd_unwind_samples",3127,"info","trace",9
+"heapprofd_unwind_time_us",3127,"info","trace",23679

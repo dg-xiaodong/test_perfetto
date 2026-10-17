@@ -1,0 +1,12 @@
+Loading trace: 0.00 MBLoading trace: 0.09 MB[755.806]     common_flags.cc:525 Trace loaded: 0.09 MB in 0.02s (4.3 MB/s)
+[755.806]            query.cc:191 Query execution time: 0 ms
+"callsite_id","parent_id","frame_name","mapping_name","cumulative_live_bytes_at_end","cumulative_allocated_bytes_in_window"
+0,"[NULL]","_start","/data/perf102v2/app/memphase",0,33554432
+1,0,"__libc_start_main","/usr/lib/libc.so.6",0,33554432
+2,1,"","/usr/lib/libc.so.6",0,33554432
+3,2,"main","/data/perf102v2/app/memphase",0,33554432
+4,3,"phase_a","/data/perf102v2/app/memphase",0,33554432
+5,4,"malloc","/data/perf102v2/bin/libheapprofd_glibc_preload.so",0,33554432
+6,5,"","/data/perf102v2/bin/libheapprofd_glibc_preload.so",0,33554432
+7,6,"","/data/perf102v2/bin/libheapprofd_glibc_preload.so",0,33554432
+8,7,"","/data/perf102v2/bin/libheapprofd_glibc_preload.so",0,33554432

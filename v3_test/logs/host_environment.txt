@@ -1,0 +1,5 @@
+host uname: Linux LUOBO-ESPBR58 6.18.40.1-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Fri Jul 31 22:12:15 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+trace processor: Perfetto v58.2-add693d8b (add693d8b338ba9599dbcbc3e300b1ab8c000897)
+chrome: Google Chrome for Testing 155.0.8059.39 
+python: Python 3.10.12
+cross gcc: aarch64-none-linux-gnu-gcc (Arm GNU Toolchain 11.3.Rel1) 11.3.1 20220712

@@ -1,0 +1,11 @@
+Loading trace: 0.00 MBLoading trace: 0.09 MB[756.064]     common_flags.cc:525 Trace loaded: 0.09 MB in 0.02s (4.3 MB/s)
+[756.064]            query.cc:191 Query execution time: 0 ms
+"check_item","check_values","verdict"
+"A: malloc 32 MiB — program bytes -> heapprofd positive bytes","33554432 -> 33554432","MATCH"
+"A: free 32 MiB — program bytes -> heapprofd negative bytes","33554432 -> 33554432","MATCH"
+"A: alloc record count (sampling estimate, not a malloc log)","1 expected (large alloc p=1) -> 1","MATCH"
+"B: direct mmap 32 MiB — heapprofd rows in B window","0 -> 0","NOT COVERED (expected for direct mmap)"
+"A: heapprofd alloc ts - program malloc start (ms)","4.212 ms","INSIDE malloc/touch window"
+"B: RSS rise A idle -> mmap hold (MiB)","31.965 MiB (expected ~32)","MATCH within 2 MiB"
+"A: RSS rise baseline -> malloc hold (MiB)","32.324 MiB (expected ~32)","MATCH within 2 MiB"
+"dump count: collector sent -> analyzer visible","9 -> 1","DEDUPED (same window_end, dur=0)"

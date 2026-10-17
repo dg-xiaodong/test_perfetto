@@ -1,0 +1,37 @@
+Loading trace: 0.00 MBLoading trace: 0.09 MB[756.025]     common_flags.cc:525 Trace loaded: 0.09 MB in 0.02s (4.1 MB/s)
+[756.026]            query.cc:191 Query execution time: 0 ms
+"name","idx","value"
+"traced_buf_buffer_size",0,8388608
+"traced_buf_buffer_size",1,4194304
+"traced_buf_buffer_size",2,33554432
+"traced_buf_bytes_read",0,65536
+"traced_buf_bytes_read",1,65536
+"traced_buf_bytes_read",2,4096
+"traced_buf_bytes_written",0,65536
+"traced_buf_bytes_written",1,65536
+"traced_buf_bytes_written",2,4096
+"traced_buf_chunks_discarded",0,0
+"traced_buf_chunks_discarded",1,0
+"traced_buf_chunks_discarded",2,0
+"traced_buf_chunks_read",0,2
+"traced_buf_chunks_read",1,2
+"traced_buf_chunks_read",2,1
+"traced_buf_chunks_written",0,2
+"traced_buf_chunks_written",1,2
+"traced_buf_chunks_written",2,1
+
+"name","total"
+"ftrace_cpu_commit_overrun_begin",0
+"ftrace_cpu_commit_overrun_end",0
+"ftrace_cpu_dropped_events_end",0
+"ftrace_cpu_overrun_begin",0
+"ftrace_cpu_overrun_end",0
+"ftrace_cpu_read_events_end",956
+
+"name","pid","value"
+"heapprofd_client_disconnected",3127,1
+"heapprofd_last_profile_timestamp",3127,30431519138469
+"heapprofd_unwind_samples",3127,9
+
+"visible_dumps","distinct_ts_end","zero_dur_dumps","first_ts","last_ts_end"
+1,1,1,30389714144908,30389714144908
