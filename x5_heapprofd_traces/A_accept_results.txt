@@ -1,0 +1,58 @@
+# accept.sql（trace=x5_heapprofd_A_no_tick.pftrace, TP=Perfetto v58.2-add693d8b）
+
+===== S1 目标候选 (rc=0) =====
+"upid","pid","name","dumps","alloc_rows"
+191,1062,"/data/memprobe",1,4
+193,1065,"/data/memprobe",0,0
+
+
+===== S2 LEVEL1 (rc=0) =====
+"level","check_name","ok","detail"
+"L1","no_severe_capture_errors",1,"severe_stats=0"
+"L1","schema_allocation_columns",1,"heap_profile_allocation=6/6"
+"L1","schema_heap_profile_columns",1,"heap_profile=5/5"
+"L1","target_alloc_rows_exist",1,"rows=4"
+"L1","target_dumps_exist",1,"dumps=1"
+"L1","target_upid_resolved",1,"name_candidates=2, data_bearing=1, resolved=191"
+
+
+===== S3 LEVEL2 (rc=0) =====
+"level","check_name","kind","ok","detail"
+"L2","hold_within_dump_window_bounds","behavior",0,"window_lower_s=0.0, window_upper_s=0.0, same_dump=1, source=probe_live_block"
+"L2","last_axis_dump_live_is_zero","behavior",1,"last_live_mib=0.0, dumps=1"
+"L2","live_hold_phase_at_least_6MiB","behavior",0,"max_live_mib=0.0"
+"L2","post_release_dump_exists","behavior",0,"post_release_dumps=0 (窗口结束严格晚于释放 dump 结束；空闲期 heapprofd 可能不产 dump)"
+"L2","release_observed_in_dump","behavior",1,"free_rows_ge_1MiB=2"
+"L2","total_alloc_28MiB_within_40pct","behavior",1,"alloc_mib=28.0"
+"L2","total_free_matches_alloc_within_20pct","behavior",1,"free_mib=28.0"
+"L2","probe_churn_cycle_identified","identify",1,"cum_bytes=20971520"
+"L2","probe_live_block_identified","identify",1,"cum_bytes=8388608"
+"L2","callstack_structure_present","symbol",1,"chain_nodes=18"
+"L2","frames_have_names","symbol",1,"named=11/11"
+
+
+===== S4 状态 (rc=0) =====
+"status","l1_failed","symbol_missing_failed","symbol_uncertain_count","l2_behavior_failed","detail"
+"CAPTURE_OK_BEHAVIOR_INCOMPLETE",0,0,0,3,"name_candidates=2, data_bearing=1, dumps=1, rows=4, alloc_mib=28.0, free_mib=28.0, max_live_mib=0.0, last_live_mib=0.0, hold_src=probe_live_block, hold_bounds_s=[0.0,0.0], post_release_dumps=0, severe_stats=0"
+
+
+===== S5 调用栈 self/cum (rc=0) =====
+"function_name","self_bytes","cumulative_bytes"
+"probe_live_block",0,8388608
+"probe_churn_cycle",0,20971520
+"(unresolved)",0,0
+
+
+===== S6 符号/映射 (rc=0) =====
+"frames_in_target_chains","named_frames","unnamed_frames","distinct_build_ids","frames_without_mapping"
+11,11,0,2,0
+
+
+===== S7 严重 stats (rc=0) =====
+"name","severity","source","value","description"
+
+
+===== S8 数值明细 (rc=0) =====
+"name_candidates","data_bearing_upids","dumps","min_dump_dur_ns","max_dump_dur_ns","alloc_rows","alloc_bytes","free_bytes","max_live_bytes","last_live_bytes","free_rows_live"
+2,1,1,0,0,4,29360128,29360128,0,0,2
+

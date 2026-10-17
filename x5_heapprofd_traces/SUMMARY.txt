@@ -1,0 +1,26 @@
+########## A (x5_heapprofd_A_no_tick.pftrace) ##########
+trace_bounds: [['1765330261049', '1778002043597', '12.671783']]
+targets: [['191', '1062', '/data/memprobe'], ['193', '1065', '/data/memprobe']]
+dumps: [['1']]
+dump_axis(ts_end,dur_ms,rows): [['1766874047884', '0.000000', '4']]
+totals(rows,alloc_mib,free_mib): [['4', '28.000000', '28.000000']]
+live_curve(ts,live_mib): [['1766874047884', '0.000000']]
+frames(frames,named,bids): [['11', '11', '3']]
+probe_frames: [['probe_churn_cycle', '1'], ['probe_live_block', '1']]
+stats: [['heapprofd_client_disconnected', '1'], ['heapprofd_last_profile_timestamp', '1778895941139'], ['heapprofd_unwind_samples', '264'], ['heapprofd_unwind_time_us', '30630']]
+top_alloc_frames: [['', '28.000000']]
+S4: [['CAPTURE_OK_BEHAVIOR_INCOMPLETE', '0', '0', '0', '3', 'name_candidates=2, data_bearing=1, dumps=1, rows=4, alloc_mib=28.0, free_mib=28.0, max_live_mib=0.0, last_live_mib=0.0, hold_src=probe_live_block, hold_bounds_s=[0.0,0.0], post_release_dumps=0, severe_stats=0']]
+
+########## B (x5_heapprofd_B_tick_200ms.pftrace) ##########
+trace_bounds: [['1786328177559', '1799953857858', '13.625680']]
+targets: [['192', '1123', '/data/memprobe'], ['194', '1126', '/data/memprobe']]
+dumps: [['6']]
+dump_axis(ts_end,dur_ms,rows): [['1789933857853', '0.000000', '5'], ['1791943857854', '0.000000', '2'], ['1793943857855', '0.000000', '2'], ['1795943857856', '0.000000', '3'], ['1797953857857', '0.000000', '2'], ['1799953857858', '0.000000', '2']]
+totals(rows,alloc_mib,free_mib): [['16', '28.230000', '28.230000']]
+live_curve(ts,live_mib): [['1789933857853', '8.000000'], ['1791943857854', '8.000000'], ['1793943857855', '8.000000'], ['1795943857856', '0.000000'], ['1797953857857', '0.000000'], ['1799953857858', '0.000000']]
+frames(frames,named,bids): [['15', '15', '3']]
+probe_frames: [['probe_churn_cycle', '1'], ['probe_live_block', '1'], ['probe_tick_alloc', '1']]
+stats: [['heapprofd_client_disconnected', '1'], ['heapprofd_last_profile_timestamp', '1799956228566'], ['heapprofd_unwind_samples', '474'], ['heapprofd_unwind_time_us', '65538']]
+top_alloc_frames: [['', '28.230000']]
+S4: [['CAPTURE_OK_BEHAVIOR_INCOMPLETE', '0', '0', '0', '1', 'name_candidates=2, data_bearing=1, dumps=6, rows=16, alloc_mib=28.23, free_mib=28.23, max_live_mib=8.0, last_live_mib=0.0, hold_src=probe_live_block, hold_bounds_s=[6.01,6.01], post_release_dumps=2, severe_stats=0']]
+

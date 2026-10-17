@@ -1,0 +1,9 @@
+[765.029]          service.cc:308 Started traced, listening on /tmp/perfetto-producer /tmp/perfetto-consumer
+[765.290]            probes.cc:95 Starting traced_probes service
+[765.292]  probes_producer.cc:435 Connected to the service
+[765.302]   perf_producer.cc:1394 Connected to the service
+[765.303]    perfetto_cmd.cc:1138 Connected to the Perfetto traced service, starting tracing
+[765.304] ng_service_impl.cc:1307 Configured tracing session 1, #sources:2, duration:0 ms, #buffers:1, total buffer size:16384 KB, total sessions:1, uid:0 session name: ""
+[778.895]    perfetto_cmd.cc:1362 SIGINT/SIGTERM received: disabling tracing.
+[778.896]  probes_producer.cc:582 Producer stop (id=1)
+[778.898]    perfetto_cmd.cc:1293 Wrote 21346 bytes into /data/x5_heapprofd_A_no_tick.pftrace

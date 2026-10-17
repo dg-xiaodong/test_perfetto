@@ -1,0 +1,33 @@
+Warning: Permanently added '192.168.1.10' (ED25519) to the list of known hosts.
+== [0/8] 前置检查
+WARN: 板上无 file，跳过动态链接检查（主机侧已校验）
+== [1/8] 清理旧产物
+== [2/8] 启动会话（--notify-fd 8，就绪由状态字节判定）
+TB_PID=1047 (→ /data/A_tb.pid)
+== [3/8] 等待 notify-fd 状态字节（0=会话已就绪）
+notify byte = 0 (0=成功)
+diag: producer socket = /tmp/perfetto-producer
+== [4/8] 启动测试程序（LD_PRELOAD + 阻塞式初始化）
+PROBE_PID=1062
+== [5/8] 运行期证据：preload 是否真的注入
+OK: preload 已映射到目标进程
+== [6/8] 等待测试程序结束（检查退出码）
+PROBE_RC=0
+== [7/8] 停止会话（SIGTERM）并等待最终 flush
+TB_RC=0 (killed=0)
+== [8/8] 产物检查
+trace=/data/x5_heapprofd_A_no_tick.pftrace size=21346 bytes
+ec392840ae22bd8e0937b95e229000c1e5f30c488921e0041f2cbaf01a837dbb  /data/x5_heapprofd_A_no_tick.pftrace
+--- 程序日志关键事件 ---
+EV 1766884719342 LIVE_HOLD_BEGIN held_bytes=8388608 blocks=4 hold_ms=8000
+EV 1774893339846 FREE_DONE
+EV 1774893370971 POST_FREE_HOLD_BEGIN post_free_ms=4000
+EV 1778893622139 SUMMARY pid=1062 alloc_bytes=29360128 free_bytes=29360128 live_bytes=0 alloc_calls=44 free_calls=44 tick_ms=0 ticks=0
+--- tracebox 日志尾部 ---
+[765.303]    perfetto_cmd.cc:1138 Connected to the Perfetto traced service, starting tracing
+[765.304] ng_service_impl.cc:1307 Configured tracing session 1, #sources:2, duration:0 ms, #buffers:1, total buffer size:16384 KB, total sessions:1, uid:0 session name: ""
+[778.895]    perfetto_cmd.cc:1362 SIGINT/SIGTERM received: disabling tracing.
+[778.896]  probes_producer.cc:582 Producer stop (id=1)
+[778.898]    perfetto_cmd.cc:1293 Wrote 21346 bytes into /data/x5_heapprofd_A_no_tick.pftrace
+OK: 最小实验采集完成（数据有效性仍需主机 SQL 判定）
+BOARD_RUN_EXIT=0

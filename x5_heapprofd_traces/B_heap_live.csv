@@ -1,0 +1,7 @@
+ts,value_mib,series
+1789933857853,8.000000,UPID 192 | libc.malloc live est (MiB)
+1791943857854,8.000000,UPID 192 | libc.malloc live est (MiB)
+1793943857855,8.000000,UPID 192 | libc.malloc live est (MiB)
+1795943857856,0.000000,UPID 192 | libc.malloc live est (MiB)
+1797953857857,0.000000,UPID 192 | libc.malloc live est (MiB)
+1799953857858,0.000000,UPID 192 | libc.malloc live est (MiB)
