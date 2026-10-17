@@ -1,6 +1,6 @@
 diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/MANIFEST.json /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/MANIFEST.json
 --- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/MANIFEST.json	2026-10-17 11:10:04.767464709 +0800
-+++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/MANIFEST.json	2026-10-17 19:00:22.538202715 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/MANIFEST.json	2026-10-17 19:25:33.767788776 +0800
 @@ -1,20 +1,21 @@
  {
    "name": "perfetto-memory-debugging",
@@ -10,7 +10,7 @@ diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_mod
    "entrypoint": "SKILL.md",
    "verification": {
 -    "local_unit_tests_passed": 35,
-+    "local_unit_tests_passed": 58,
++    "local_unit_tests_passed": 65,
      "official_descriptor_validation": "not_executed",
 -    "trace_processor_execution": "not_executed",
 +    "trace_processor_execution": "executed_on_x5_ab_traces_v58.2",
@@ -24,10 +24,10 @@ diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_mod
 -    "README.md": "8dac631d7b072947b0dd9e82d209413d97d1a34b2029e1f061975f19bbbe1b27",
 -    "SKILL.md": "4f5f6ae9ec20c6dd0fccab18409617cb575ad350e23febd2879397861119cba7",
 -    "TEST_REPORT.md": "386a2312fd544d06cb42ec1878fbf4aa44798c29d50d23cd6623958a69384e06",
-+    "MANIFEST.json": "d0d659f533255f57bad8ab075ac3f86be4efe5168fa67152d532cdac41f606a3",
++    "MANIFEST.json": "dd4be461a2bbacdc9c920f06bf9a6fb7eac3827d016c6215724431d34ea6755c",
 +    "README.md": "9081e666173999098b12f6d91861667fcef45a8880dcbdf2868bebc57d7f1125",
 +    "SKILL.md": "70371e5bcbe06e8efdc9c47578111989001ad33d787106de649430bab53275d0",
-+    "TEST_REPORT.md": "48176b7d378c70d35a692fabd52c2a9ce9149a0f47ba4be8b9982f821b4cd985",
++    "TEST_REPORT.md": "5943218ec00b0f56e0a7598033e6ea407464f89f1346449fca7807d01eddacfe",
      "configs/android-lmk.pbtxt": "f602a30b1e9a907488fb4583eef6d0dea96584a4b256cdb3533518f6ad58997f",
      "configs/java-alloc.pbtxt": "22d464dec025b932979adea285a3c452dabd0257d065a25e9cf3f926e33208e7",
      "configs/java-graph.pbtxt": "048c3ae592100e18ff88f4a9523a0b4d3fd5e50d7e1f4509f5fdf3081bc0eb74",
@@ -50,7 +50,7 @@ diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_mod
      "scripts/survey.sh": "177174ef9bc97a634f819373701e56078866b97d3b62d1ebfb385a75c8645c72",
 -    "scripts/validate_config.py": "b2148c5039d5f398ec2bca98c927f78ef59c3dd114a550fdac9dc2a6a8a5d8ba",
 -    "sql/00-inventory.sql": "bac0e609ca1ec00d49558cbadc27ff6f2e7932d2f618e133721c1ad5360eb223",
-+    "scripts/validate_config.py": "7f0a77561763bdd094e8172c15c098992fb4f5ddf269a2429ddb3c930a5cacff",
++    "scripts/validate_config.py": "98c2f8f6e41be205f67095e43aabd48ffddf98983799ad0fcdbb2f9c4eb0b35f",
 +    "sql/00-inventory.sql": "15395e29057af8992dc86987687ea9a824cc8b8b0e525d8e263e9061c2a7b0e8",
      "sql/01-rss-timeline.sql": "bba8bd251ade106d03e07cf5ea838a0cfc2c4acb750c9aaa4102cfa200f1a81d",
      "sql/02-counter-fallback.sql": "8ca84c3b038b164a81e53c3d9d9f1460bf0c7430aa42ade614b0a599c159cb46",
@@ -78,7 +78,7 @@ diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_mod
      "tests/test_package.py": "4f5b9d0e9266f7de7ef7980d1bf1ec9e3b8351296a1191f47868c9f168401a4b",
 -    "tests/test_validator.py": "ac3387caa958d2960bc47e6115bbf11f5d9bd4c5e5468e737c91976f723a2ba0"
 +    "tests/test_targets.py": "b6f93c90b9bc65b2912ca4917dec737c8d26b7cac4a9dfddad1e4032262e8aa3",
-+    "tests/test_validator.py": "57d5c8aada169b22719bc569c510f9b34c7af1b6e1688ce74cf246427d7dc2d7"
++    "tests/test_validator.py": "c6c32b804ca57e9d5e9522f45ad0c01fcbbf3cd97abf4195142f2f77082bbd7e"
    }
  }
 diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/README.md /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/README.md
@@ -123,8 +123,8 @@ diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_mod
  优先调用 `python3 scripts/make_config.py --help`，按实际平台、目标和事件文件生成完整 pbtxt。十个常用场景已实现；高级变体按相应参考扩展，不把生成器选项当作能力全集。
 diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/TEST_REPORT.md /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/TEST_REPORT.md
 --- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/TEST_REPORT.md	2026-10-17 11:10:04.751266098 +0800
-+++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/TEST_REPORT.md	2026-10-17 19:00:22.516014469 +0800
-@@ -35,3 +35,19 @@
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/TEST_REPORT.md	2026-10-17 19:25:33.765613483 +0800
+@@ -35,3 +35,24 @@
  gcc在`-Wall -Wextra -Werror`下构建memprobe通过；heap模式使用1MiB/1ms/2轮，spike/churn/mmap各使用1MiB/1ms/1轮，均正常退出并打印结束事件。没有在这里执行300MiB压力测试。
  
  只读survey的临时tracefs fixture输出与输入事件文件逐字一致，tracing_on保持0；`sh -n`通过。独立CLI smoke中Native配置完整输出；在Linux上请求java-graph被拒绝且stdout没有残留半份配置。
@@ -133,7 +133,7 @@ diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_mod
 +
 +新增测试：`test_targets.py`（候选发现/路径名/歧义）、`test_dump_capability.py`（可见 dump/零宽窗口/v57.1 降级）、`test_validator.py` 的 `PreflightTests`（资源完整性、deploy-name、ELF PT_INTERP、退出码）。
 +
-+- 本地单测：**58 项通过**（`python3 -m unittest discover -s tests`；含 2026-10-17 预检修复新增用例）。
++- 本地单测：**65 项通过**（`python3 -m unittest discover -s tests`；含 2026-10-17 预检修复新增用例）。
 +- 真实 TP 回归（v58.2 + X5 A/B 真实 trace）：候选查询各返回 2 行、唯一 data-bearing；`sql/10` 在 A 报 `dumps=1/dur=0`、B 报 `dumps=6/dur=0`；`sql/03` 在 B 得到 `8,8,8,0,0,0`。
 +- 未执行：Perfetto UI 检查、X5 现场采集（本轮不要求）、独立 Agent A/B（材料见 `tests/agent_ab/`）。
 +- 预检脚本只证明静态前提；**运行期就绪/注入/停止/flush 仍需运行期证据**（notify-fd 字节、trace 内容、stats/日志）。
@@ -144,6 +144,11 @@ diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_mod
 +- `references/02-native.md`：上界证据**不得**断言"实际持有与预期不符"。
 +- `tests/agent_ab/rubric.md`：符号无数据接受 UNKNOWN；UNKNOWN 后禁用 interval 推断"不符"；重新评分 6/9 vs 8/9。
 +- 真实 TP 回归脚本 `verify/tp_check.py` 加固断言并新增故障注入测试（8 例）。
++
++## 2026-10-17 第二轮定点修复
++
++- `scripts/validate_config.py`：`process_cmdline` 改为**结构感知解析**——跳过注释与字符串、按整词匹配标识符、只接受 `heapprofd_config` 块内字段；括号/字符串不闭合或字段在块外 → UNKNOWN(rc=2)；归一化按 `NormalizeCmdLine`（截断首个 `@` 后取 basename）。
++- `verify/tp_check.py`：Live 结果校验 `ts/value/series` 三列、ts 为整数且严格递增、ts 与 dump 轴一致；新增 5 个故障注入反例。
 diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/references/02-native.md /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/references/02-native.md
 --- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/references/02-native.md	2026-10-17 11:10:04.759453505 +0800
 +++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/references/02-native.md	2026-10-17 18:59:41.241198729 +0800
@@ -208,8 +213,8 @@ diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_mod
 +修复任一 SQL 后，回归必须覆盖"真实 TP + 反例"，SQLite fixture 单独通过不算完成。
 diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/scripts/validate_config.py /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/scripts/validate_config.py
 --- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/scripts/validate_config.py	2026-10-17 11:10:04.761779638 +0800
-+++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/scripts/validate_config.py	2026-10-17 18:59:11.029130770 +0800
-@@ -1,12 +1,153 @@
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/scripts/validate_config.py	2026-10-17 19:24:48.206085034 +0800
+@@ -1,12 +1,268 @@
  #!/usr/bin/env python3
  """Validate pbtxt using a descriptor set from YOUR collector's Perfetto source.
 -Host dependency: Python protobuf. Schema success does not verify runtime support.
@@ -278,19 +283,132 @@ diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_mod
 +    return 'PASS', f'{len(REQUIRED)} required files + {len(cfgs)} configs readable'
 +
 +
++def parse_targets(config_text: str):
++    """Parse process_cmdline values that belong to heapprofd_config blocks.
++
++    Returns (targets, error). error is None on a clean parse. The scanner:
++      - skips '#' comments and quoted strings (so commented or quoted text can
++        never be mistaken for a field);
++      - tokenizes identifiers, so 'not_process_cmdline' is not a match;
++      - tracks the block stack and only accepts fields whose innermost block is
++        'heapprofd_config';
++      - returns an error (-> UNKNOWN) for unterminated strings, unbalanced
++        braces, or process_cmdline appearing outside heapprofd_config.
++    """
++    i, n = 0, len(config_text.lower())  # lower() keeps indices aligned
++    text = config_text
++    stack, targets, misplaced = [], [], 0
++    in_str = None
++    token = None
++    pending_block = None
++    while i < n:
++        ch = text[i]
++        if in_str is not None:
++            if ch == '\\' and i + 1 < n:
++                i += 2
++                continue
++            if ch == in_str:
++                in_str = None
++            i += 1
++            continue
++        if ch in ('"', "'"):
++            in_str = ch
++            i += 1
++            continue
++        if ch == '#':
++            while i < n and text[i] not in '\r\n':
++                i += 1
++            continue
++        if ch == '{':
++            stack.append(pending_block if pending_block is not None else (token or ''))
++            pending_block = None
++            token = None
++            i += 1
++            continue
++        if ch == '}':
++            if not stack:
++                return None, 'unbalanced "}" in config'
++            stack.pop()
++            token = None
++            i += 1
++            continue
++        if ch == ':' and token == 'process_cmdline' and pending_block is None:
++            j = i + 1
++            while j < n and text[j] in ' \t\r\n':
++                j += 1
++            if j < n and text[j] in ('"', "'"):
++                q = text[j]
++                k, buf = j + 1, []
++                while k < n:
++                    if text[k] == '\\' and k + 1 < n:
++                        buf.append(text[k + 1])
++                        k += 2
++                        continue
++                    if text[k] == q:
++                        break
++                    buf.append(text[k])
++                    k += 1
++                if k >= n:
++                    return None, 'unterminated string in config'
++                val = ''.join(buf)
++                i = k + 1
++            else:
++                k = j
++                while k < n and text[k] not in ' \t\r\n,;}#':
++                    k += 1
++                val = text[j:k]
++                i = k
++            scope = stack[-1] if stack else ''
++            if scope != 'heapprofd_config':
++                misplaced += 1
++            elif val.strip():
++                targets.append(val.strip())
++            token = None
++            continue
++        if ch == ':' and token is not None:
++            # allow "block_name: { ... }" form
++            j = i + 1
++            while j < n and text[j] in ' \t\r\n':
++                j += 1
++            if j < n and text[j] == '{':
++                pending_block = token
++            token = None
++            i += 1
++            continue
++        if ch.isalnum() or ch == '_':
++            j = i
++            while j < n and (text[j].isalnum() or text[j] == '_'):
++                j += 1
++            token = text[i:j]
++            i = j
++            continue
++        if not ch.isspace():
++            token = None
++            pending_block = None
++        i += 1
++    if in_str is not None:
++        return None, 'unterminated string in config'
++    if stack:
++        return None, 'unbalanced "{" in config'
++    if misplaced and not targets:
++        return None, 'process_cmdline found only outside heapprofd_config; cannot verify'
++    return targets, None
++
++
 +def read_targets(config_text: str):
-+    """Extract process_cmdline values anywhere in the text (same line/minified ok)."""
-+    out = []
-+    for m in CMD_RE.finditer(config_text):
-+        val = next((g for g in m.groups() if g is not None), '')
-+        if val:
-+            out.append(val.strip())
-+    return out
++    """Backward-compatible list view (empty on parse error)."""
++    return parse_targets(config_text)[0] or []
 +
 +
 +def normalize_target(name: str):
-+    """Return basename for a target name, or None if it contains a glob (unsupported)."""
++    """heapprofd NormalizeCmdLine: trim at first '@', then take the basename.
++
++    Version evidence: src/profiling/common/proc_utils.cc NormalizeCmdLine()
++    (v54 and v58.2 identical): first arg is cut at the first '@', then the
++    basename after the last '/'. Returns None for globs (unsupported).
++    """
 +    n = name.strip().strip('"').strip("'")
++    n = n.split('@', 1)[0]
 +    if any(ch in n for ch in '*?['):
 +        return None
 +    return pathlib.PurePath(n).name
@@ -298,12 +416,14 @@ diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_mod
 +
 +def check_deploy_name(config_text: str, deploy_name: str):
 +    """heapprofd matches argv[0] basename; compare against every configured target."""
-+    targets = read_targets(config_text)
++    targets, err = parse_targets(config_text)
++    if err:
++        return 'UNKNOWN', err
 +    if not targets:
-+        return 'UNKNOWN', 'config has no process_cmdline (not a heapprofd target config)'
-+    got = pathlib.PurePath(deploy_name.strip()).name
-+    if any(ch in got for ch in '*?['):
-+        return 'UNKNOWN', f'launched name {deploy_name!r} contains a glob; cannot verify statically'
++        return 'UNKNOWN', 'no process_cmdline inside heapprofd_config (cannot verify)'
++    got = normalize_target(deploy_name)
++    if got is None:
++        return 'UNKNOWN', f'launched name {deploy_name!r} contains a glob; cannot verify'
 +    normalized = []
 +    for t in targets:
 +        nt = normalize_target(t)
@@ -364,7 +484,7 @@ diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_mod
  def parse_config(descriptor_bytes: bytes, config_text: str):
      from google.protobuf import descriptor_pb2, descriptor_pool, message_factory, text_format
      desc = descriptor_pb2.FileDescriptorSet()
-@@ -31,22 +172,81 @@
+@@ -31,22 +287,81 @@
          raise ValueError('Missing required fields: ' + ', '.join(message.FindInitializationErrors()))
      return message
  
@@ -906,8 +1026,8 @@ diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_mod
 +    unittest.main()
 diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/test_validator.py /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/test_validator.py
 --- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/test_validator.py	2026-10-17 11:10:04.767310320 +0800
-+++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/test_validator.py	2026-10-17 18:59:21.844193746 +0800
-@@ -45,4 +45,128 @@
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/test_validator.py	2026-10-17 19:25:14.750094682 +0800
+@@ -45,4 +45,161 @@
      def test_empty_descriptor(self):
          with self.assertRaisesRegex(ValueError,'Empty'):self.module.parse_config(b'','duration_ms: 1')
  
@@ -971,18 +1091,18 @@ diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_mod
 +        self.assertEqual(st,'PASS'); self.assertIn('memprobe',detail)
 +
 +    def test_deploy_name_normalizes_paths(self):
-+        st,_=self.m.check_deploy_name('process_cmdline: "/data/memprobe"','./memprobe')
++        st,_=self.m.check_deploy_name('heapprofd_config { process_cmdline: "/data/memprobe" }','./memprobe')
 +        self.assertEqual(st,'PASS')
 +
 +    def test_deploy_name_mismatch(self):
-+        st,detail=self.m.check_deploy_name('linear { process_cmdline: "memprobe" }','memprobe_arm64')
++        st,detail=self.m.check_deploy_name('heapprofd_config { process_cmdline: "memprobe" }','memprobe_arm64')
 +        self.assertEqual(st,'FAIL'); self.assertIn('BLOCKING_INIT',detail)
 +
 +    def test_deploy_name_not_heapprofd(self):
 +        self.assertEqual(self.m.check_deploy_name('duration_ms: 1000','memprobe')[0],'UNKNOWN')
 +
 +    def test_deploy_name_glob_is_unknown(self):
-+        st,detail=self.m.check_deploy_name('process_cmdline: "memprobe*"','memprobe')
++        st,detail=self.m.check_deploy_name('heapprofd_config { process_cmdline: "memprobe*" }','memprobe')
 +        self.assertEqual(st,'UNKNOWN'); self.assertIn('glob',detail)
 +
 +    # ---- binary ----
@@ -1026,6 +1146,39 @@ diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_mod
 +            self.assertEqual(self.m.main(),1)
 +        with mock.patch.object(sys,'argv',['v']):
 +            self.assertEqual(self.m.main(),2)
++
++    def test_comment_is_not_a_field(self):
++        # 复现：注释里写 memprobe、有效字段是 other_app → 必须 FAIL，不能 PASS
++        cfg = '# process_cmdline: "memprobe"\nheapprofd_config { process_cmdline: "other_app" }\n'
++        st, detail = self.m.check_deploy_name(cfg, '/data/memprobe')
++        self.assertEqual(st, 'FAIL')
++        self.assertIn('other_app', detail)
++
++    def test_similar_field_name_not_matched(self):
++        st, _ = self.m.check_deploy_name('heapprofd_config { not_process_cmdline: "memprobe" }', 'memprobe')
++        self.assertEqual(st, 'UNKNOWN')
++
++    def test_cmdline_inside_string_ignored(self):
++        st, _ = self.m.check_deploy_name('heapprofd_config { heap_name: "process_cmdline: memprobe" }', 'memprobe')
++        self.assertEqual(st, 'UNKNOWN')
++
++    def test_unbalanced_braces_unknown(self):
++        st, detail = self.m.check_deploy_name('heapprofd_config { process_cmdline: "memprobe"', 'memprobe')
++        self.assertEqual(st, 'UNKNOWN'); self.assertIn('unbalanced', detail)
++
++    def test_cmdline_outside_heapprofd_config_unknown(self):
++        st, detail = self.m.check_deploy_name('process_cmdline: "memprobe"', 'memprobe')
++        self.assertEqual(st, 'UNKNOWN'); self.assertIn('outside heapprofd_config', detail)
++
++    def test_at_suffix_normalized(self):
++        # NormalizeCmdLine: 截断首个 '@'，再取 basename
++        cfg = 'heapprofd_config { process_cmdline: "/system/bin/app_process@/system/bin/app_process64" }'
++        self.assertEqual(self.m.check_deploy_name(cfg, 'app_process')[0], 'PASS')
++        self.assertEqual(self.m.check_deploy_name(cfg, '/system/bin/app_process@x')[0], 'PASS')
++
++    def test_nested_block_scope_is_honored(self):
++        cfg = 'data_sources { config { heapprofd_config { process_cmdline: "memprobe" } } }'
++        self.assertEqual(self.m.check_deploy_name(cfg, './memprobe')[0], 'PASS')
 +
 +    def test_main_unknown_is_exit_2(self):
 +        import sys, tempfile, unittest.mock as mock

@@ -92,6 +92,23 @@ class FaultTests(unittest.TestCase):
     def test_zero_dur_wrong_fails(self):
         self.assertGreater(self._run(make_runner({(B, 'summary'): [['6', '6', '0', '100', '600']]})), 0)
 
+    def test_bad_ts_fails(self):
+        self.assertGreater(self._run(make_runner({(A, 'live'): [['not-a-timestamp', '0.0', 's']]})), 0)
+
+    def test_missing_series_column_fails(self):
+        self.assertGreater(self._run(make_runner({(A, 'live'): [['100', '0.0']]})), 0)
+
+    def test_unsorted_ts_fails(self):
+        self.assertGreater(self._run(make_runner(
+            {(B, 'live'): [['101', '8.0', 's'], ['100', '8.0', 's'], ['102', '8.0', 's'],
+                           ['103', '0.0', 's'], ['104', '0.0', 's'], ['105', '0.0', 's']]})), 0)
+
+    def test_ts_not_matching_axis_fails(self):
+        self.assertGreater(self._run(make_runner({(A, 'live'): [['999', '0.0', 's']]})), 0)
+
+    def test_empty_series_fails(self):
+        self.assertGreater(self._run(make_runner({(A, 'live'): [['100', '0.0', '  ']]})), 0)
+
     def test_helper_with_data_fails(self):
         cand = base_rows(A)['candidates']
         cand[1][3] = '9'

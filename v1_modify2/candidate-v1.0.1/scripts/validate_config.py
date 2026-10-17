@@ -65,19 +65,132 @@ def check_resources(root: pathlib.Path):
     return 'PASS', f'{len(REQUIRED)} required files + {len(cfgs)} configs readable'
 
 
+def parse_targets(config_text: str):
+    """Parse process_cmdline values that belong to heapprofd_config blocks.
+
+    Returns (targets, error). error is None on a clean parse. The scanner:
+      - skips '#' comments and quoted strings (so commented or quoted text can
+        never be mistaken for a field);
+      - tokenizes identifiers, so 'not_process_cmdline' is not a match;
+      - tracks the block stack and only accepts fields whose innermost block is
+        'heapprofd_config';
+      - returns an error (-> UNKNOWN) for unterminated strings, unbalanced
+        braces, or process_cmdline appearing outside heapprofd_config.
+    """
+    i, n = 0, len(config_text.lower())  # lower() keeps indices aligned
+    text = config_text
+    stack, targets, misplaced = [], [], 0
+    in_str = None
+    token = None
+    pending_block = None
+    while i < n:
+        ch = text[i]
+        if in_str is not None:
+            if ch == '\\' and i + 1 < n:
+                i += 2
+                continue
+            if ch == in_str:
+                in_str = None
+            i += 1
+            continue
+        if ch in ('"', "'"):
+            in_str = ch
+            i += 1
+            continue
+        if ch == '#':
+            while i < n and text[i] not in '\r\n':
+                i += 1
+            continue
+        if ch == '{':
+            stack.append(pending_block if pending_block is not None else (token or ''))
+            pending_block = None
+            token = None
+            i += 1
+            continue
+        if ch == '}':
+            if not stack:
+                return None, 'unbalanced "}" in config'
+            stack.pop()
+            token = None
+            i += 1
+            continue
+        if ch == ':' and token == 'process_cmdline' and pending_block is None:
+            j = i + 1
+            while j < n and text[j] in ' \t\r\n':
+                j += 1
+            if j < n and text[j] in ('"', "'"):
+                q = text[j]
+                k, buf = j + 1, []
+                while k < n:
+                    if text[k] == '\\' and k + 1 < n:
+                        buf.append(text[k + 1])
+                        k += 2
+                        continue
+                    if text[k] == q:
+                        break
+                    buf.append(text[k])
+                    k += 1
+                if k >= n:
+                    return None, 'unterminated string in config'
+                val = ''.join(buf)
+                i = k + 1
+            else:
+                k = j
+                while k < n and text[k] not in ' \t\r\n,;}#':
+                    k += 1
+                val = text[j:k]
+                i = k
+            scope = stack[-1] if stack else ''
+            if scope != 'heapprofd_config':
+                misplaced += 1
+            elif val.strip():
+                targets.append(val.strip())
+            token = None
+            continue
+        if ch == ':' and token is not None:
+            # allow "block_name: { ... }" form
+            j = i + 1
+            while j < n and text[j] in ' \t\r\n':
+                j += 1
+            if j < n and text[j] == '{':
+                pending_block = token
+            token = None
+            i += 1
+            continue
+        if ch.isalnum() or ch == '_':
+            j = i
+            while j < n and (text[j].isalnum() or text[j] == '_'):
+                j += 1
+            token = text[i:j]
+            i = j
+            continue
+        if not ch.isspace():
+            token = None
+            pending_block = None
+        i += 1
+    if in_str is not None:
+        return None, 'unterminated string in config'
+    if stack:
+        return None, 'unbalanced "{" in config'
+    if misplaced and not targets:
+        return None, 'process_cmdline found only outside heapprofd_config; cannot verify'
+    return targets, None
+
+
 def read_targets(config_text: str):
-    """Extract process_cmdline values anywhere in the text (same line/minified ok)."""
-    out = []
-    for m in CMD_RE.finditer(config_text):
-        val = next((g for g in m.groups() if g is not None), '')
-        if val:
-            out.append(val.strip())
-    return out
+    """Backward-compatible list view (empty on parse error)."""
+    return parse_targets(config_text)[0] or []
 
 
 def normalize_target(name: str):
-    """Return basename for a target name, or None if it contains a glob (unsupported)."""
+    """heapprofd NormalizeCmdLine: trim at first '@', then take the basename.
+
+    Version evidence: src/profiling/common/proc_utils.cc NormalizeCmdLine()
+    (v54 and v58.2 identical): first arg is cut at the first '@', then the
+    basename after the last '/'. Returns None for globs (unsupported).
+    """
     n = name.strip().strip('"').strip("'")
+    n = n.split('@', 1)[0]
     if any(ch in n for ch in '*?['):
         return None
     return pathlib.PurePath(n).name
@@ -85,12 +198,14 @@ def normalize_target(name: str):
 
 def check_deploy_name(config_text: str, deploy_name: str):
     """heapprofd matches argv[0] basename; compare against every configured target."""
-    targets = read_targets(config_text)
+    targets, err = parse_targets(config_text)
+    if err:
+        return 'UNKNOWN', err
     if not targets:
-        return 'UNKNOWN', 'config has no process_cmdline (not a heapprofd target config)'
-    got = pathlib.PurePath(deploy_name.strip()).name
-    if any(ch in got for ch in '*?['):
-        return 'UNKNOWN', f'launched name {deploy_name!r} contains a glob; cannot verify statically'
+        return 'UNKNOWN', 'no process_cmdline inside heapprofd_config (cannot verify)'
+    got = normalize_target(deploy_name)
+    if got is None:
+        return 'UNKNOWN', f'launched name {deploy_name!r} contains a glob; cannot verify'
     normalized = []
     for t in targets:
         nt = normalize_target(t)

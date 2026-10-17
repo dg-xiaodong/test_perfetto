@@ -168,6 +168,34 @@ def evaluate(tp, skill_dir, traces_dir, runner=run):
             continue
         if len(live) != exp['dumps']:
             print(f"  FAIL live: rows={len(live)} expected {exp['dumps']}"); fails += 1
+        # 结构：ts / value / series 三列
+        live_ok = True
+        for r in live:
+            if len(r) != 3:
+                print(f'  FAIL live: expected 3 columns (ts,value,series), got {len(r)}'); fails += 1
+                live_ok = False
+                break
+        ts_list = []
+        if live_ok:
+            for r in live:
+                ts = _num(r, 0)
+                if ts is None:
+                    print(f'  FAIL live: ts is not an integer timestamp: {r[0]!r}'); fails += 1
+                    live_ok = False
+                    break
+                ts_list.append(ts)
+                if not str(r[2]).strip():
+                    print('  FAIL live: empty series column'); fails += 1
+                    live_ok = False
+                    break
+        if live_ok and len(ts_list) > 1 and any(b <= a for a, b in zip(ts_list, ts_list[1:])):
+            print(f'  FAIL live: ts not strictly increasing: {ts_list}'); fails += 1
+            live_ok = False
+        if live_ok and axis is not None:
+            axis_ts = [_num(r, 1) for r in axis]
+            if ts_list != axis_ts:
+                print(f'  FAIL live: ts {ts_list} does not match dump axis {axis_ts}'); fails += 1
+                live_ok = False
         try:
             vals = [round(float(r[1]), 2) for r in live]
         except (TypeError, ValueError, IndexError):
@@ -178,7 +206,7 @@ def evaluate(tp, skill_dir, traces_dir, runner=run):
                 print(f'  FAIL live: negative live estimate {vals}'); fails += 1
             if vals != exp['live']:
                 print(f"  FAIL live: {vals} expected {exp['live']}"); fails += 1
-            else:
+            elif live_ok:
                 print('  live values (MiB):', vals, '-> PASS')
 
     return fails

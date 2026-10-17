@@ -1,7 +1,7 @@
-dd4be461a2bbacdc9c920f06bf9a6fb7eac3827d016c6215724431d34ea6755c  ./MANIFEST.json
+57e0dcb15d1cbfe103da2674684aa7efeb9b8db3285959ec1572c81f4fdd96ed  ./MANIFEST.json
 9081e666173999098b12f6d91861667fcef45a8880dcbdf2868bebc57d7f1125  ./README.md
 70371e5bcbe06e8efdc9c47578111989001ad33d787106de649430bab53275d0  ./SKILL.md
-48176b7d378c70d35a692fabd52c2a9ce9149a0f47ba4be8b9982f821b4cd985  ./TEST_REPORT.md
+5943218ec00b0f56e0a7598033e6ea407464f89f1346449fca7807d01eddacfe  ./TEST_REPORT.md
 f602a30b1e9a907488fb4583eef6d0dea96584a4b256cdb3533518f6ad58997f  ./configs/android-lmk.pbtxt
 22d464dec025b932979adea285a3c452dabd0257d065a25e9cf3f926e33208e7  ./configs/java-alloc.pbtxt
 048c3ae592100e18ff88f4a9523a0b4d3fd5e50d7e1f4509f5fdf3081bc0eb74  ./configs/java-graph.pbtxt
@@ -27,7 +27,7 @@ ad5936f6487777fda1ff9afa86021ca94a218450a14ef40606cbc44aa71966c3  ./references/0
 ca4156344e7d791af2e403807a15d19100a18e495368977ed56fe55d562c647b  ./references/sources.md
 7fc12b10626826d08a40cf881780f2e053c282356ad7293712ad6d2ccf50b959  ./scripts/make_config.py
 177174ef9bc97a634f819373701e56078866b97d3b62d1ebfb385a75c8645c72  ./scripts/survey.sh
-7f0a77561763bdd094e8172c15c098992fb4f5ddf269a2429ddb3c930a5cacff  ./scripts/validate_config.py
+98c2f8f6e41be205f67095e43aabd48ffddf98983799ad0fcdbb2f9c4eb0b35f  ./scripts/validate_config.py
 15395e29057af8992dc86987687ea9a824cc8b8b0e525d8e263e9061c2a7b0e8  ./sql/00-inventory.sql
 bba8bd251ade106d03e07cf5ea838a0cfc2c4acb750c9aaa4102cfa200f1a81d  ./sql/01-rss-timeline.sql
 8ca84c3b038b164a81e53c3d9d9f1460bf0c7430aa42ade614b0a599c159cb46  ./sql/02-counter-fallback.sql
@@ -51,4 +51,4 @@ e3c985b33408c2b009db41ea18f1005c6abc66c7e321be50d263fad1738b99bd  ./tests/scenar
 459f4ec9dc095774154bf6d6210aedc0253bc8ef0daf014b087198dd1c5ff589  ./tests/test_dump_capability.py
 4f5b9d0e9266f7de7ef7980d1bf1ec9e3b8351296a1191f47868c9f168401a4b  ./tests/test_package.py
 b6f93c90b9bc65b2912ca4917dec737c8d26b7cac4a9dfddad1e4032262e8aa3  ./tests/test_targets.py
-57d5c8aada169b22719bc569c510f9b34c7af1b6e1688ce74cf246427d7dc2d7  ./tests/test_validator.py
+c6c32b804ca57e9d5e9522f45ad0c01fcbbf3cd97abf4195142f2f77082bbd7e  ./tests/test_validator.py

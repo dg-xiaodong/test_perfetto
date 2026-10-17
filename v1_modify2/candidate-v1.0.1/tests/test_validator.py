@@ -105,18 +105,18 @@ class PreflightTests(unittest.TestCase):
         self.assertEqual(st,'PASS'); self.assertIn('memprobe',detail)
 
     def test_deploy_name_normalizes_paths(self):
-        st,_=self.m.check_deploy_name('process_cmdline: "/data/memprobe"','./memprobe')
+        st,_=self.m.check_deploy_name('heapprofd_config { process_cmdline: "/data/memprobe" }','./memprobe')
         self.assertEqual(st,'PASS')
 
     def test_deploy_name_mismatch(self):
-        st,detail=self.m.check_deploy_name('linear { process_cmdline: "memprobe" }','memprobe_arm64')
+        st,detail=self.m.check_deploy_name('heapprofd_config { process_cmdline: "memprobe" }','memprobe_arm64')
         self.assertEqual(st,'FAIL'); self.assertIn('BLOCKING_INIT',detail)
 
     def test_deploy_name_not_heapprofd(self):
         self.assertEqual(self.m.check_deploy_name('duration_ms: 1000','memprobe')[0],'UNKNOWN')
 
     def test_deploy_name_glob_is_unknown(self):
-        st,detail=self.m.check_deploy_name('process_cmdline: "memprobe*"','memprobe')
+        st,detail=self.m.check_deploy_name('heapprofd_config { process_cmdline: "memprobe*" }','memprobe')
         self.assertEqual(st,'UNKNOWN'); self.assertIn('glob',detail)
 
     # ---- binary ----
@@ -160,6 +160,39 @@ class PreflightTests(unittest.TestCase):
             self.assertEqual(self.m.main(),1)
         with mock.patch.object(sys,'argv',['v']):
             self.assertEqual(self.m.main(),2)
+
+    def test_comment_is_not_a_field(self):
+        # 复现：注释里写 memprobe、有效字段是 other_app → 必须 FAIL，不能 PASS
+        cfg = '# process_cmdline: "memprobe"\nheapprofd_config { process_cmdline: "other_app" }\n'
+        st, detail = self.m.check_deploy_name(cfg, '/data/memprobe')
+        self.assertEqual(st, 'FAIL')
+        self.assertIn('other_app', detail)
+
+    def test_similar_field_name_not_matched(self):
+        st, _ = self.m.check_deploy_name('heapprofd_config { not_process_cmdline: "memprobe" }', 'memprobe')
+        self.assertEqual(st, 'UNKNOWN')
+
+    def test_cmdline_inside_string_ignored(self):
+        st, _ = self.m.check_deploy_name('heapprofd_config { heap_name: "process_cmdline: memprobe" }', 'memprobe')
+        self.assertEqual(st, 'UNKNOWN')
+
+    def test_unbalanced_braces_unknown(self):
+        st, detail = self.m.check_deploy_name('heapprofd_config { process_cmdline: "memprobe"', 'memprobe')
+        self.assertEqual(st, 'UNKNOWN'); self.assertIn('unbalanced', detail)
+
+    def test_cmdline_outside_heapprofd_config_unknown(self):
+        st, detail = self.m.check_deploy_name('process_cmdline: "memprobe"', 'memprobe')
+        self.assertEqual(st, 'UNKNOWN'); self.assertIn('outside heapprofd_config', detail)
+
+    def test_at_suffix_normalized(self):
+        # NormalizeCmdLine: 截断首个 '@'，再取 basename
+        cfg = 'heapprofd_config { process_cmdline: "/system/bin/app_process@/system/bin/app_process64" }'
+        self.assertEqual(self.m.check_deploy_name(cfg, 'app_process')[0], 'PASS')
+        self.assertEqual(self.m.check_deploy_name(cfg, '/system/bin/app_process@x')[0], 'PASS')
+
+    def test_nested_block_scope_is_honored(self):
+        cfg = 'data_sources { config { heapprofd_config { process_cmdline: "memprobe" } } }'
+        self.assertEqual(self.m.check_deploy_name(cfg, './memprobe')[0], 'PASS')
 
     def test_main_unknown_is_exit_2(self):
         import sys, tempfile, unittest.mock as mock
