@@ -1,4 +1,4 @@
-# v2_test_fix1 — 首轮 `v2_test` 的范围受限技术修正
+# v2_modify — 首轮 `v2_test` 的范围受限技术修正
 
 本目录是第二轮独立场景测试首轮交付 `v2_test` 的**独立修正版**。
 首轮 `v2_test/` 原样保留，不覆盖、不改写 history；本版只修本轮明确列出的确定性问题
@@ -28,7 +28,7 @@
 ## 2. 目录
 
 ```text
-v2_test_fix1/
+v2_modify/
 ├── README.md
 ├── PLAN.md                      完整方案（已替换第 4 节执行流程，补充版本边界/测试）
 ├── CHANGES.diff                 相对 v2_test 的 unified diff

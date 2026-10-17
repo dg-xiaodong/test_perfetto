@@ -1,11 +1,11 @@
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/PLAN.md v2_test_fix1/PLAN.md
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/PLAN.md v2_modify/PLAN.md
 --- v2_test/PLAN.md	2026-10-17 19:51:40.567547411 +0800
-+++ v2_test_fix1/PLAN.md	2026-10-17 20:18:46.011500361 +0800
++++ v2_modify/PLAN.md	2026-10-17 20:29:13.285215645 +0800
 @@ -1,6 +1,10 @@
  # RDK X5 `worker_app`：Perfetto 调试与分析方案
  
 -> 方案只做设计与静态验证，未连接开发板、未修改业务程序、未采集任何真实 trace。
-+> **版本：v2_test_fix1（首轮 v2_test 的范围受限修正）**
++> **版本：v2_modify（首轮 v2_test 的范围受限修正）**
 +> 首轮 `v2_test/` 原样保留；本版只修明确列出的 7 项确定性问题及直接关联内容。
 +> 这不是新的盲测成绩，不把修正后的表现冒充首轮首次交付质量。
 +>
@@ -585,12 +585,12 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +4. 若 C3 显示 allocator 占比在抖动窗上升，再跑 C2（测试实例 + preload，
 +   `OBSERVE_S=30`；配置 90 s 只是安全上限），用 `10/12/13/17` 归因到 callsite。
  5. 只有 C2+C3+C1 的证据链成立，才讨论“临时对象复用/池化”的修改；修改后用同一套配置做 A/B，才算因果闭环。
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/README.md v2_test_fix1/README.md
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/README.md v2_modify/README.md
 --- v2_test/README.md	2026-10-17 19:51:26.491050179 +0800
-+++ v2_test_fix1/README.md	2026-10-17 20:18:07.095537955 +0800
++++ v2_modify/README.md	2026-10-17 20:29:13.284532787 +0800
 @@ -1,97 +1,108 @@
 -# v2_test — RDK X5 `worker_app` Perfetto 性能调试交付
-+# v2_test_fix1 — 首轮 `v2_test` 的范围受限技术修正
++# v2_modify — 首轮 `v2_test` 的范围受限技术修正
  
 -本目录是 2026-10 一轮独立方案的全部交付物：针对 RDK X5 上 C++ 进程 `worker_app`
 -“RSS 稳定 180–200 MB、每隔几秒 CPU 上升且延迟抖动、怀疑临时对象频繁创建/销毁”的问题，
@@ -636,7 +636,7 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
  
  ```text
 -v2_test/
-+v2_test_fix1/
++v2_modify/
  ├── README.md
 -├── PLAN.md                      完整方案：假设、选路、配置、操作、验收、SQL、UI、因果判据、降级
 +├── PLAN.md                      完整方案（已替换第 4 节执行流程，补充版本边界/测试）
@@ -773,9 +773,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +  检查并降级。
 +- v58.2 descriptor 只做静态校验，不等于 v57.1 运行期验证。
 +- heapprofd count/size 是采样估计；业务延迟需独立事件/日志证据。
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/configs/C2-worker-native-alloc.pbtxt v2_test_fix1/configs/C2-worker-native-alloc.pbtxt
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/configs/C2-worker-native-alloc.pbtxt v2_modify/configs/C2-worker-native-alloc.pbtxt
 --- v2_test/configs/C2-worker-native-alloc.pbtxt	2026-10-17 19:51:29.262267450 +0800
-+++ v2_test_fix1/configs/C2-worker-native-alloc.pbtxt	2026-10-17 20:06:45.962753006 +0800
++++ v2_modify/configs/C2-worker-native-alloc.pbtxt	2026-10-17 20:06:45.962753006 +0800
 @@ -8,7 +8,7 @@
  buffers { size_kb: 4096  fill_policy: RING_BUFFER }   # 1: process_stats
  buffers { size_kb: 16384 fill_policy: RING_BUFFER }   # 2: heapprofd packets
@@ -785,9 +785,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
  
  data_sources {
    config {
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/host_pull.sh v2_test_fix1/scripts/host_pull.sh
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/host_pull.sh v2_modify/scripts/host_pull.sh
 --- v2_test/scripts/host_pull.sh	1970-01-01 08:00:00.000000000 +0800
-+++ v2_test_fix1/scripts/host_pull.sh	2026-10-17 20:06:38.547021319 +0800
++++ v2_modify/scripts/host_pull.sh	2026-10-17 20:06:38.547021319 +0800
 @@ -0,0 +1,23 @@
 +#!/bin/sh
 +# Host-side pull with explicit failure propagation.
@@ -812,9 +812,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +  fi
 +  echo "PULL OK: $f size=$(wc -c < "$out") sha256=$(sha256sum "$out" | awk '{print $1}')"
 +done
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/remote_c1.sh v2_test_fix1/scripts/remote_c1.sh
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/remote_c1.sh v2_modify/scripts/remote_c1.sh
 --- v2_test/scripts/remote_c1.sh	1970-01-01 08:00:00.000000000 +0800
-+++ v2_test_fix1/scripts/remote_c1.sh	2026-10-17 20:19:07.736298936 +0800
++++ v2_modify/scripts/remote_c1.sh	2026-10-17 20:19:07.736298936 +0800
 @@ -0,0 +1,37 @@
 +#!/bin/sh
 +# C1: low-overhead timeline. Runs on the X5 board.
@@ -853,9 +853,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +
 +echo "C1 DONE size_bytes=$(wc -c < C1.pftrace)" > C1.status
 +cat C1.status
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/remote_c2.sh v2_test_fix1/scripts/remote_c2.sh
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/remote_c2.sh v2_modify/scripts/remote_c2.sh
 --- v2_test/scripts/remote_c2.sh	1970-01-01 08:00:00.000000000 +0800
-+++ v2_test_fix1/scripts/remote_c2.sh	2026-10-17 20:18:46.011640436 +0800
++++ v2_modify/scripts/remote_c2.sh	2026-10-17 20:18:46.011640436 +0800
 @@ -0,0 +1,157 @@
 +#!/bin/sh
 +# C2: heapprofd native allocation. Runs on the X5 board.
@@ -1014,9 +1014,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +
 +echo "C2 DONE size_bytes=$(wc -c < C2.pftrace)" > C2.status
 +cat C2.status
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/remote_c3.sh v2_test_fix1/scripts/remote_c3.sh
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/remote_c3.sh v2_modify/scripts/remote_c3.sh
 --- v2_test/scripts/remote_c3.sh	1970-01-01 08:00:00.000000000 +0800
-+++ v2_test_fix1/scripts/remote_c3.sh	2026-10-17 20:19:07.736378993 +0800
++++ v2_modify/scripts/remote_c3.sh	2026-10-17 20:19:07.736378993 +0800
 @@ -0,0 +1,37 @@
 +#!/bin/sh
 +# C3: linux.perf CPU profile. Runs on the X5 board.
@@ -1055,9 +1055,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +
 +echo "C3 DONE size_bytes=$(wc -c < C3.pftrace)" > C3.status
 +cat C3.status
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/remote_lib.sh v2_test_fix1/scripts/remote_lib.sh
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/remote_lib.sh v2_modify/scripts/remote_lib.sh
 --- v2_test/scripts/remote_lib.sh	1970-01-01 08:00:00.000000000 +0800
-+++ v2_test_fix1/scripts/remote_lib.sh	2026-10-17 20:10:03.628961283 +0800
++++ v2_modify/scripts/remote_lib.sh	2026-10-17 20:10:03.628961283 +0800
 @@ -0,0 +1,64 @@
 +#!/bin/sh
 +# Common board-side helpers. Runs on the X5, not on the Ubuntu host.
@@ -1123,9 +1123,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +  wait_pid_exit "$_pid" 10 || return 1
 +  return 0
 +}
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/remote_stop.sh v2_test_fix1/scripts/remote_stop.sh
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/remote_stop.sh v2_modify/scripts/remote_stop.sh
 --- v2_test/scripts/remote_stop.sh	1970-01-01 08:00:00.000000000 +0800
-+++ v2_test_fix1/scripts/remote_stop.sh	2026-10-17 20:12:02.064635871 +0800
++++ v2_modify/scripts/remote_stop.sh	2026-10-17 20:12:02.064635871 +0800
 @@ -0,0 +1,25 @@
 +#!/bin/sh
 +# Manual early stop for C1/C2/C3 tracebox session. Runs on the X5.
@@ -1152,9 +1152,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +  exit 3
 +fi
 +echo "STOP OK: $NAME size_bytes=$(wc -c < "$TRACEFILE")"
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/10-cpu-thread-buckets.sql v2_test_fix1/sql/10-cpu-thread-buckets.sql
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/10-cpu-thread-buckets.sql v2_modify/sql/10-cpu-thread-buckets.sql
 --- v2_test/sql/10-cpu-thread-buckets.sql	2026-10-17 19:51:29.263877428 +0800
-+++ v2_test_fix1/sql/10-cpu-thread-buckets.sql	2026-10-17 20:18:53.495391578 +0800
++++ v2_modify/sql/10-cpu-thread-buckets.sql	2026-10-17 20:18:53.495391578 +0800
 @@ -1,19 +1,37 @@
  -- 10-cpu-thread-buckets.sql
  -- Per-thread CPU time in 100 ms buckets for the target process.
@@ -1232,9 +1232,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +-- 30-90 s windows; split longer traces.
 +-- Cross-check: for any single interval, SUM(cpu_ms) over its buckets must
 +-- equal dur; see validation/tests/bucket_overlap_test.sql.
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/11-runnable-and-blocked.sql v2_test_fix1/sql/11-runnable-and-blocked.sql
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/11-runnable-and-blocked.sql v2_modify/sql/11-runnable-and-blocked.sql
 --- v2_test/sql/11-runnable-and-blocked.sql	2026-10-17 19:51:29.264146800 +0800
-+++ v2_test_fix1/sql/11-runnable-and-blocked.sql	2026-10-17 20:18:53.495474303 +0800
++++ v2_modify/sql/11-runnable-and-blocked.sql	2026-10-17 20:18:53.495474303 +0800
 @@ -2,33 +2,71 @@
  -- Runqueue latency and uninterruptible sleep in 100 ms buckets.
  -- "R"/"R+" = runnable but not on CPU (wakeup -> running latency).
@@ -1323,9 +1323,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +-- 30-90 s windows; split longer traces.
 +-- Cross-check: SUM(running_ms + runnable_ms + d_state_ms + S/I/... buckets)
 +-- must be <= trace duration; see validation/tests/bucket_overlap_test.sql.
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/12-native-dump-timeline.sql v2_test_fix1/sql/12-native-dump-timeline.sql
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/12-native-dump-timeline.sql v2_modify/sql/12-native-dump-timeline.sql
 --- v2_test/sql/12-native-dump-timeline.sql	2026-10-17 19:51:29.264363361 +0800
-+++ v2_test_fix1/sql/12-native-dump-timeline.sql	2026-10-17 20:07:28.523300735 +0800
++++ v2_modify/sql/12-native-dump-timeline.sql	2026-10-17 20:07:28.523300735 +0800
 @@ -4,6 +4,12 @@
  -- (start_timestamp not published). Treat a.row ts as the snapshot END and the
  -- preceding dump_interval_ms as an UNKNOWN-width window; do not claim exact
@@ -1339,9 +1339,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
  WITH params AS (
    SELECT -1 AS target_upid, 'libc.malloc' AS target_heap
  )
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/13-native-callsite-hotspots.sql v2_test_fix1/sql/13-native-callsite-hotspots.sql
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/13-native-callsite-hotspots.sql v2_modify/sql/13-native-callsite-hotspots.sql
 --- v2_test/sql/13-native-callsite-hotspots.sql	2026-10-17 19:51:29.264622756 +0800
-+++ v2_test_fix1/sql/13-native-callsite-hotspots.sql	2026-10-17 20:07:28.523369732 +0800
++++ v2_modify/sql/13-native-callsite-hotspots.sql	2026-10-17 20:07:28.523369732 +0800
 @@ -2,6 +2,10 @@
  -- Leaf callsites by allocated and freed bytes/counts (not ancestor-cumulative).
  -- Use sql/04-native-callstacks.sql when the caller chain is needed.
@@ -1353,9 +1353,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
  WITH params AS (
    SELECT -1 AS target_upid, 'libc.malloc' AS target_heap
  )
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/16-perf-spike-vs-quiet.sql v2_test_fix1/sql/16-perf-spike-vs-quiet.sql
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/16-perf-spike-vs-quiet.sql v2_modify/sql/16-perf-spike-vs-quiet.sql
 --- v2_test/sql/16-perf-spike-vs-quiet.sql	2026-10-17 19:51:29.265905301 +0800
-+++ v2_test_fix1/sql/16-perf-spike-vs-quiet.sql	2026-10-17 20:07:20.810745370 +0800
++++ v2_modify/sql/16-perf-spike-vs-quiet.sql	2026-10-17 20:07:20.810745370 +0800
 @@ -1,28 +1,50 @@
  -- 16-perf-spike-vs-quiet.sql
 --- Compare self CPU samples in explicit spike vs quiet windows.
@@ -1431,9 +1431,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
  )
  SELECT phase, frame_name, mapping_name, COUNT(*) AS samples
  FROM tagged
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/16a-perf-window-check.sql v2_test_fix1/sql/16a-perf-window-check.sql
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/16a-perf-window-check.sql v2_modify/sql/16a-perf-window-check.sql
 --- v2_test/sql/16a-perf-window-check.sql	1970-01-01 08:00:00.000000000 +0800
-+++ v2_test_fix1/sql/16a-perf-window-check.sql	2026-10-17 20:07:20.822745291 +0800
++++ v2_modify/sql/16a-perf-window-check.sql	2026-10-17 20:07:20.822745291 +0800
 @@ -0,0 +1,41 @@
 +-- 16a-perf-window-check.sql
 +-- Companion to 16-perf-spike-vs-quiet.sql.
@@ -1476,9 +1476,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +    ELSE 'OK'
 +  END AS window_check
 +FROM windows;
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/17-alloc-vs-cpu.sql v2_test_fix1/sql/17-alloc-vs-cpu.sql
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/17-alloc-vs-cpu.sql v2_modify/sql/17-alloc-vs-cpu.sql
 --- v2_test/sql/17-alloc-vs-cpu.sql	2026-10-17 19:51:29.266152347 +0800
-+++ v2_test_fix1/sql/17-alloc-vs-cpu.sql	2026-10-17 20:07:31.319835950 +0800
++++ v2_modify/sql/17-alloc-vs-cpu.sql	2026-10-17 20:07:31.319835950 +0800
 @@ -7,6 +7,8 @@
  --   * v57.1 collector may publish no window start (dur=0);
  --   * 1 s CPU bucket and 2 s dump interval are different resolutions.
@@ -1488,9 +1488,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
  WITH params AS (
    SELECT
      -1 AS target_upid,
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/20-jitter-cycles.sql v2_test_fix1/sql/20-jitter-cycles.sql
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/20-jitter-cycles.sql v2_modify/sql/20-jitter-cycles.sql
 --- v2_test/sql/20-jitter-cycles.sql	2026-10-17 19:51:29.266935256 +0800
-+++ v2_test_fix1/sql/20-jitter-cycles.sql	2026-10-17 20:07:11.818803904 +0800
++++ v2_modify/sql/20-jitter-cycles.sql	2026-10-17 20:07:11.818803904 +0800
 @@ -2,6 +2,14 @@
  -- Collapse high-CPU 1 s buckets into episodes, so the period and duty cycle of
  -- the "every few seconds" burst can be measured instead of eyeballed.
@@ -1531,9 +1531,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
  GROUP BY grp
  ORDER BY first_bucket_s;
  -- UI: Slice Track; Timestamp=ts; Duration=dur; Name=<literal>; Pivot=<literal>.
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/SKILL_GAP.md v2_test_fix1/validation/SKILL_GAP.md
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/SKILL_GAP.md v2_modify/validation/SKILL_GAP.md
 --- v2_test/validation/SKILL_GAP.md	1970-01-01 08:00:00.000000000 +0800
-+++ v2_test_fix1/validation/SKILL_GAP.md	2026-10-17 20:18:07.037643809 +0800
++++ v2_modify/validation/SKILL_GAP.md	2026-10-17 20:18:07.037643809 +0800
 @@ -0,0 +1,31 @@
 +# 首轮错误与 Skill 规则/实现缺口
 +
@@ -1566,9 +1566,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +
 +本修正版新增的 `scripts/`、`sql/16a`、`validation/tests/` 只是本交付的补丁，
 +不代表 Skill 已获得这些能力，也没有修改 Skill。
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/VALIDATION.md v2_test_fix1/validation/VALIDATION.md
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/VALIDATION.md v2_modify/validation/VALIDATION.md
 --- v2_test/validation/VALIDATION.md	2026-10-17 19:51:26.503050104 +0800
-+++ v2_test_fix1/validation/VALIDATION.md	2026-10-17 20:14:40.792734947 +0800
++++ v2_modify/validation/VALIDATION.md	2026-10-17 20:14:40.792734947 +0800
 @@ -111,3 +111,50 @@
  - 未验证 `worker_app` 的符号、Build ID、frame pointer、启动参数。
  - 未打开 Perfetto UI 查看本次采集结果；未生成截图/曲线。
@@ -1620,9 +1620,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +- 未上板；未运行真实 tracebox/survey/heapprofd/perf。
 +- 未验证 C2 producer 注册与 SIGINT flush 的真实时序。
 +- 未验证 `worker_app` trace、符号、UI、性能因果。
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/TEST_RECORD.md v2_test_fix1/validation/tests/TEST_RECORD.md
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/TEST_RECORD.md v2_modify/validation/tests/TEST_RECORD.md
 --- v2_test/validation/tests/TEST_RECORD.md	1970-01-01 08:00:00.000000000 +0800
-+++ v2_test_fix1/validation/tests/TEST_RECORD.md	2026-10-17 20:18:39.958227476 +0800
++++ v2_modify/validation/tests/TEST_RECORD.md	2026-10-17 20:18:39.958227476 +0800
 @@ -0,0 +1,210 @@
 +# 修正版测试记录
 +
@@ -1834,9 +1834,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +- 未验证 v57.1 descriptor。
 +- 未验证 `worker_app` 的真实 trace、符号、UI。
 +- 未证明任何性能因果关系。
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/bucket_overlap_old_vs_new.sql v2_test_fix1/validation/tests/bucket_overlap_old_vs_new.sql
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/bucket_overlap_old_vs_new.sql v2_modify/validation/tests/bucket_overlap_old_vs_new.sql
 --- v2_test/validation/tests/bucket_overlap_old_vs_new.sql	1970-01-01 08:00:00.000000000 +0800
-+++ v2_test_fix1/validation/tests/bucket_overlap_old_vs_new.sql	2026-10-17 20:13:48.409815882 +0800
++++ v2_modify/validation/tests/bucket_overlap_old_vs_new.sql	2026-10-17 20:13:48.409815882 +0800
 @@ -0,0 +1,30 @@
 +-- Demonstrates the old vs fixed bucket attribution for a 90 ms interval
 +-- starting at 95 ms. OLD: all 90 ms is charged to bucket 0. FIXED: 5 ms in
@@ -1868,9 +1868,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +UNION ALL
 +SELECT 'FIXED', bucket, new_ms FROM new_attribution
 +ORDER BY logic, bucket;
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/bucket_overlap_test.sql v2_test_fix1/validation/tests/bucket_overlap_test.sql
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/bucket_overlap_test.sql v2_modify/validation/tests/bucket_overlap_test.sql
 --- v2_test/validation/tests/bucket_overlap_test.sql	1970-01-01 08:00:00.000000000 +0800
-+++ v2_test_fix1/validation/tests/bucket_overlap_test.sql	2026-10-17 20:07:39.258625235 +0800
++++ v2_modify/validation/tests/bucket_overlap_test.sql	2026-10-17 20:07:39.258625235 +0800
 @@ -0,0 +1,69 @@
 +-- Synthetic test for the interval/bucket intersection used by sql/10 and 11.
 +-- Intervals are in ns; buckets are 100 ms.
@@ -1941,9 +1941,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +FROM overlapped
 +GROUP BY name, dur
 +ORDER BY name;
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/jitter_cycles_counterexample.sql v2_test_fix1/validation/tests/jitter_cycles_counterexample.sql
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/jitter_cycles_counterexample.sql v2_modify/validation/tests/jitter_cycles_counterexample.sql
 --- v2_test/validation/tests/jitter_cycles_counterexample.sql	1970-01-01 08:00:00.000000000 +0800
-+++ v2_test_fix1/validation/tests/jitter_cycles_counterexample.sql	2026-10-17 20:07:53.270538814 +0800
++++ v2_modify/validation/tests/jitter_cycles_counterexample.sql	2026-10-17 20:07:53.270538814 +0800
 @@ -0,0 +1,80 @@
 +-- Counterexample for sql/20-jitter-cycles.sql.
 +-- Seven 1 s buckets:
@@ -2025,9 +2025,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +SELECT
 +  (SELECT COUNT(*) FROM old_episodes) AS old_episode_count,
 +  (SELECT COUNT(*) FROM fixed_episodes) AS fixed_episode_count;
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/perf_window_guard_test.sql v2_test_fix1/validation/tests/perf_window_guard_test.sql
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/perf_window_guard_test.sql v2_modify/validation/tests/perf_window_guard_test.sql
 --- v2_test/validation/tests/perf_window_guard_test.sql	1970-01-01 08:00:00.000000000 +0800
-+++ v2_test_fix1/validation/tests/perf_window_guard_test.sql	2026-10-17 20:08:00.018506997 +0800
++++ v2_modify/validation/tests/perf_window_guard_test.sql	2026-10-17 20:08:00.018506997 +0800
 @@ -0,0 +1,32 @@
 +-- Guard test for sql/16a-perf-window-check.sql.
 +-- Windows are relative to this trace's trace_bounds.start_ts.
@@ -2061,9 +2061,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +  END AS window_check
 +FROM windows
 +ORDER BY name;
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/real_trace_overlap_test.sql v2_test_fix1/validation/tests/real_trace_overlap_test.sql
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/real_trace_overlap_test.sql v2_modify/validation/tests/real_trace_overlap_test.sql
 --- v2_test/validation/tests/real_trace_overlap_test.sql	1970-01-01 08:00:00.000000000 +0800
-+++ v2_test_fix1/validation/tests/real_trace_overlap_test.sql	2026-10-17 20:07:47.374576227 +0800
++++ v2_modify/validation/tests/real_trace_overlap_test.sql	2026-10-17 20:07:47.374576227 +0800
 @@ -0,0 +1,42 @@
 +-- Real-trace regression for the bucket intersection (sql/10 formula).
 +-- This does NOT use worker_app data; it uses any trace containing sched
@@ -2107,9 +2107,9 @@ diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2
 +FROM overlapped
 +GROUP BY id, ts, dur
 +ORDER BY ts;
-diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/shell_lifecycle_dryrun.sh v2_test_fix1/validation/tests/shell_lifecycle_dryrun.sh
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/shell_lifecycle_dryrun.sh v2_modify/validation/tests/shell_lifecycle_dryrun.sh
 --- v2_test/validation/tests/shell_lifecycle_dryrun.sh	1970-01-01 08:00:00.000000000 +0800
-+++ v2_test_fix1/validation/tests/shell_lifecycle_dryrun.sh	2026-10-17 20:18:16.530128841 +0800
++++ v2_modify/validation/tests/shell_lifecycle_dryrun.sh	2026-10-17 20:18:16.530128841 +0800
 @@ -0,0 +1,108 @@
 +#!/bin/sh
 +# Host-side dry run for the remote lifecycle scripts. No board, no real
