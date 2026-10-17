@@ -1,0 +1,18 @@
+# Illustrative fixture, NOT a target capability survey.
+kmem:rss_stat
+sched:sched_switch
+sched:sched_process_exit
+sched:sched_process_free
+vmscan:mm_vmscan_direct_reclaim_begin
+vmscan:mm_vmscan_direct_reclaim_end
+compaction:mm_compaction_begin
+compaction:mm_compaction_end
+cma:cma_alloc_start
+cma:cma_alloc_finish
+cma:cma_alloc_busy_retry
+cma:cma_release
+oom:mark_victim
+oom:oom_score_adj_update
+raw_syscalls:sys_enter
+raw_syscalls:sys_exit
+lowmemorykiller:lowmemory_kill

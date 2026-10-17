@@ -1,0 +1,71 @@
+# REFERENCE ONLY: target names/events must be regenerated from the actual device.
+# Generated recipe; validate with the COLLECTOR version before deployment.
+# Durations/polling: ms. Buffers: KiB. Heap sampling: bytes.
+# Budget includes buffers + per-CPU ftrace + heapprofd shmem + output files.
+
+buffers { size_kb: 8192 fill_policy: RING_BUFFER }
+
+buffers { size_kb: 4096 fill_policy: DISCARD }
+
+buffers { size_kb: 65536 fill_policy: DISCARD }
+
+duration_ms: 30000
+
+data_sources {
+  config {
+    name: "linux.process_stats"
+    target_buffer: 1
+    process_stats_config {
+      scan_all_processes_on_start: true
+      proc_stats_poll_ms: 1000
+    }
+  }
+}
+
+data_sources {
+  config {
+    name: "linux.sys_stats"
+    target_buffer: 0
+    sys_stats_config {
+      meminfo_period_ms: 1000
+      meminfo_counters: MEMINFO_MEM_TOTAL
+      meminfo_counters: MEMINFO_MEM_FREE
+      meminfo_counters: MEMINFO_MEM_AVAILABLE
+      meminfo_counters: MEMINFO_BUFFERS
+      meminfo_counters: MEMINFO_CACHED
+      meminfo_counters: MEMINFO_ANON_PAGES
+      meminfo_counters: MEMINFO_SHMEM
+      meminfo_counters: MEMINFO_SLAB
+      meminfo_counters: MEMINFO_SWAP_TOTAL
+      meminfo_counters: MEMINFO_SWAP_FREE
+      meminfo_counters: MEMINFO_CMA_TOTAL
+      meminfo_counters: MEMINFO_CMA_FREE
+      vmstat_period_ms: 1000
+      vmstat_counters: VMSTAT_NR_FREE_PAGES
+      vmstat_counters: VMSTAT_PGFAULT
+      vmstat_counters: VMSTAT_PGMAJFAULT
+      vmstat_counters: VMSTAT_PSWPIN
+      vmstat_counters: VMSTAT_PSWPOUT
+    }
+  }
+}
+
+data_sources {
+  config {
+    name: "android.java_hprof"
+    target_buffer: 2
+    java_hprof_config {
+      process_cmdline: "com.example.app"
+      dump_smaps: true
+      continuous_dump_config { dump_interval_ms: 5000 }
+    }
+  }
+}
+
+data_sources {
+  config {
+    name: "android.packages_list"
+    target_buffer: 1
+
+  }
+}
