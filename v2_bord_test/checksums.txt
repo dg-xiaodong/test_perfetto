@@ -1,20 +1,20 @@
 # checksums.txt — perfetto-memory-debugging v1.0.2 RC X5 smoke test (published copy)
-# generated: 2026-10-17T14:02:34Z
-# NOTE: text files in this copy are sanitized (board IP / host paths / hostname);
+# generated: 2026-10-17T14:21:17Z
+# NOTE: text files are sanitized where published (board IP / host paths / hostname);
 #       .pftrace files are raw, unmodified collector output and keep their capture hashes.
 
 ## frozen revision
 repository            https://github.com/dg-xiaodong/test_perfetto
 commit                0fa17e08eb8b93a9944232e380c7ddb39666fcf2
-expected_tag          perfetto-memory-debugging-v1.0.2-rc1 (NOT present on remote; UNKNOWN)
+rc_tag                perfetto-memory-debugging-v1.0.2-rc1 (annotated, tag object 96dc8099615ad8520a041620d335da7fb7346287, peels to the commit above)
 candidate_dir         v2_modify/candidate-v1.0.2/
 manifest_verify       ok=77 missing=0 mismatch=0
 
-## artifact SHA-256 (published sanitized copies)
-skill_md_sha256       9f8f3a5677178fbc6099e16bfbf80668fe6c6dd1a82ffa9d377239f8c19f1521  SKILL.md (frozen)
+## frozen artifact identities
 manifest_sha256       6503943043a7a922bf31fbbf0e9175f7247056ef52c15de25007d0181572a719  MANIFEST.json (frozen)
+skill_md_sha256       9f8f3a5677178fbc6099e16bfbf80668fe6c6dd1a82ffa9d377239f8c19f1521  SKILL.md (frozen)
 
-## deployed collector (board)
+## deployed collector (board-side binaries, not in this repository)
 58f44bbb430d1bf955a5216e2660cc45c03d877c0cba6a01c53307caee8c57f3  <SDK_ARM64>/tracebox
 d8fde29ca20fb0398a6002ffa9b9523653d2ef2c03ed757d23e0d57bf7c417c1  <SDK_ARM64>/libheapprofd_glibc_preload.so
 
@@ -52,6 +52,7 @@ d3811146311d2e77563e86187a983adb59e4b1325d23189973a6a16eb0eb6b54  checksums/coll
 e7eb42851a84ed53bc062fdb3f806fe73f47e16a749c37f07785281467e575d7  logs/board_cleanup.txt
 80f656b4c710a035ff1b19e1fed60dd520685e04f68b0923b092b24aeb065753  logs/board_environment_final.txt
 b72695fcb3e2889d64484497e2ea8079822f1532c2505f226cde970957bedf7d  logs/candidate_unit_tests.log
+0e8e24ce20f81722578e2d8ece21cf6f454746c4962102024be207ee14536677  logs/candidate_unittest.log
 0298439cd3c6ead3d24fb2617f5d0ac1a33e1012dc16b0e3f925007816e358ab  logs/host_environment.txt
 50bed20884b0878bcee2cc9930c4cd6fd524b1d759dac61d83bf5845878316c6  logs/make_config_s1.stderr
 50bed20884b0878bcee2cc9930c4cd6fd524b1d759dac61d83bf5845878316c6  logs/make_config_s2.stderr
@@ -100,7 +101,8 @@ a11e676e4f8e2e9872a45eab26c3e4efdc5e588dae529ea8b8d22af69345441c  sql_out/s2_04-
 51cdacc5efac062faaf5562648f9093bc2e016670b3d8d2e56f032efb4c0d5bd  sql_out/s2_sql00_full.txt
 
 ## this report set
-caaad3f78a991becb9a3fc360cc3cb87573bcc3378a3a3bdb50a18d337219840  SMOKE_REPORT.md
+765003a0b630e100ce431cf4229afaa8ef660eb330f66d8e81852a37df02d9ad  README.md
+e409ac4637c7af95166ad02964cd2b1731a66409401304c80979eda8cfb635f4  SMOKE_REPORT.md
 0d4065d1d1b4ae2136d157c62827935cca14d746170a4384227ac96e3402cecb  ENVIRONMENT.md
-2c2d420d2ca0f35919b3addb1d64cc594e0d75fd91da4a3a64f552b1f6c169ae  COMMANDS.md
-137310104132870cb6af61f91e17233e35507492930bf0531c24bd67d93a7888  README.md
+47da9edc01b66e8c56bd24b3166230df2879d09e2fe616e388673e4b385ceafc  COMMANDS.md
+2ac10704ba91722f739b31c2bb6048aa55f9fee58f4c7ebc512fb1d2d568b8b7  DATA_CLEANUP_PLAN.md

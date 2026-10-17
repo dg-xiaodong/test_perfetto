@@ -112,7 +112,7 @@ UI flamegraph: **not opened** (no browser / Perfetto UI in this environment) →
 | 6.5 | board `touch /data/smoke102/work/empty_probe.bin`; host pull `empty_probe.bin` → `PULL FAIL: ... missing or empty` | 1 |
 | 6.6 | host `cp -a <candidate> hostwork/candidate_copy_missing_resource && rm .../sql/12-cpu-spike-episodes.sql`; `python3 .../validate_config.py --check-resources` → `[UNKNOWN] resources: cannot complete resource check: sql/12-cpu-spike-episodes.sql` | 2 |
 | 6.7 | host `python3 scripts/validate_config.py --check-resources` (intact candidate) → `[PASS] resources: 33 required files + 10 configs readable` | 0 |
-| 6.8 | host `python3 -m pytest tests -q` | 1 (no module pytest → UNKNOWN, not a candidate failure) |
+| 6.8 | host `python3 -m unittest discover -s tests -v` (in the frozen candidate; `PYTHONDONTWRITEBYTECODE=1`) → `Ran 76 tests ... OK` | 0 |
 
 ## 7. Cleanup
 
@@ -138,3 +138,18 @@ python3 $CAND/scripts/make_config.py native --platform linux --process memprobe 
 # 2) deploy tracebox+preload+scripts (see §3), run sessions (see §4/§5)
 # 3) analyze with TP v58.2 (see §4.10-4.12, §5.12-5.15)
 ```
+
+## 9. Delivery wrap-up (after the smoke test; no re-run of S1/S2/S3)
+
+| # | Command | Exit |
+|---|---|---|
+| 9.1 | `git ls-remote --tags origin` → **no tags** at wrap-up start | 0 |
+| 9.2 | `git tag -a perfetto-memory-debugging-v1.0.2-rc1 0fa17e08eb8b93a9944232e380c7ddb39666fcf2 -m "..."` | 0 |
+| 9.3 | `git push origin refs/tags/perfetto-memory-debugging-v1.0.2-rc1` → `[new tag]` | 0 |
+| 9.4 | `git ls-remote --tags origin` → `96dc8099... refs/tags/...-rc1` and `0fa17e08... refs/tags/...-rc1^{}` (annotated tag peels to frozen commit; no pre-existing tag moved) | 0 |
+| 9.5 | host `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v` (candidate) → 76 tests, OK; log `logs/candidate_unittest.log`; candidate tree stays clean (0 pycache) | 0 |
+| 9.6 | added `DATA_CLEANUP_PLAN.md`; corrected `SMOKE_REPORT.md` §0/§1/§4/§7/§10 (status separation, tag state, unittest, public trace handling) | 0 |
+| 9.7 | `git add -f v2_bord_test && git commit ... && git push origin main` | 0 |
+
+Note: the candidate's test suite is `unittest`-based; `pytest` is not a
+dependency and its absence on the host must not be read as a Skill defect.

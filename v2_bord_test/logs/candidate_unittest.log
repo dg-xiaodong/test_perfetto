@@ -1,0 +1,88 @@
+test_art_snapshot_scope (test_accounting.AccountingTests) ... ok
+test_display_window_keeps_prefix_baseline (test_accounting.AccountingTests) ... ok
+test_native_callstacks_scope_and_window (test_accounting.AccountingTests) ... ok
+test_native_live_signed_and_scoped (test_accounting.AccountingTests) ... ok
+test_negative_upid_template_does_not_analyze_wrong_process (test_accounting.AccountingTests) ... ok
+test_rss_absolute_counter_not_sum (test_accounting.AccountingTests) ... ok
+test_all_recipes_generate_balanced_configs (test_config.ConfigTests) ... ok
+test_android_version_gates (test_config.ConfigTests) ... ok
+test_art_alloc_heap (test_config.ConfigTests) ... ok
+test_art_only_android (test_config.ConfigTests) ... ok
+test_bad_values_and_injection (test_config.ConfigTests) ... ok
+test_cma_is_ftrace_not_datasource (test_config.ConfigTests) ... ok
+test_event_normalization (test_config.ConfigTests) ... ok
+test_generator_exists (test_config.ConfigTests) ... ok
+test_graph_periodic (test_config.ConfigTests) ... ok
+test_kernel_empty_events_rejected (test_config.ConfigTests) ... ok
+test_lmk_selects_available_events (test_config.ConfigTests) ... ok
+test_mmap_gates_and_arch (test_config.ConfigTests) ... ok
+test_native_requires_target (test_config.ConfigTests) ... ok
+test_native_sampling_and_buffers (test_config.ConfigTests) ... ok
+test_oome_trigger_not_duration (test_config.ConfigTests) ... ok
+test_overview (test_config.ConfigTests) ... ok
+test_peak_not_continuous (test_config.ConfigTests) ... ok
+test_spike_requires_events (test_config.ConfigTests) ... ok
+test_200ms_does_not_spike_at_150ms (test_cpu_sql.CpuSqlTests) ... ok
+test_350ms_spikes_in_correct_bucket (test_cpu_sql.CpuSqlTests) ... ok
+test_cross_bucket_200ms_is_100_plus_100 (test_cpu_sql.CpuSqlTests) ... ok
+test_negative_upid_returns_nothing (test_cpu_sql.CpuSqlTests) ... ok
+test_quiet_gap_keeps_two_episodes (test_cpu_sql.CpuSqlTests) ... ok
+test_window_clips_interval (test_cpu_sql.CpuSqlTests) ... ok
+test_axis_rows (test_dump_capability.CapabilityTests) ... ok
+test_v571_fallback_without_heap_profile (test_dump_capability.CapabilityTests) ... ok
+test_v582_axis_reports_zero_width (test_dump_capability.CapabilityTests) ... ok
+test_mock_lifecycle_and_pull (test_linux_scripts.LinuxScriptTests) ... ok
+test_shell_syntax (test_linux_scripts.LinuxScriptTests) ... ok
+test_eleven_user_sources (test_package.PackageTests) ... ok
+test_frontmatter (test_package.PackageTests) ... ok
+test_local_markdown_links_exist (test_package.PackageTests) ... ok
+test_no_device_success_claim_in_report (test_package.PackageTests) ... ok
+test_ten_config_assets (test_package.PackageTests) ... ok
+test_generated_target_and_duration_match (test_release_preflight.ReleasePreflightTests) ... ok
+test_target_mismatch_is_rejected (test_release_preflight.ReleasePreflightTests) ... ok
+test_ambiguity_flag (test_targets.CandidateTests) ... ok
+test_path_name_matches_and_counts (test_targets.CandidateTests) ... ok
+test_unresolved_placeholder_is_not_no_allocation (test_targets.CandidateTests) ... ok
+test_user_specified_upid_is_kept (test_targets.CandidateTests) ... ok
+test_at_suffix_normalized (test_validator.PreflightTests) ... ok
+test_binary_dynamic (test_validator.PreflightTests) ... ok
+test_binary_no_phdr_is_unknown (test_validator.PreflightTests) ... ok
+test_binary_not_elf (test_validator.PreflightTests) ... ok
+test_binary_static (test_validator.PreflightTests) ... ok
+test_binary_truncated_elf_is_unknown_not_crash (test_validator.PreflightTests) ... ok
+test_cmdline_inside_string_ignored (test_validator.PreflightTests) ... ok
+test_cmdline_outside_heapprofd_config_unknown (test_validator.PreflightTests) ... ok
+test_comment_is_not_a_field (test_validator.PreflightTests) ... ok
+test_deploy_name_glob_is_unknown (test_validator.PreflightTests) ... ok
+test_deploy_name_match_multiple_targets (test_validator.PreflightTests) ... ok
+test_deploy_name_match_same_line (test_validator.PreflightTests) ... ok
+test_deploy_name_mismatch (test_validator.PreflightTests) ... ok
+test_deploy_name_normalizes_paths (test_validator.PreflightTests) ... ok
+test_deploy_name_not_heapprofd (test_validator.PreflightTests) ... ok
+test_main_exit_codes (test_validator.PreflightTests) ... ok
+test_main_unknown_is_exit_2 (test_validator.PreflightTests) ... ok
+test_nested_block_scope_is_honored (test_validator.PreflightTests) ... ok
+test_new_v102_resources_required (test_validator.PreflightTests) ... ok
+test_resources_complete (test_validator.PreflightTests) ... ok
+test_resources_empty_config_is_not_ok (test_validator.PreflightTests) ... ok
+test_resources_missing (test_validator.PreflightTests) ... ok
+test_similar_field_name_not_matched (test_validator.PreflightTests) ... ok
+test_unbalanced_braces_unknown (test_validator.PreflightTests) ... ok
+test_empty_descriptor (test_validator.ValidatorTests) ... ok
+test_invalid_integer (test_validator.ValidatorTests) ... ok
+test_missing_import (test_validator.ValidatorTests) ... ok
+test_unknown_enum (test_validator.ValidatorTests) ... ok
+test_unknown_field (test_validator.ValidatorTests) ... ok
+test_valid_fixture (test_validator.ValidatorTests) ... ok
+
+----------------------------------------------------------------------
+Ran 76 tests in 29.827s
+
+OK
+[PASS] resources: 33 required files + 10 configs readable
+[NOTE] runtime not verified by preflight: pass/fail above covers only static premises; readiness/injection/stop/flush still need runtime evidence
+[FAIL] deploy-name: launched basename='definitely-not-matching' not in config targets ['memprobe']; heapprofd will not match this process and BLOCKING_INIT may hang
+[NOTE] runtime not verified by preflight: pass/fail above covers only static premises; readiness/injection/stop/flush still need runtime evidence
+[UNKNOWN] nothing to do: pass --descriptor-set and/or --check-resources/--deploy-name/--binary
+[UNKNOWN] deploy-name: no process_cmdline inside heapprofd_config (cannot verify)
+[NOTE] runtime not verified by preflight: pass/fail above covers only static premises; readiness/injection/stop/flush still need runtime evidence

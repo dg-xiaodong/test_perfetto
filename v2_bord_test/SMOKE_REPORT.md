@@ -7,39 +7,48 @@
 - Host analyzer: Perfetto **v58.2**; board collector: tracebox/preload **v57.1**
 - Execution levels used: **board actual** / **host offline (real TP)** / **static check** / **UNKNOWN**
 
-## 0. Final verdict
+## 0. Final status (read this before quoting any result)
 
-**PASS** — all necessary checks of S1/S2/S3 that could be executed passed; no
-code/config/execution defect was found in the frozen candidate. Recorded
-UNKNOWNs (none of them is a silent pass):
+Status categories are deliberately separated; do not conflate them.
 
-1. `perfetto-memory-debugging-v1.0.2-rc1` **tag is not on the remote**; the test
-   pinned the known frozen commit instead (explicitly allowed by the task).
-2. Perfetto UI native-heap flamegraph was **not opened** (no browser/UI in this
-   environment) → UI-level UNKNOWN.
-3. No v57.1 descriptor set was available, so formal schema validation against the
-   **collector** version is UNKNOWN; v58.2 descriptor validation passes only as a
-   supplementary check.
-4. heapprofd **dump timeline** is not analyzable with a v57.1 collector + v58.2
-   analyzer: all raw dumps carry the same timestamp (`dur=0`, 1 visible dump).
-   Data attribution is still valid (see S2).
-5. Full frame symbolization is incomplete (top allocation frames named; libc and
+| State | Result |
+|---|---|
+| **S1/S2/S3 functional smoke test** | **PASS** (necessary checks that could be executed) |
+| Native heap **dump timeline**, complete **symbolization**, **Perfetto UI** | **Not fully verified (UNKNOWN)** |
+| **Real X5 end-to-end** execution | Executed on the live board; evidence in this record |
+| **Official v1.0.2 release / deployment approval** | **Not decided here** — this record is input to a separate formal review |
+
+Functional smoke verdict: **PASS** — no code/config/execution defect was found in
+the frozen candidate. The observation-layer UNKNOWNs below are limitations of the
+collector/analyzer pairing and of this environment, not functional failures:
+
+1. heapprofd **dump timeline** is not analyzable with a v57.1 collector + v58.2
+   analyzer: all raw dumps carry the same internal timestamp (`dur=0`, one
+   visible dump). Data attribution is still valid (see S2).
+2. Full frame symbolization is incomplete (top allocation frames named; libc and
    preload-internal frames unnamed) → deep-stack symbolization UNKNOWN.
+3. Perfetto UI native-heap flamegraph was **not opened** (no browser/UI in this
+   environment) → UI-level UNKNOWN.
+4. No v57.1 descriptor set was available, so formal schema validation against the
+   **collector** version is UNKNOWN; v58.2 descriptor validation is supplementary.
+5. The candidate's unit-test suite uses `unittest` (76/76 pass, see §4); `pytest`
+   is not a dependency, so its absence on the host is not a skill defect.
 
 ## 1. Version freeze verification
 
 | Check | Result | Evidence |
 |---|---|---|
 | Remote repo reachable | PASS | `git ls-remote origin` → `0fa17e08... HEAD`, `0fa17e08... refs/heads/main` |
-| Expected RC tag `perfetto-memory-debugging-v1.0.2-rc1` exists | **UNKNOWN (absent)** | `git ls-remote --tags origin` returned no lines; local clone has no tags either |
+| Expected RC tag `perfetto-memory-debugging-v1.0.2-rc1` | **PASS (created at wrap-up)** | absent during the test (test pinned the commit); at delivery wrap-up an annotated tag was created at `0fa17e08...` and pushed; `git ls-remote --tags` now shows tag object `96dc8099...` peeled to `0fa17e08...`; no existing tag was moved |
 | Frozen commit `0fa17e08...` accessible | PASS | local clone HEAD = `0fa17e08...`, worktree clean (`git status --porcelain` = 0 lines) |
 | Candidate dir = frozen commit | PASS | `v2_modify/candidate-v1.0.2/` is the committed tree at `0fa17e08...` |
 | MANIFEST vs files | PASS | 77/77 files present, **SHA-256 all match** (`MANIFEST.json` lists 77 entries; self and `CHANGES.diff` excluded by design) |
 | Candidate not modified during test | PASS | final `git status --porcelain` = 0 lines; no writes to candidate dir |
 | No moving `main` used | PASS | all runs used the pinned commit; `main` happened to equal it at test time, recorded but not relied on |
 
-Per instruction #4, the missing tag was recorded as UNKNOWN and the test
-continued on the pinned commit. No silent version switch was made.
+During the test the tag was missing, so per instruction #4 the frozen commit was
+pinned and the tag recorded as UNKNOWN; no silent version switch was made. The
+tag was added afterwards at the frozen commit without moving any existing tag.
 
 ## 2. S1 — normal Perfetto trace (board actual + real TP analysis)
 
@@ -142,10 +151,14 @@ stats). Temporal live curve and UI are UNKNOWN, as explicitly allowed.
 | 4a | SCP failure (missing remote file) | PASS | `PULL FAIL: scp root@...:nonexistent_file.bin`, **exit 1** | host actual |
 | 4b | empty file pulled | PASS | `PULL FAIL: .../empty_probe.bin missing or empty`, **exit 1** | host actual |
 | 5 | missing skill resource → `--check-resources` non-success | PASS | copy of candidate with `sql/12-cpu-spike-episodes.sql` removed → `[UNKNOWN] resources: cannot complete resource check: sql/12-cpu-spike-episodes.sql`, **exit 2**; intact candidate → `[PASS] resources: 33 required files + 10 configs readable`, exit 0 | static, offline |
-| — | candidate's own pytest suite | **UNKNOWN** | `python3 -m pytest tests -q` → `No module named pytest` (exit 1) on the host; not a candidate failure | host |
+| — | candidate's own unit-test suite (`unittest`) | PASS | `python3 -m unittest discover -s tests -v` → **Ran 76 tests … OK** (76 `ok`), matching MANIFEST `local_unit_tests_passed: 76`; log: `logs/candidate_unittest.log`. `pytest` is not used by the candidate and is not required | host (frozen copy) |
 
 Minor observations (not failures, no action taken):
 
+- The candidate's test suite is plain `unittest` (9 test files import
+  `unittest`, no `pytest` imports). Running it via `unittest discover` is the
+  supported path; missing `pytest` on the host is an environment fact, not a
+  Skill defect.
 - `--check-resources` reports a missing file as `[UNKNOWN]` with exit 2 rather
   than `[FAIL]` with exit 1. It is still non-success and names the missing file,
   which satisfies the requirement; the label/exit-code split is a polish item.
@@ -182,9 +195,9 @@ as PASS.
 
 ## 7. Minimal fix suggestions (no frozen code changed)
 
-1. **Release process**: push `perfetto-memory-debugging-v1.0.2-rc1` to
-   `0fa17e08...` (or publish an equivalent annotated tag). Until then the tag is
-   UNKNOWN and only the commit is verifiable.
+1. **Release process**: done at delivery wrap-up — annotated tag
+   `perfetto-memory-debugging-v1.0.2-rc1` was created and pushed at
+   `0fa17e08...`; no existing tag was moved.
 2. **Collector/analyzer pairing**: for heapprofd timelines, the v57.1 collector
    in this build does not advance per-dump timestamps; v58.2 then shows one `dur=0` dump. This
    is a collector-version limitation already documented by `sql/10` and
@@ -224,4 +237,21 @@ as PASS.
 - `bin/scp` — test-harness wrapper used only to make the frozen `host_pull.sh`
   run on a password-auth board (documented above)
 
-No `.pftrace` is being uploaded anywhere; traces stay in this test record.
+## 10. Public data / trace handling
+
+This record lives in the **public** repository `dg-xiaodong/test_perfetto`
+(verified via the anonymous GitHub API: `private=false`). The repository
+therefore contains raw `.pftrace` files:
+
+- **5 traces from this smoke test** under `v2_bord_test/hostwork/captures/`,
+  published on explicit owner instruction at delivery time (the request to push
+  the test results and pftrace files to `v2_bord_test/`), commit `7e72856`;
+- **2 pre-existing traces** under `x5_heapprofd_traces/`, already present in the
+  frozen commit `0fa17e08...` and added earlier by the repository owner in commit
+  `3dcef36`.
+
+No credentials (passwords / private keys) are present in this record. The raw
+traces contain device paths and process command lines by nature of the format.
+Authorization status per file group, the exposure boundary, and the full
+history-cleanup procedure are documented in **`DATA_CLEANUP_PLAN.md`**. Deleting
+the current directory alone does **not** remove these blobs from Git history.
