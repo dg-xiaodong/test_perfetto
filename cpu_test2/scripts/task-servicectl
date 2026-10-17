@@ -1,0 +1,120 @@
+#!/bin/sh
+# task-service control script (RDK X5, buildroot sysvinit)
+#
+#   task-servicectl start|stop|restart|status|enable-autostart|disable-autostart|logs
+#
+# Only this instance's own pidfile and paths are ever touched; there is no
+# wildcard deletion and no global pkill.
+set -u
+
+BASE=/userdata/cpu-lab
+RUN=$BASE/run
+LOGS=$BASE/logs
+BIN=$BASE/bin/task-service
+PIDFILE=$RUN/task-service.pid
+MARKER=$BASE/autostart.disabled
+STDOUT_LOG=$LOGS/stdout.log
+
+# Two CPUs were confirmed suitable on this board (see GROUND_TRUTH.md):
+# homogeneous Cortex-A55, lowest interrupt load, not used by cam-service.
+CPU_A=${TASK_SERVICE_CPU_A:-6}
+CPU_B=${TASK_SERVICE_CPU_B:-7}
+
+running_pid() {
+    [ -f "$PIDFILE" ] || return 1
+    pid=$(cat "$PIDFILE" 2>/dev/null)
+    [ -n "${pid:-}" ] || return 1
+    [ -d "/proc/$pid" ] || return 1
+    # make sure the pid really is our binary and not a recycled pid
+    if [ -r "/proc/$pid/cmdline" ]; then
+        tr '\0' ' ' < "/proc/$pid/cmdline" | grep -q "task-service" || return 1
+    fi
+    echo "$pid"
+    return 0
+}
+
+do_start() {
+    if pid=$(running_pid); then
+        echo "task-service already running (pid $pid)"
+        return 0
+    fi
+    [ -x "$BIN" ] || { echo "task-service binary missing: $BIN" >&2; return 1; }
+    mkdir -p "$LOGS" "$RUN"
+    setsid "$BIN" --cpu-a "$CPU_A" --cpu-b "$CPU_B" >>"$STDOUT_LOG" 2>&1 &
+    launched=$!
+    # bounded wait for the pidfile + the lock to be taken (single instance)
+    i=0
+    while [ $i -lt 50 ]; do
+        if pid=$(running_pid); then
+            echo "task-service started (pid $pid, cpus $CPU_A,$CPU_B)"
+            return 0
+        fi
+        sleep 0.1
+        i=$((i + 1))
+    done
+    echo "task-service failed to start within 5s (see $STDOUT_LOG)" >&2
+    return 1
+}
+
+do_stop() {
+    if ! pid=$(running_pid); then
+        echo "task-service not running"
+        rm -f "$PIDFILE"
+        return 0
+    fi
+    kill -TERM "$pid" 2>/dev/null || true
+    i=0
+    while [ $i -lt 100 ]; do
+        [ -d "/proc/$pid" ] || break
+        sleep 0.1
+        i=$((i + 1))
+    done
+    if [ -d "/proc/$pid" ]; then
+        echo "task-service (pid $pid) ignored SIGTERM for 10s, sending SIGKILL" >&2
+        kill -KILL "$pid" 2>/dev/null || true
+        sleep 0.5
+    fi
+    rm -f "$PIDFILE"
+    echo "task-service stopped"
+    return 0
+}
+
+do_status() {
+    if pid=$(running_pid); then
+        nthreads=$(ls "/proc/$pid/task" 2>/dev/null | wc -l)
+        stat=$(tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null)
+        echo "state : running"
+        echo "pid   : $pid"
+        echo "cmd   : $stat"
+        echo "threads: $nthreads"
+        st=$(awk '{print $22}' "/proc/$pid/stat" 2>/dev/null)
+        now=$(cut -d' ' -f1 /proc/uptime)
+        if [ -n "$st" ]; then
+            echo "uptime: $(awk -v n="$now" -v s="$st" 'BEGIN{printf "%d s", n - s/100}')"
+        fi
+        grep -E "^(VmRSS|VmHWM):" "/proc/$pid/status" 2>/dev/null | sed 's/^/mem   : /'
+    else
+        echo "state : stopped"
+    fi
+    if [ -f "$MARKER" ]; then
+        echo "autostart: disabled ($MARKER present)"
+    else
+        echo "autostart: enabled (/userdata/startup.sh -> task-servicectl start)"
+    fi
+    echo "logs  : $LOGS/requests.jsonl  $LOGS/service.log"
+    echo "binary: $BIN"
+}
+
+case "${1:-}" in
+    start)             do_start ;;
+    stop)              do_stop ;;
+    restart)           do_stop; do_start ;;
+    status)            do_status ;;
+    enable-autostart)  rm -f "$MARKER"; echo "autostart enabled" ;;
+    disable-autostart) : > "$MARKER"; echo "autostart disabled ($MARKER present)" ;;
+    logs)              ls -l "$LOGS" ;;
+    *)
+        echo "usage: $0 {start|stop|restart|status|enable-autostart|disable-autostart|logs}"
+        exit 1
+        ;;
+esac

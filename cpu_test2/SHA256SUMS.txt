@@ -1,0 +1,4 @@
+c48922e484cc96419b66851373a74aefea5bda02096761208a5bd6cf96ec37e1  ./RUNNING_BRIEF.md
+a263a0d4ee49cb69fe0b059061d51a2e4097ab8dfe783dc972bd7502387d3a99  ./artifacts/task-service
+36f9495054e655f61e3ec177bad8ddfac7caebffbbc2ca40159b95c7ae040a49  ./scripts/startup.sh
+bca154d4a7ac0daacd3d399f50219d88e193049230e0ef463028bc94159e5e59  ./scripts/task-servicectl
