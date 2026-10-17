@@ -1,0 +1,27 @@
+Command: sh validation/tests/shell_lifecycle_dryrun.sh
+== C2 lifecycle dry run ==
+C2 started tracebox_pid=19
+C2 started app_pid=26
+C2 heapprofd producer visible
+C2 DONE size_bytes=11
+PASS: C2 lifecycle, trace non-empty
+== C1/C3 completion dry run ==
+C1 started tracebox_pid=226
+C1 DONE size_bytes=21
+C3 started tracebox_pid=240
+C3 DONE size_bytes=21
+PASS: C1/C3 completion, non-empty outputs
+== remote_stop dry run ==
+STOP OK: C1 size_bytes=21
+STOP FAIL: missing /tmp/perfetto-lifecycle.clFDIY/work/MISSING.pid
+PASS: missing pid propagated
+== host_pull success ==
+PULL OK: C1.pftrace size=21 sha256=5b45f84547811ccace568e462f7a256a9b22dae65cdc953b2820c4bd06f17b8a
+PASS: pull success
+== host_pull missing file ==
+fake scp: no such file
+PULL FAIL: scp fakeboard:/tmp/perfetto-lifecycle.clFDIY/work/MISSING.pftrace
+PASS: pull failure propagated
+== host_pull empty file ==
+PULL FAIL: /tmp/perfetto-lifecycle.clFDIY/pull/EMPTY.pftrace is missing or empty
+PASS: empty file rejected

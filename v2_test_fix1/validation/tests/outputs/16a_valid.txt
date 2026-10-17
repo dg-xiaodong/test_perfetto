@@ -1,0 +1,12 @@
+Command: 16a with valid offsets (1000/2000/3000/4000 ms)
+Loading trace: 0.00 MBLoading trace: 1.09 MB[006.936]     common_flags.cc:525 Trace loaded: 1.09 MB in 0.05s (22.4 MB/s)
+
+
+Trace health issues:
+
+  Import errors
+    slice_max_depth_exceeded: 11120 | A slice was dropped because the slice nesting depth exceeded the max supported limit.
+
+[006.936]            query.cc:191 Query execution time: 0 ms
+"start_ts","end_ts","spike_start_ts","spike_end_ts","quiet_start_ts","quiet_end_ts","window_check"
+133248075771,145240532694,134248075771,135248075771,136248075771,137248075771,"OK"

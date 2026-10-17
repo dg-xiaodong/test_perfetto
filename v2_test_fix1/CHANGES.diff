@@ -1,0 +1,2221 @@
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/PLAN.md v2_test_fix1/PLAN.md
+--- v2_test/PLAN.md	2026-10-17 19:51:40.567547411 +0800
++++ v2_test_fix1/PLAN.md	2026-10-17 20:18:46.011500361 +0800
+@@ -1,6 +1,10 @@
+ # RDK X5 `worker_app`：Perfetto 调试与分析方案
+ 
+-> 方案只做设计与静态验证，未连接开发板、未修改业务程序、未采集任何真实 trace。
++> **版本：v2_test_fix1（首轮 v2_test 的范围受限修正）**
++> 首轮 `v2_test/` 原样保留；本版只修明确列出的 7 项确定性问题及直接关联内容。
++> 这不是新的盲测成绩，不把修正后的表现冒充首轮首次交付质量。
++>
++> 方案只做设计与静态/离线验证，未连接开发板、未修改业务程序、未采集任何真实 trace。
+ > 文中所有“预期/待验证”均未标注为已实测结果。
+ 
+ ## 0. Skill 加载记录
+@@ -67,6 +71,17 @@
+ - `linux.perf`：CPU 采样调用栈；回答“CPU 花在哪”，不回答“分配了多少”；需要 `perf_event_open` 权限、符号/展开信息。
+ - `mmap/munmap/brk/madvise` syscall：只覆盖分配器的 backing/直接映射；glibc tcache 的小对象临时分配通常不产生这些 syscall，因此不能拿它替代 heapprofd。
+ 
++### 2.3 heapprofd count 的采样估计语义
++
++- `heap_profile_allocation.count` / `size` 是**随机字节采样后的估计值**，不是精确
++  malloc/free 调用次数或精确字节数；`Total Malloc Count` 也是估计，不是逐调用日志。
++- 分析表的 `count` 已经过采样估计处理，**不要**再乘 `sampling_interval_bytes`。
++- `Unreleased` 是追踪范围内“分配未配对释放”的估计，不是 RSS；高 `Total` 只说明
++  分配流量活跃，不能单独证明 CPU 开销或延迟。
++- heapprofd 和 `linux.perf` 都**不记录业务级延迟**。业务延迟必须来自独立证据：
++  应用日志/打点、`trace_marker`、业务帧/请求时间戳，或与这些事件同 trace 的标记。
++  `thread_state` 的 runnable/D 状态只是系统级等待代理，不能冒充业务处理延迟。
++
+ ## 3. TraceConfig
+ 
+ 三个配置均位于 `configs/`。已用本地 v58.2 源码生成的 descriptor 做静态 schema 校验（PASS）；**未做 v57.1 descriptor 校验，也未在板端解析**。
+@@ -98,7 +113,9 @@
+ - `shmem_size_bytes: 8388608`：默认 8 MiB；高频分配若溢出，`block_client:false` 会提前停止或丢数据，需用 stats/log 判读，必要时升到 16/32 MiB。
+ - `block_client: false`：不把 profiler 压力变成目标线程阻塞；代价是可能丢数据/提前结束。
+ - `continuous_dump_config`：`dump_phase_ms:500`、`dump_interval_ms:2000`；2 s 快照与“几秒一次”抖动同量级。若周期约 3 s，可改 1000 ms 以获得相位分辨率，但 trace 更大。
+-- `duration_ms: 45000`：包含测试进程在 preload 下的启动时间。
++- `duration_ms: 90000`：只是安全上限，不是观测时长。`remote_c2.sh` 在
++  producer 注册、`OBSERVE_S` 观测、停止 app 和 flush 后主动 SIGINT；90 s 让
++  “服务等待 + app 启动 + 30 s 观测 + 停止/ flush”不会先撞上 duration 上限。
+ - **重要版本事实**：v57.1 采集端不发 `ProfilePacket.ProcessHeapSamples.start_timestamp`，v58.2 TP 上常见 `heap_profile.dur = 0`。这不等于采集失败，只意味着“精确持有区间”不可判；总量、分配/释放、dump 数仍可判。用 `sql/10-native-dump-capability.sql` 检查，不要用 `dur=0` 否定总量结论。
+ 
+ ### 3.3 C3：CPU 调用栈归因
+@@ -116,53 +133,83 @@
+ 
+ ## 4. 主机与板端操作
+ 
+-> 以下命令是执行稿，未在本次会话运行。`BOARD`、`WORK`、`APP_DIR`、`APP_ARGS` 填入真实值。所有写入只落 `/data`；不关闭 SELinux、不改 sysctl、不清缓存、不杀别人的 tracing。
++> **修正版 r1 重点**：首轮稿里 `$TRACEBOX` 未定义、SSH 双引号让 `$!`/`$(cat ...)`
++> 在主机侧展开。本版把板端动作收进 `scripts/remote_*.sh`，由板端 shell 自己解析
++> 变量；主机只负责 scp/ssh/等待/拉回。以下命令仍未在本次会话上板执行。
++
++### 4.1 变量与执行位置
++
++| 变量 | 定义/展开位置 | 说明 |
++|---|---|---|
++| `BOARD` | 主机 | `ssh`/`scp` 目标，如 `root@192.168.1.10` |
++| `HOST` | 主机 | 本地结果目录，如 `$PWD/output` |
++| `WORK` | **板端** | `/data/perfetto-worker`；由 remote 脚本使用 |
++| `TRACEBOX` | **板端** | remote_lib.sh 用 `command -v tracebox` 或 `/data/tracebox` 解析；**主机不定义** |
++| `APP_DIR` | **板端** | C2 测试程序工作目录（绝对路径） |
++| `APP_CMD` | **板端** | C2 测试程序/包装脚本（绝对路径，动态链接） |
++| `APP_ARGS` | **板端** | C2 可选参数，单个字符串，按空白拆分 |
++| `OBSERVE_S` | **板端** | C2 观测秒数，默认 30 |
++
++规则：
++
++- 远程命令里不要出现需要板端展开的 `$!`、`$?`、`$(...)`、`$TRACEBOX`。
++- 主机变量只用于拼绝对路径，并显式作为参数/环境传给 remote 脚本。
++- `remote_lib.sh` 在板端执行；它负责 `WORK`、`TRACEBOX`、PID、超时、SIGINT/flush。
++- 失败即停：任何 remote 脚本非 0 退出，都不得继续“拉回并宣称成功”。
+ 
+-### 4.1 预检（只读）
++反例（首轮的错误形态，不要使用）：
++
++```bash
++# 主机侧 $! 会被立即展开；$TRACEBOX 在主机未定义
++ssh "$BOARD" "cd $WORK && $TRACEBOX ... --background & echo $! > app.pid"
++```
++
++### 4.2 准备（主机 → 板端）
+ 
+ ```bash
+ BOARD=root@<x5-ip>
+ WORK=/data/perfetto-worker
+-HOST=$PWD   # 在 v2_test/ 目录执行
++HOST=$PWD/output
++TP=/path/to/trace_processor_shell        # 主机 v58.2
++mkdir -p "$HOST"
++
+ ssh "$BOARD" "mkdir -p $WORK"
+-scp ../v1_modify/candidate-v1.0.1/scripts/survey.sh "$BOARD:$WORK/"
+-ssh "$BOARD" "sh $WORK/survey.sh" > "$HOST/survey.txt"
+-ssh "$BOARD" "sh $WORK/survey.sh --events" > "$HOST/available_events.txt"
++scp configs/*.pbtxt "$BOARD:$WORK/"
++scp scripts/remote_lib.sh scripts/remote_c1.sh scripts/remote_c2.sh \
++    scripts/remote_c3.sh scripts/remote_stop.sh "$BOARD:$WORK/"
++scp v1_modify/candidate-v1.0.1/scripts/survey.sh "$BOARD:$WORK/"
++ssh "$BOARD" "chmod +x $WORK/remote_*.sh $WORK/survey.sh"
+ ```
+ 
+-检查：
++`scripts/host_pull.sh` 留在主机，不上板。
++
++预检（远程只读命令用单引号，避免主机展开）：
+ 
+ ```bash
++ssh "$BOARD" "sh $WORK/survey.sh" > "$HOST/survey.txt"
++ssh "$BOARD" "sh $WORK/survey.sh --events" > "$HOST/available_events.txt"
+ ssh "$BOARD" 'tracebox --version; command -v tracebox; uname -a; getconf PAGESIZE; nproc; free -m'
+ ssh "$BOARD" 'cat /proc/sys/kernel/perf_event_paranoid; cat /proc/sys/kernel/kptr_restrict'
+-ssh "$BOARD" 'df -h /data; mount | grep " /data "; touch /tmp/.perfetto_wtest 2>/dev/null && rm -f /tmp/.perfetto_wtest && echo /tmp-writable || echo /tmp-NOT-writable; ls -ld /run/perfetto 2>/dev/null || true'
++ssh "$BOARD" 'df -h /data; mount | grep " /data "; touch /tmp/.perfetto_wtest 2>/dev/null && rm -f /tmp/.perfetto_wtest && echo /tmp-writable || echo /tmp-NOT-writable'
+ ```
+ 
+-`--system-sockets` 在 Linux 上会落到 `/dev/socket`、`/run/perfetto` 或 `/tmp/perfetto-*`。若 `/tmp` 也不可写，改用显式 socket 路径（tracebox 源码会尊重 `PERFETTO_*_SOCK_NAME`）：
+-
+-```bash
+-export PERFETTO_PRODUCER_SOCK_NAME=$WORK/traced_producer
+-export PERFETTO_CONSUMER_SOCK_NAME=$WORK/traced_consumer
+-# tracebox 与 app 必须在同一个 shell 环境中启动；不要再加 --system-sockets
+-```
++若 `tracebox` 不在 PATH，remote_lib.sh 会尝试 `/data/tracebox`；两者都不存在时脚本以 127 退出，
++不要继续。
+ 
+-目标进程/二进制：
++目标/符号：
+ 
+ ```bash
+-ssh "$BOARD" 'for p in $(pidof worker_app 2>/dev/null || ps -eo pid,comm | awk "\$2==\"worker_app\"{print \$1}"); do
++ssh "$BOARD" 'for p in $(pidof worker_app 2>/dev/null); do
+   echo "== pid $p"; tr "\0" " " < /proc/$p/cmdline; echo; readlink /proc/$p/exe;
+   grep -E "^(VmRSS|VmHWM|Threads):" /proc/$p/status; done'
+-```
+-
+-符号/动态链接（主机侧对同一构建）：
++# 若板端没有 pidof：ssh "$BOARD" 'ps -eo pid,comm,args | grep "[w]orker_app"'
+ 
+-```bash
+ readelf -n /path/to/worker_app | grep -A1 'Build ID'
+ readelf -S /path/to/worker_app | grep -E '(symtab|debug_)'
+-readelf -l /path/to/worker_app | grep INTERP   # 有 PT_INTERP 才能 LD_PRELOAD
++readelf -l /path/to/worker_app | grep INTERP   # 无 PT_INTERP 则不能 LD_PRELOAD
+ ```
+ 
+-事件可用性（把 `/` 换成 `:` 与 `available_events` 比对）：
++事件检查：
+ 
+ ```bash
+ for e in sched/sched_switch sched/sched_wakeup power/cpu_frequency power/cpu_idle \
+@@ -173,126 +220,111 @@
+ done
+ ```
+ 
+-`MISS` 的事件从配置删除；`sched/sched_switch` 必须存在，否则 C1/C2/C3 的调度分析都不成立。
++`MISS` 的事件从配置删除；`sched/sched_switch` 必须存在。
+ 
+-### 4.2 准备 preload 与配置
++### 4.3 C1：低开销时间线
+ 
+ ```bash
+-# 使用与 tracebox v57.1 匹配的 ARM64 preload；本机已验证的副本：
+-PRELOAD=/root/sdk_md_x5_1.1.1/perfetto/linux-arm64/linux-arm64/libheapprofd_glibc_preload.so
+-# 校验版本/能力（主机）：
+-grep -a -m1 -o 'v57\.1-c59f57dd4' "$PRELOAD"
+-grep -a -m1 -o 'android.heapprofd' "$PRELOAD"
+-scp "$PRELOAD" "$BOARD:$WORK/libheapprofd_glibc_preload.so"
+-scp "$HOST"/configs/C1-worker-timeline.pbtxt "$BOARD:$WORK/"
+-scp "$HOST"/configs/C2-worker-native-alloc.pbtxt "$BOARD:$WORK/"
+-scp "$HOST"/configs/C3-worker-cpu-profile.pbtxt "$BOARD:$WORK/"
++ssh "$BOARD" "WORK=$WORK sh $WORK/remote_c1.sh"
+ ```
+ 
+-说明：`tracebox` v57.1 二进制本身不注册 `android.heapprofd`（已用 strings 检查，且构建依赖不含 heapprofd producer）；Linux 上由 preload 库 fork 的 **kChild HeapprofdProducer** 注册该数据源。因此不需要单独 `heapprofd` daemon，但必须使用匹配版本的 preload 库。
++脚本行为：
+ 
+-### 4.3 C1：已有进程，低开销时间线
++1. `tracebox --txt -c C1... -o C1.pftrace --background`，把 PID 写入 `C1.pid`。
++2. 等待 PID 退出，最长 45 s（配置 `duration_ms=30000` + 15 s 余量）。
++3. 45 s 未退出则 SIGINT，等待 flush；仍不退再 SIGTERM。
++4. 最后要求 `C1.pftrace` 非空；否则退出 4。
++5. 成功时写 `C1.status`，退出 0。
+ 
+-```bash
+-ssh "$BOARD" "cd $WORK && $TRACEBOX --txt -c C1-worker-timeline.pbtxt -o C1.pftrace --background > C1.pid"
+-sleep 2
+-# 在业务侧触发/等待抖动；30 s 后自动结束
+-sleep 32
+-ssh "$BOARD" "kill -0 \$(cat $WORK/C1.pid) 2>/dev/null && echo STILL_RUNNING || echo DONE"
+-```
++观测期间在另一个终端执行业务复现；不要在脚本里 sleep 后直接宣称完成。
+ 
+-若 `--background` 不方便，改为前台：
++### 4.4 C2：测试实例 + heapprofd 的完整生命周期
+ 
+ ```bash
+-ssh -t "$BOARD" "cd $WORK && $TRACEBOX --txt -c C1-worker-timeline.pbtxt -o C1.pftrace"
+-# 另一个终端执行业务复现
+-```
++APP_DIR=/path/to/worker_app_dir
++APP_CMD=$APP_DIR/worker_app
++APP_ARGS='<your args>'          # 可为空；不要包含单引号
++OBSERVE_S=30
+ 
+-### 4.4 C2：测试实例 + heapprofd
+-
+-先停掉**本次自己的**测试实例（不要动生产实例）：
+-
+-```bash
+-[ -f "$HOST/app.pid" ] && ssh "$BOARD" "kill -TERM \$(cat $WORK/app.pid) 2>/dev/null || true"
++ssh "$BOARD" "WORK=$WORK OBSERVE_S=$OBSERVE_S sh $WORK/remote_c2.sh '$APP_DIR' '$APP_CMD' '$APP_ARGS'"
+ ```
+ 
+-启动采集（先起 trace，再起测试进程；避免 `--background-wait` 等待尚未注册的 heapprofd 数据源）：
++脚本按顺序执行，任何一步失败都非 0 退出：
+ 
+-```bash
+-ssh "$BOARD" "cd $WORK && $TRACEBOX --system-sockets --txt \
+-  -c C2-worker-native-alloc.pbtxt -o C2.pftrace --background > C2.pid"
+-
+-# 等服务可查询（只证明服务在，不证明 heapprofd 已注册）
+-for i in $(seq 1 50); do
+-  ssh "$BOARD" "cd $WORK && $TRACEBOX perfetto --query >/dev/null 2>&1" && break
+-  sleep 0.2
+-done
+-ssh "$BOARD" "cd $WORK && $TRACEBOX perfetto --query --long" > "$HOST/C2.query.txt" 2>&1 || true
+-```
++1. `tracebox --system-sockets --txt -c C2... -o C2.pftrace --background`；
++   配置 `duration_ms=90000` 只是**安全上限**，不是观测时长。
++2. 轮询 `tracebox perfetto --query` 直到服务可查询（最多 10 s）。
++3. 检查 `libheapprofd_glibc_preload.so` 存在；在 `APP_DIR` 下以
++   `LD_PRELOAD=... PERFETTO_HEAPPROFD_BLOCKING_INIT=1` 启动 `APP_CMD`，PID 写 `app.pid`。
++4. `sleep 2` 确认 app 还活着；否则打印 `app.log` 尾部并失败。
++5. 轮询 `tracebox perfetto --query --long`，等待 `heapprofd` producer/data source 出现
++   （最多 10 s）。不出现则停止 app/trace 并失败。出现只说明注册/连接，不等于已有样本；
++   最终仍以 TP 中 `heap_profile_allocation` 非空为准。
++6. `sleep OBSERVE_S` 观测多个抖动周期；期间若 tracebox 提前退出，失败。
++7. `kill -TERM app`，最多等 10 s；不退再 `kill -KILL`。
++8. `sleep 2` 给 heapprofd flush。
++9. 回到 `WORK`，SIGINT tracebox，最多等 10 s；不退再 SIGTERM。
++10. 要求 `C2.pftrace` 非空（等待最多 5 s，避免文件晚于 PID 出现）；成功写 `C2.status`。
+ 
+-启动测试实例；`APP_DIR`/`APP_ARGS` 替换为真实值：
++若 `/tmp` 不可写，`--system-sockets` 可能失败；用显式 socket（tracebox 与 app 必须同一环境）：
+ 
+ ```bash
+-ssh "$BOARD" "cd $APP_DIR && env \
+-  LD_PRELOAD=$WORK/libheapprofd_glibc_preload.so \
+-  PERFETTO_HEAPPROFD_BLOCKING_INIT=1 \
+-  ./worker_app $APP_ARGS > $WORK/app.log 2>&1 & echo \$! > $WORK/app.pid"
++ssh "$BOARD" "WORK=$WORK \
++  PERFETTO_PRODUCER_SOCK_NAME=$WORK/traced_producer \
++  PERFETTO_CONSUMER_SOCK_NAME=$WORK/traced_consumer \
++  OBSERVE_S=30 sh $WORK/remote_c2.sh '$APP_DIR' '$APP_CMD' '$APP_ARGS'"
+ ```
+ 
+-等待 45 s 采集结束；检查 app 是否活着、日志是否报 preload 失败：
++`remote_c2.sh` 检测到 `PERFETTO_*_SOCK_NAME` 后不再传 `--system-sockets`。
+ 
+-```bash
+-ssh "$BOARD" "cat $WORK/app.pid; ps -o pid,ppid,stat,comm,args -p \$(cat $WORK/app.pid) || true"
+-ssh "$BOARD" "tail -40 $WORK/app.log"
+-```
++`PERFETTO_HEAPPROFD_BLOCKING_INIT=1` 可能在 preload 初始化时阻塞；若 app 2 s 内未起来，
++先用同一测试实例去掉该变量做一次短 smoke，确认能启动，再把“启动期漏采”标为 UNKNOWN。
+ 
+-采集结束后停止测试实例：
++### 4.5 C3：CPU 采样
+ 
+ ```bash
+-ssh "$BOARD" "kill -TERM \$(cat $WORK/app.pid) 2>/dev/null || true"
++ssh "$BOARD" "WORK=$WORK sh $WORK/remote_c3.sh"
+ ```
+ 
+-若 `worker_app` 在 `BLOCKING_INIT` 下启动卡住：先在短窗口去掉 `PERFETTO_HEAPPROFD_BLOCKING_INIT`，确认能起来，再决定是否接受启动期漏采（不是忽略，而是标记 UNKNOWN）。
++行为与 C1 相同：后台采集、PID、45 s 完成/超时、SIGINT flush、非空文件、`C3.status`。
++C3 可对已运行进程采集，不需要重启业务。
++
++### 4.6 停止与 flush
+ 
+-### 4.5 C3：已有进程，CPU 采样
++优先让 C1/C3 的 `duration_ms` 自然结束；C2 由 `remote_c2.sh` 在观测结束后主动停止。
++手工提前停止只用本次 PID：
+ 
+ ```bash
+-ssh "$BOARD" "cd $WORK && $TRACEBOX --txt -c C3-worker-cpu-profile.pbtxt \
+-  -o C3.pftrace --background > C3.pid"
+-sleep 2
+-# 执行业务/等待抖动；30 s 后自动结束
+-sleep 32
+-ssh "$BOARD" "cd $WORK && $TRACEBOX perfetto --query --long | \
+-  grep -E 'linux.perf|traced_perf|linux.ftrace' || true"
++ssh "$BOARD" "WORK=$WORK sh $WORK/remote_stop.sh C1"
++# 或 C2、C3
+ ```
+ 
+-### 4.6 停止与拉回
++`remote_stop.sh` 读取 `$WORK/<name>.pid`，SIGINT，等待 flush，最后检查文件非空。
++不要 `pkill traced` / `pkill traced_probes`，也不要杀别人的会话。
+ 
+-优先让 `duration_ms` 自然结束；需要提前停止时，只对**本次 tracebox PID** 发 SIGINT：
++### 4.7 拉回：SCP 失败不得宣称成功
+ 
+ ```bash
+-ssh "$BOARD" "kill -INT \$(cat $WORK/C1.pid) 2>/dev/null || true"
+-# 等 2–3 s；仍不退再 TERM，不要 pkill traced/traced_probes
++WORK=$WORK sh scripts/host_pull.sh "$BOARD" "$HOST" C1.pftrace C1.log C1.status
++# C2 追加：C2.pftrace C2.status C2.query.txt app.log
+ ```
+ 
+-拉回并校验：
++`host_pull.sh` 对每个文件：
+ 
+-```bash
+-for f in C1 C2 C3; do
+-  scp "$BOARD:$WORK/$f.pftrace" "$HOST/" 2>/dev/null || true
+-  scp "$BOARD:$WORK/$f.log" "$HOST/" 2>/dev/null || true
+-done
+-scp "$BOARD:$WORK/C2.query.txt" "$HOST/" 2>/dev/null || true
+-ls -lh "$HOST"/*.pftrace
+-sha256sum "$HOST"/*.pftrace
+-```
++- `scp -q` 返回非 0 → 立即 `exit 1`；
++- 本地文件不存在/0 字节 → `exit 1`；
++- 成功打印 size 与 sha256。
+ 
+-清理只删本次产物；保留 `survey.txt`、`available_events.txt`、配置和日志：
++拉回成功后再用主机 TP 做一次硬校验：
+ 
+ ```bash
+-ssh "$BOARD" "rm -f $WORK/C1.pftrace $WORK/C2.pftrace $WORK/C3.pftrace"
++"$TP" query "$HOST/C1.pftrace" "SELECT * FROM trace_bounds;"
++"$TP" query "$HOST/C1.pftrace" "SELECT name, value FROM stats WHERE value<>0;"
+ ```
+ 
++只有 remote 脚本退出 0 **且** `host_pull.sh` 退出 0 **且** TP 能读出一个覆盖预期时长的
++`trace_bounds`，才可写“采集成功”。任一失败写“采集失败/UNKNOWN”，不得用文件存在代替。
++
+ ## 5. 采集验收（先验收，后分析）
+ 
+ 按 Skill 的四级口径，**四级不能互相替代**：
+@@ -304,9 +336,17 @@
+ 
+ 逐遍检查：
+ 
+-- **C1**：`trace_bounds` 覆盖 30 s；`sched_slice`/`thread_state` 非空；目标 PID 正确；`ftrace_event` 有 `sched_switch`、`sched_wakeup`；`stats` 无 `ftrace_cpu_overrun`/`traced_buf_*` 数据丢失；目标进程 CPU bucket 非空。
+-- **C2**：`heap_profile_allocation` 中目标 UPID + `libc.malloc` 行数 >0；`heap_profile` dump 数合理；`stats` 无 heapprofd 错误；`C2.query.txt` 里能看到 `android.heapprofd` producer/data source。**`dur=0` 不是失败**，按 `sql/10` 判读。
+-- **C3**：`perf_sample` 中目标 utid 样本 >0；`stats` 中 `perf_cpu_lost_records`/`perf_samples_dropped` 为 0 或可解释；`unwind_error` 比例可接受；符号解析比例可接受。
++- **C1**：`remote_c1.sh` 退出 0；`C1.status` 存在；`host_pull.sh` 退出 0；
++  `trace_bounds` 覆盖 30 s；`sched_slice`/`thread_state` 非空；目标 PID 正确；
++  `ftrace_event` 有 `sched_switch`、`sched_wakeup`；`stats` 无
++  `ftrace_cpu_overrun`/`traced_buf_*` 数据丢失；目标进程 CPU bucket 非空。
++- **C2**：`remote_c2.sh` 退出 0；`C2.status` 存在；app 已停止；`host_pull.sh` 退出 0；
++  `C2.query.txt` 中能看到 `heapprofd` producer/data source；
++  `heap_profile_allocation` 中目标 UPID + `libc.malloc` 行数 >0；`heap_profile` dump 数合理；
++  `stats` 无 heapprofd 错误。**`dur=0` 不是失败**，按 `sql/10` 判读。
++- **C3**：`remote_c3.sh` 退出 0；`C3.status` 存在；`host_pull.sh` 退出 0；
++  `perf_sample` 中目标 utid 样本 >0；`stats` 中 `perf_cpu_lost_records`/
++  `perf_samples_dropped` 为 0 或可解释；`unwind_error` 比例可接受；符号解析比例可接受。
+ 
+ 三态判定：PASS / FAIL / UNKNOWN。缺数据必须写 UNKNOWN，不能用“没看到”代替“没有发生”。
+ 
+@@ -323,17 +363,18 @@
+ 
+ 本次新增（位于 `sql/`）：
+ 
+-- `10-cpu-thread-buckets.sql`：每线程 100 ms CPU 时间。
+-- `11-runnable-and-blocked.sql`：Running/Runnable/D 状态、runnable 次数。
+-- `12-native-dump-timeline.sql`：每个 dump end 的 alloc/free bytes/count。
+-- `13-native-callsite-hotspots.sql`：leaf callsite 的分配/释放热点。
++- `10-cpu-thread-buckets.sql`：每线程 100 ms CPU 时间；区间与桶**取交集**。
++- `11-runnable-and-blocked.sql`：Running/Runnable/D；同样按区间交集，不整段计入起始桶。
++- `12-native-dump-timeline.sql`：每个 dump end 的 alloc/free bytes/count（采样估计）。
++- `13-native-callsite-hotspots.sql`：leaf callsite 的分配/释放热点（采样估计）。
+ - `14-perf-hot-functions.sql`：perf self 样本按函数聚合。
+ - `15-perf-allocator-share.sql`：allocator/free 样本占比。
+-- `16-perf-spike-vs-quiet.sql`：显式 spike/quiet 窗口对比函数样本。
++- `16-perf-spike-vs-quiet.sql`：用**本 trace 的相对毫秒窗口**对比函数样本。
++- `16a-perf-window-check.sql`：检查 16 的窗口是否落在本 trace；越界报 OUT_OF_TRACE。
+ - `17-alloc-vs-cpu.sql`：分配快照与 CPU 高/低桶的交叉筛查（有分辨率限制）。
+ - `18-data-quality.sql`：trace bounds、stats、事件类型、表行数、dump 轴。
+ - `19-cpu-frequency.sql`：cpufreq 时间线。
+-- `20-jitter-cycles.sql`：把高 CPU 1 s 桶折叠成 episode，输出周期/占空比，可直接做 Slice Track。
++- `20-jitter-cycles.sql`：先筛高 CPU 桶再编号，安静间隔不会被合并；输出 episode。
+ 
+ 核心查询（完整文件见上）：
+ 
+@@ -344,25 +385,48 @@
+ -- 仅当恰好一个 data_bearing=1 时采用；ambiguous=1 或 0 个候选都要停下来报“未解析”。
+ ```
+ 
+-### 6.2 CPU 线程桶
++### 6.2 CPU 线程桶（区间交集）
++
++完整实现见 `sql/10-cpu-thread-buckets.sql`。核心不是
++`GROUP BY ts/100ms`，而是对每个 `[ts, ts+dur)` 与每个桶求正交集：
+ 
+ ```sql
+-WITH params AS (SELECT 'worker_app' AS target_name),
++WITH RECURSIVE
++params AS (SELECT 'worker_app' AS target_name),
+ target_threads AS (
+   SELECT th.utid, th.tid, th.name AS thread_name, p.upid, p.pid
+   FROM thread th JOIN process p USING(upid), params
+   WHERE p.name = params.target_name OR p.name GLOB '*/' || params.target_name
+-), bounds AS (SELECT start_ts FROM trace_bounds)
++),
++bounds AS (SELECT start_ts, end_ts FROM trace_bounds),
++buckets(bucket) AS (
++  SELECT 0
++  UNION ALL
++  SELECT bucket + 1 FROM buckets
++  WHERE bucket + 1 <
++        (SELECT CAST((end_ts - start_ts + 99999999) / 100000000 AS INTEGER) FROM bounds)
++)
+ SELECT t.utid, t.tid, t.thread_name,
+-       b.start_ts + CAST((s.ts-b.start_ts)/100000000 AS INTEGER)*100000000 AS ts_ns,
+-       SUM(s.dur)/1000000.0 AS cpu_ms
+-FROM sched_slice s JOIN target_threads t USING(utid) CROSS JOIN bounds b
+-WHERE s.ts >= b.start_ts
+-GROUP BY t.utid, t.tid, t.thread_name, ts_ns
++       b.start_ts + bk.bucket * 100000000 AS ts_ns,
++       SUM(
++         MIN(s.ts + s.dur, b.start_ts + (bk.bucket + 1) * 100000000)
++         - MAX(s.ts, b.start_ts + bk.bucket * 100000000)
++       ) / 1000000.0 AS cpu_ms,
++       COUNT(*) AS overlapping_slices
++FROM sched_slice s
++JOIN target_threads t USING(utid)
++CROSS JOIN bounds b
++JOIN buckets bk
++  ON s.ts < b.start_ts + (bk.bucket + 1) * 100000000
++ AND s.ts + s.dur > b.start_ts + bk.bucket * 100000000
++WHERE s.dur > 0 AND s.ts < b.end_ts
++GROUP BY t.utid, t.tid, t.thread_name, ts_ns, bk.bucket
+ ORDER BY ts_ns, cpu_ms DESC;
+ ```
+ 
+ UI：`Counter Track`，Timestamp=`ts_ns`，Value=`cpu_ms`，Pivot=`thread_name`。
++90 ms/120 ms 跨 100 ms 边界的正例、反例见
++`validation/tests/bucket_overlap_test.sql` 与 `real_trace_overlap_test.sql`。
+ 
+ ### 6.3 分配 dump 时间线
+ 
+@@ -378,6 +442,7 @@
+ ```
+ 
+ 注意：`ts` 是 **dump 结束时刻**，v57.1 常常没有窗口起点；不能把它当逐次 malloc 时间。
++`alloc_count`/`free_count`/bytes 是 heapprofd 采样估计，不是精确调用次数。
+ 
+ ### 6.4 分配热点
+ 
+@@ -412,11 +477,12 @@
+ GROUP BY frame_name, mapping_name ORDER BY samples DESC LIMIT 50;
+ ```
+ 
+-allocator 占比见 `15-perf-allocator-share.sql`；spike/quiet 对比见 `16`。
++allocator 占比见 `15-perf-allocator-share.sql`；spike/quiet 对比见 `16`，
++窗口必须来自**当前 C3 trace** 的相对偏移，先用 `16a` 检查，不能直接粘贴 C1 的绝对 ns。
+ 
+ ### 6.6 分配与 CPU 的交叉筛查
+ 
+-`17-alloc-vs-cpu.sql` 把每个 dump 归到 1 s CPU 高/低桶，输出各 callsite 的 `spike/quiet` 分配量。它是**筛查**：dump 结束时刻 vs 1 s 桶、v57.1 无窗口起点、2 s dump 间隔都会造成错位。只有结合 `10/11` 的周期和 `14/16` 的 CPU 归因，才能谈关联。
++`17-alloc-vs-cpu.sql` 把每个 dump 归到 1 s CPU 高/低桶，输出各 callsite 的 `spike/quiet` 分配量。它是**筛查**：dump 结束时刻 vs 1 s 桶、v57.1 无窗口起点、2 s dump 间隔都会造成错位；count/bytes 仍是采样估计。只有结合 `10/11` 的周期和 `14/16` 的 CPU 归因，才能谈关联。
+ 
+ ## 7. Perfetto UI 操作
+ 
+@@ -450,11 +516,17 @@
+ 
+ 支持“分配抖动是贡献因素”的最小证据链：
+ 
+-1. **时间**：C1 的 CPU/runnable 抖动窗口与 C2 的分配/释放高峰有稳定相位关系（多次重复，不是一次）。
+-2. **剂量**：分配 count/bytes 越大，抖动延迟/CPU 越高；安静窗分配率低。
+-3. **机制**：C3 在抖动窗的 allocator/free self 样本占比上升；或 `sched_slice` 显示目标线程在 allocator 路径上占用 CPU。
+-4. **特异性**：控制 DVFS、其他进程、采样开销后仍成立；同样分配率但无抖动，或同样抖动但无分配峰，都要解释。
+-5. **可干预性**（后续，不在本次执行）：减少临时对象/复用池后抖动下降；这是最强的因果证据，但需要改代码和 A/B。
++1. **时间**：C1 只负责建立抖动周期/形状；在 **C2 自己的 trace** 内，分配/释放高峰要与
++   同 trace 的 CPU/runnable 变化同相（多次重复，不是一次）。不要把 C1 的绝对 ns 直接
++   套到 C2；两次采集没有共同时钟证据。
++2. **剂量**：C2 内估计的 count/bytes 越大，同 trace 的 CPU/runnable 越高；安静窗分配率低。
++   若业务延迟来自独立日志/标记，再用它做剂量关系。
++3. **机制**：C3 在抖动窗的 allocator/free self 样本占比上升；或 `sched_slice` 显示目标线程
++   在 allocator 路径上占用 CPU。
++4. **特异性**：控制 DVFS、其他进程、采样开销后仍成立；同样分配率但无抖动，或同样抖动但
++   无分配峰，都要解释。
++5. **可干预性**（后续，不在本次执行）：减少临时对象/复用池后抖动下降；这是最强的因果
++   证据，但需要改代码和 A/B。
+ 
+ 不足以证明因果的证据：
+ 
+@@ -466,6 +538,15 @@
+ - C2/C3 是两次独立采集，不能做逐点时间对齐；只能比较模式和分布。
+ - profiler 开启后才出现的抖动：先怀疑观测扰动。
+ 
++**采样估计与业务延迟的边界**：
++
++- `heap_profile_allocation.count`/`size` 是采样估计；不能把“count 增加 100”写成
++  “多调用了 100 次 malloc”，也不能用估计值算精确优化收益。
++- heapprofd 与 `linux.perf` 都不提供业务处理延迟。业务延迟必须来自独立日志、打点、
++  `trace_marker` 或同 trace 的业务时间戳；`thread_state` 的 runnable/D 只是系统级代理。
++- C1/C2/C3 是独立采集；C2 与 C3 之间也不能做逐点时间对齐，除非有共同标记/时钟证据。
++  跨 trace 只能比较模式、分布和重复实验，不能把两条时间轴硬拼。
++
+ 判读矩阵：
+ 
+ | 观察 | 结论方向 |
+@@ -493,7 +574,28 @@
+ | v57.1 `dur=0` | 用 `sql/10` 降级：只统计活动 dump/总量；精确持有区间标 UNKNOWN | 精确窗口 |
+ | v57.1 descriptor 不可得 | 用 v58.2 descriptor 只做静态语法检查；板端以实际解析/log 为准 | 版本级 schema 保证 |
+ 
+-## 10. 本次已验证 / 未验证
++## 10. 版本适用边界与本次验证
++
++### 10.1 Perfetto v57.1 / v58.2 边界
++
++- **采集端 v57.1**：tracebox 支持 `linux.ftrace`、`linux.process_stats`、`linux.sys_stats`、
++  `linux.perf`/`traced_perf`、`--background`、`--system-sockets`；`android.heapprofd` 由
++  匹配版本的 preload kChild producer 注册，不是 tracebox 内建 applet。
++- **v57.1 heapprofd**：不发布 `ProfilePacket.ProcessHeapSamples.start_timestamp`；
++  v58.2 TP 上 `heap_profile.dur` 常见为 0。精确持有区间 UNKNOWN；总量/分配释放/dump 数
++  仍可判。TP 还会按 `(upid, window_end, heap_name)` 去重，配置的 dump 间隔不等于可见 dump 数。
++- **分析端 v58.2**：本方案 SQL 使用 `sched_slice`、`thread_state`、`perf_sample`、
++  `heap_profile`、`heap_profile_allocation`、`stats`、`ftrace_event` 等 v58.2 表/视图。
++  若换用 v57.1 TP，`heap_profile` 可能不存在，需用 `sql/10-native-dump-capability.sql`
++  的降级语句；其他表名/列也可能不同，先跑 `00-inventory.sql`。
++- **配置 schema**：本次只对 v58.2 descriptor 做静态校验；v57.1 实际解析/运行未验证。
++  配置中使用的字段在 v57.1 二进制中有对应字符串，但不等于正式 schema 验证。
++- **采样语义**：`heap_profile_allocation.count/size` 是估计值，v57.1/v58.2 都成立；
++  不要因分析表有 `count` 就当成精确 malloc 次数。
++- **UI**：v58.2 的 StackSamples/perf 火焰图可用；更旧 UI 可能没有该轨道，需退回 SQL
++  或 pprof 聚合。
++
++### 10.2 本次已验证 / 未验证
+ 
+ 已验证（本地、静态/离线）：
+ 
+@@ -501,6 +603,13 @@
+ - 未使用部署的 v1.0.0（sha 不同）。
+ - C1/C2/C3 配置用本地 v58.2 源码生成的 descriptor 做 `validate_config.py` 静态校验，均 PASS；该 descriptor 与既有 `trace_config.desc` sha256 一致。
+ - SQL 语法在本机 v58.2 Trace Processor 上对现有 trace 执行过（只验证表/语法，不从这些 trace 得出 worker_app 结论）。
++- 区间交集：合成 90/120 ms 跨 100 ms 边界样本、真实 trace 的 90–120 ms sched slice 均验证
++  `sum(overlap) == dur`、`diff=0`（`validation/tests/`）。
++- jitter episode：含安静间隔的合成反例验证旧逻辑合并、新逻辑拆成 2 段。
++- 16/16a：合成窗口与真实 trace 偏移验证 `OK` / `OUT_OF_TRACE`。
++- shell 生命周期 dry-run：mock tracebox/app 验证 C2 启动→producer→观测→停止→flush，
++  C1/C3 完成条件，`remote_stop.sh` 成功/缺失 PID，`host_pull.sh` 对 scp 失败/空文件
++  的非零退出。
+ - 板端 tracebox v57.1 二进制包含 `linux.perf`、`traced_perf`、`sched_switch`、`power/cpu_frequency`、`cpufreq_period_ms`、`record_process_runtime` 等字符串；不包含 `android.heapprofd` 注册串。
+ - 同版本 `libheapprofd_glibc_preload.so` 包含 `v57.1-c59f57dd4`、`android.heapprofd`，并导出 malloc/free/calloc/realloc hook。
+ - 本机 v58.2 TP 存在并可使用 `sched_slice`、`thread_state`、`perf_sample`、`heap_profile`、`heap_profile_allocation`、`stats`、`ftrace_event`。
+@@ -508,17 +617,33 @@
+ 
+ 未验证（明确标记）：
+ 
+-- 未连接 X5；未在板端执行 `tracebox`/`survey.sh`/任何采集。
++- 未连接 X5；未在板端执行 `tracebox`/`survey.sh`/任何采集；shell dry-run 只是 mock。
++- 未验证真实 C2 `heapprofd` 注册与 flush 时序；mock 只能证明脚本控制流与失败传播。
+ - 未验证 v57.1 的 TraceConfig descriptor；仅 v58.2 静态校验。
+ - 未验证板端实际 `available_events`、perf 权限、preload 注入、heapprofd 数据源注册、C2 端到端。
+ - 未验证 `worker_app` 的符号、Build ID、frame pointer、启动参数。
+ - 未打开 Perfetto UI 查看任何本次采集结果；未生成截图/曲线。
+ - 未证明任何性能因果关系；所有判读都是预期规则，需真实 trace 验证。
+ 
++### 10.3 首轮错误归因（规则未落实 vs 缺少实现）
++
++详见 `validation/SKILL_GAP.md`。摘要：
++
++- **Skill 规则已写、首轮未落实**：主机/目标变量与执行位置、采集验收、heapprofd 采样估计、
++  业务延迟需独立证据。
++- **Skill 有原则但缺可复用实现**：远程 runner/变量作用域、C2 生命周期状态机、C1/C3
++  完成与 pull 失败传播、区间交集 SQL、jitter episode SQL、跨 trace 窗口检查。
++- **首轮 SQL/实现缺陷**：`10/11` 整段计入起始桶、`20` 先编号后筛、`16` 跨 trace 绝对时间戳。
++  其中 `10/11/20` 也说明 Skill 没有对应的可复用 SQL。
++
++本修正版补了 `scripts/`、`16a` 和测试，但**没有修改或部署 Skill**；这些补丁不能算作
++Skill 已具备的能力。
++
+ ## 11. 建议的最小下一步
+ 
+ 1. 跑 4.1 预检，拿到 `survey.txt`、`available_events.txt`、`worker_app` 的 PID/命令行/构建信息。
+ 2. 只跑 C1（30 s），用 `00/01/10/11/18/20` 确认：抖动是否真实、周期多少、是否有 reclaim/compaction/DVFS 混淆。
+ 3. 若 C1 指向用户态 CPU 且无内存压力，跑 C3（30 s），用 `14/15/16` 找热点函数与 allocator 占比。
+-4. 若 C3 显示 allocator 占比在抖动窗上升，再跑 C2（45 s，测试实例 + preload），用 `10/12/13/17` 归因到 callsite。
++4. 若 C3 显示 allocator 占比在抖动窗上升，再跑 C2（测试实例 + preload，
++   `OBSERVE_S=30`；配置 90 s 只是安全上限），用 `10/12/13/17` 归因到 callsite。
+ 5. 只有 C2+C3+C1 的证据链成立，才讨论“临时对象复用/池化”的修改；修改后用同一套配置做 A/B，才算因果闭环。
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/README.md v2_test_fix1/README.md
+--- v2_test/README.md	2026-10-17 19:51:26.491050179 +0800
++++ v2_test_fix1/README.md	2026-10-17 20:18:07.095537955 +0800
+@@ -1,97 +1,108 @@
+-# v2_test — RDK X5 `worker_app` Perfetto 性能调试交付
++# v2_test_fix1 — 首轮 `v2_test` 的范围受限技术修正
+ 
+-本目录是 2026-10 一轮独立方案的全部交付物：针对 RDK X5 上 C++ 进程 `worker_app`
+-“RSS 稳定 180–200 MB、每隔几秒 CPU 上升且延迟抖动、怀疑临时对象频繁创建/销毁”的问题，
+-给出一套可执行的 Perfetto 采集、验收、SQL 与 UI 分析方案。
+-
+-**本次只做方案与静态验证：未连接开发板、未修改业务程序、未采集真实 trace。**
+-文中所有“预期/待验证”都不是实测结果。
+-
+-## 1. Skill 来源
+-
+-- Skill：`perfetto-memory-debugging`
+-- 版本：`1.0.1` Candidate
+-- Git 提交：`f16f68ae1e3f112794af3b953881d1b18fa8415e`
+-- 候选目录：`v1_modify/candidate-v1.0.1`（本仓库）
+-- `SKILL.md` sha256：`70371e5bcbe06e8efdc9c47578111989001ad33d787106de649430bab53275d0`
+-- 未使用部署的 v1.0.0（`SKILL.md` sha256 为 `4f5f6ae9...`，与候选版不同）。
++本目录是第二轮独立场景测试首轮交付 `v2_test` 的**独立修正版**。
++首轮 `v2_test/` 原样保留，不覆盖、不改写 history；本版只修本轮明确列出的确定性问题
++及其直接关联的文档、配置、SQL、脚本。
++
++> 这是一次技术修正，不是新的盲测成绩。不得把本版表现冒充首轮独立 Agent 的首交付质量。
++
++## 1. 修正范围
++
++1. **变量作用域**：消除未定义的 `$TRACEBOX`；把板端动作收进 `scripts/remote_*.sh`，
++   由板端 shell 解析变量，避免 SSH 双引号在主机侧展开 `$!`/`$(...)`。
++2. **C2 生命周期**：服务就绪 → 起测试进程（preload）→ 等 `heapprofd` producer →
++   观测 `OBSERVE_S` → 停 app → flush → SIGINT tracebox → 非空校验；不再启动后立即杀进程。
++3. **C1/C3 完成条件**：后台 PID、超时、SIGINT/SIGTERM、文件非空；
++   `host_pull.sh` 对 scp 失败或空文件立即非零退出，不再“拉回失败仍宣称成功”。
++4. **`10`/`11` 跨桶**：用 `min(ts+dur,bucket_end)-max(ts,bucket_start)` 做区间交集，
++   不再把完整 `dur` 记到起始桶；用 90/120 ms 跨 100 ms 边界样本测试。
++5. **`20` 抖动 episode**：先筛高 CPU 桶再 `ROW_NUMBER()`，安静间隔不会把两段合并；
++   提供含安静间隔的反例。
++6. **`16` 时间窗口**：改为相对当前 trace `trace_bounds.start_ts` 的毫秒偏移；
++   新增 `16a` 检查窗口是否在本 trace。C1 的绝对 ns 不得直接用于 C3。
++7. **采样语义**：明确 heapprofd `count/size` 是采样估计，不是精确调用次数；
++   业务延迟需要独立日志/打点/trace_marker 证据。
++
++未修改：`worker_app`、既有实验数据、Skill 的安装/部署、首轮 `v2_test/` 内容。
+ 
+ ## 2. 目录
+ 
+ ```text
+-v2_test/
++v2_test_fix1/
+ ├── README.md
+-├── PLAN.md                      完整方案：假设、选路、配置、操作、验收、SQL、UI、因果判据、降级
++├── PLAN.md                      完整方案（已替换第 4 节执行流程，补充版本边界/测试）
++├── CHANGES.diff                 相对 v2_test 的 unified diff
+ ├── configs/
+-│   ├── C1-worker-timeline.pbtxt      低开销时间线（sched/RSS/DVFS/reclaim）
+-│   ├── C2-worker-native-alloc.pbtxt  heapprofd native allocation 归因
+-│   └── C3-worker-cpu-profile.pbtxt   linux.perf CPU 调用栈归因
++│   ├── C1-worker-timeline.pbtxt
++│   ├── C2-worker-native-alloc.pbtxt   duration 改为 90 s 安全上限
++│   └── C3-worker-cpu-profile.pbtxt
++├── scripts/
++│   ├── remote_lib.sh            板端：WORK/TRACEBOX/PID/超时/stop
++│   ├── remote_c1.sh             板端：C1 后台采集与完成条件
++│   ├── remote_c2.sh             板端：C2 完整生命周期
++│   ├── remote_c3.sh             板端：C3 后台采集与完成条件
++│   ├── remote_stop.sh           板端：手工 SIGINT + flush + 非空检查
++│   └── host_pull.sh             主机：scp + 非空 + sha256，失败即非零
+ ├── sql/
+-│   ├── 10-cpu-thread-buckets.sql
+-│   ├── 11-runnable-and-blocked.sql
+-│   ├── 12-native-dump-timeline.sql
+-│   ├── 13-native-callsite-hotspots.sql
++│   ├── 10-cpu-thread-buckets.sql        区间交集
++│   ├── 11-runnable-and-blocked.sql      区间交集
++│   ├── 12-native-dump-timeline.sql      采样估计说明
++│   ├── 13-native-callsite-hotspots.sql  采样估计说明
+ │   ├── 14-perf-hot-functions.sql
+ │   ├── 15-perf-allocator-share.sql
+-│   ├── 16-perf-spike-vs-quiet.sql
+-│   ├── 17-alloc-vs-cpu.sql
++│   ├── 16-perf-spike-vs-quiet.sql       本 trace 相对窗口
++│   ├── 16a-perf-window-check.sql        窗口越界检查（新增）
++│   ├── 17-alloc-vs-cpu.sql              采样估计说明
+ │   ├── 18-data-quality.sql
+ │   ├── 19-cpu-frequency.sql
+-│   └── 20-jitter-cycles.sql
++│   └── 20-jitter-cycles.sql             先筛后编号
+ ├── validation/
+-│   ├── VALIDATION.md                   本次静态验证记录
+-│   └── trace_config-v58.2.desc         本机 v58.2 源码生成的 TraceConfig descriptor
++│   ├── VALIDATION.md
++│   ├── SKILL_GAP.md                首轮错误 vs Skill 规则/实现缺口
++│   ├── trace_config-v58.2.desc
++│   └── tests/
++│       ├── bucket_overlap_test.sql
++│       ├── bucket_overlap_old_vs_new.sql
++│       ├── real_trace_overlap_test.sql
++│       ├── jitter_cycles_counterexample.sql
++│       ├── perf_window_guard_test.sql
++│       ├── shell_lifecycle_dryrun.sh
++│       ├── TEST_RECORD.md
++│       └── outputs/                    原始测试输出
+ └── SHA256SUMS
+ ```
+ 
+-## 3. 建议阅读顺序
+-
+-1. `PLAN.md` 第 1–2 节：问题、假设、数据源选路。
+-2. `PLAN.md` 第 3 节：三份完整 TraceConfig 与参数依据。
+-3. `PLAN.md` 第 4–5 节：主机/板端执行、验收。
+-4. `PLAN.md` 第 6–8 节：SQL、UI、因果判据。
+-5. `PLAN.md` 第 9–11 节：降级、已验证/未验证、最小下一步。
+-
+-## 4. 最小执行顺序
+-
+-- **C1**（30 s）：先确认抖动是否真实、周期多少、是否有 reclaim/compaction/DVFS 混淆。
+-- **C3**（30 s）：若 C1 指向用户态 CPU，找热点函数与 allocator 占比。
+-- **C2**（45 s）：若 C3 显示 allocator 占比在抖动窗上升，重启**测试实例**并在
+-  `LD_PRELOAD` 下采集 heapprofd，归因到 callsite。
++## 3. 快速使用
+ 
+-C1/C3 可对已运行进程采集；C2 需要 preload 在进程启动时加载，只能用于允许重启的测试实例。
++1. `PLAN.md` 第 3 节：三份配置与参数依据。
++2. `PLAN.md` 第 4 节：变量作用域、预检、C1/C2/C3 生命周期、停止/拉回。
++3. `PLAN.md` 第 6–8 节：SQL、UI、因果判据。
++4. `validation/SKILL_GAP.md`：区分“Skill 规则未落实”与“Skill 缺少可复用实现”。
++5. `validation/tests/TEST_RECORD.md`：本轮实际执行的 SQL/流程测试记录。
+ 
+-## 5. 静态验证状态
++## 4. 验证状态
+ 
+ | 项 | 状态 |
+ |---|---|
+-| Skill 候选版路径/版本/commit/sha | 已验证 |
+-| `validate_config.py --check-resources` | PASS（27 个必需文件 + 10 个配置） |
+-| C1/C2/C3 对 v58.2 descriptor 的 schema 校验 | PASS |
+-| v57.1 descriptor 校验 | **未执行**（本地无 v57.1 descriptor） |
+-| SQL 语法在本机 v58.2 TP 上执行 | 已执行（仅表/语法，不用于 worker_app 结论） |
+-| 板端 tracebox/survey/heapprofd/perf 运行 | **未执行** |
+-| Perfetto UI 截图/实际显示 | **未执行** |
+-| 实际性能因果 | **未证明** |
+-
+-详见 `validation/VALIDATION.md`。
+-
+-## 6. 版本与能力注意
+-
+-- 板端 tracebox v57.1；主机 Trace Processor v58.2；UI 版本可能更新。
+-- v57.1 采集端不发布 heapprofd `start_timestamp`，v58.2 TP 上常见
+-  `heap_profile.dur = 0`。这不等于采集失败，只意味着精确持有区间不可判；
+-  总量、分配/释放、dump 数仍可判。使用 `sql/10-native-dump-capability.sql` 检查。
+-- Linux 上 `android.heapprofd` 由 `libheapprofd_glibc_preload.so` fork 的
+-  kChild producer 注册；`tracebox` 二进制本身不注册该数据源，不需要单独
+-  heapprofd daemon，但需要与 tracebox 匹配的 preload 版本。
+-- `linux.perf` 需要 perf_event_open 权限；无权限时退回 sched + process runtime，
+-  只能做等待/CPU 归因，不能做函数级火焰图。
+-
+-## 7. 明确边界
+-
+-- 不包含任何真实采集结果、性能数字或 UI 截图。
+-- 不包含对 `worker_app` 的代码修改。
+-- 不声称已在 X5 上跑通 C1/C2/C3。
+-- 配置中的 `worker_app`、事件名、buffer 大小需按实际板端 `available_events`、
+-  `nproc`、`/data` 余量与 target cmdline 调整。
++| 首轮 `v2_test/` 未被修改 | 是（独立目录） |
++| Skill 候选版路径/版本/commit/sha | 与首轮一致，未改 Skill |
++| C1/C2/C3 对 v58.2 descriptor 静态 schema | PASS |
++| v57.1 descriptor 校验 | **未执行** |
++| 10/11 区间交集：90/120 ms 跨桶正例 | PASS（diff=0） |
++| 10/11 真实 trace 90–120 ms slice | PASS（5 条，diff=0） |
++| 20 含安静间隔反例 | OLD=1 段，FIXED=2 段 |
++| 16/16a 本 trace 窗口检查 | `OK` / `OUT_OF_TRACE` 均验证 |
++| shell 生命周期 dry-run（mock） | C2 生命周期、C1/C3 完成、pull 失败传播均 PASS |
++| 板端 tracebox/heapprofd/perf 实跑 | **未执行** |
++| worker_app 真实 trace / UI 截图 | **未执行** |
++| 性能因果 | **未证明** |
++
++## 5. 版本边界（摘要）
++
++- 板端 tracebox v57.1；主机 Trace Processor v58.2。
++- v57.1 heapprofd 不发布 `start_timestamp`，v58.2 上 `dur=0` 常见；精确窗口 UNKNOWN，
++  总量/分配/释放/dump 数仍可判。
++- SQL 使用 v58.2 表名；换 v57.1 TP 时先用 `00-inventory.sql`/`10-native-dump-capability.sql`
++  检查并降级。
++- v58.2 descriptor 只做静态校验，不等于 v57.1 运行期验证。
++- heapprofd count/size 是采样估计；业务延迟需独立事件/日志证据。
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/configs/C2-worker-native-alloc.pbtxt v2_test_fix1/configs/C2-worker-native-alloc.pbtxt
+--- v2_test/configs/C2-worker-native-alloc.pbtxt	2026-10-17 19:51:29.262267450 +0800
++++ v2_test_fix1/configs/C2-worker-native-alloc.pbtxt	2026-10-17 20:06:45.962753006 +0800
+@@ -8,7 +8,7 @@
+ buffers { size_kb: 4096  fill_policy: RING_BUFFER }   # 1: process_stats
+ buffers { size_kb: 16384 fill_policy: RING_BUFFER }   # 2: heapprofd packets
+ 
+-duration_ms: 45000   # includes the test process startup under LD_PRELOAD
++duration_ms: 90000   # safety cap only; remote_c2.sh stops after OBSERVE_S + flush
+ 
+ data_sources {
+   config {
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/host_pull.sh v2_test_fix1/scripts/host_pull.sh
+--- v2_test/scripts/host_pull.sh	1970-01-01 08:00:00.000000000 +0800
++++ v2_test_fix1/scripts/host_pull.sh	2026-10-17 20:06:38.547021319 +0800
+@@ -0,0 +1,23 @@
++#!/bin/sh
++# Host-side pull with explicit failure propagation.
++# Usage: host_pull.sh BOARD DEST FILE [FILE ...]
++# Exits non-zero on the first scp failure or empty local file.
++set -eu
++BOARD=${1:?usage: host_pull.sh BOARD DEST FILE [FILE ...]}
++DEST=${2:?usage: host_pull.sh BOARD DEST FILE [FILE ...]}
++shift 2
++WORK=${WORK:-/data/perfetto-worker}
++mkdir -p "$DEST"
++
++for f in "$@"; do
++  out="$DEST/$f"
++  if ! scp -q "$BOARD:$WORK/$f" "$out"; then
++    echo "PULL FAIL: scp $BOARD:$WORK/$f" >&2
++    exit 1
++  fi
++  if [ ! -s "$out" ]; then
++    echo "PULL FAIL: $out is missing or empty" >&2
++    exit 1
++  fi
++  echo "PULL OK: $f size=$(wc -c < "$out") sha256=$(sha256sum "$out" | awk '{print $1}')"
++done
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/remote_c1.sh v2_test_fix1/scripts/remote_c1.sh
+--- v2_test/scripts/remote_c1.sh	1970-01-01 08:00:00.000000000 +0800
++++ v2_test_fix1/scripts/remote_c1.sh	2026-10-17 20:19:07.736298936 +0800
+@@ -0,0 +1,37 @@
++#!/bin/sh
++# C1: low-overhead timeline. Runs on the X5 board.
++# Completion: tracebox exits, output file non-empty, else exit non-zero.
++set -eu
++SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
++. "$SCRIPT_DIR/remote_lib.sh"
++
++cd "$WORK"
++TPID=""
++cleanup() { [ -n "$TPID" ] && stop_tracebox "$TPID" || true; }
++trap cleanup EXIT INT TERM
++rm -f C1.pftrace C1.pid C1.log C1.status
++
++# C1 duration_ms is 30000; allow 45 s wall clock, then SIGINT + 15 s flush.
++echo "C1 start $(date)" > C1.log
++"$TRACEBOX" --txt -c C1-worker-timeline.pbtxt -o C1.pftrace \
++  --background > C1.pid 2>> C1.log
++TPID=$(cat C1.pid)
++echo "C1 started tracebox_pid=$TPID"
++
++if ! wait_pid_exit "$TPID" 45; then
++  echo "C1 TIMEOUT: sending SIGINT for flush" >&2
++  if ! stop_tracebox "$TPID"; then
++    echo "C1 FAIL: tracebox did not exit after SIGINT/SIGTERM" >&2
++    exit 3
++  fi
++fi
++TPID=""   # tracebox has exited; avoid signaling a reused PID in cleanup
++
++# The output file may become visible slightly after the PID disappears.
++if ! wait_nonempty_file C1.pftrace 5; then
++  echo "C1 FAIL: C1.pftrace missing or empty" >&2
++  exit 4
++fi
++
++echo "C1 DONE size_bytes=$(wc -c < C1.pftrace)" > C1.status
++cat C1.status
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/remote_c2.sh v2_test_fix1/scripts/remote_c2.sh
+--- v2_test/scripts/remote_c2.sh	1970-01-01 08:00:00.000000000 +0800
++++ v2_test_fix1/scripts/remote_c2.sh	2026-10-17 20:18:46.011640436 +0800
+@@ -0,0 +1,157 @@
++#!/bin/sh
++# C2: heapprofd native allocation. Runs on the X5 board.
++# Usage: remote_c2.sh APP_DIR APP_CMD [APP_ARGS]
++#   APP_DIR   directory containing the test binary
++#   APP_CMD   binary path or wrapper script (dynamic executable)
++#   APP_ARGS  optional single string, split on whitespace
++#
++# Lifecycle:
++#   1. start trace (90 s safety cap)
++#   2. wait for tracing service to answer
++#   3. start the test process under LD_PRELOAD
++#   4. wait until the heapprofd producer/data source is visible
++#   5. observe for OBSERVE_S seconds
++#   6. stop the test process and let heapprofd flush
++#   7. SIGINT tracebox, wait for exit, require non-empty output
++set -eu
++SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
++. "$SCRIPT_DIR/remote_lib.sh"
++
++APP_DIR=${1:?usage: remote_c2.sh APP_DIR APP_CMD [APP_ARGS]}
++APP_CMD=${2:?usage: remote_c2.sh APP_DIR APP_CMD [APP_ARGS]}
++APP_ARGS=${3:-}
++OBSERVE_S=${OBSERVE_S:-30}
++
++cd "$WORK"
++TPID=""
++APID=""
++STOPPED=0
++cleanup() {
++  if [ -n "$APID" ] && kill -0 "$APID" 2>/dev/null; then
++    kill -TERM "$APID" 2>/dev/null || true
++    sleep 1
++    kill -KILL "$APID" 2>/dev/null || true
++  fi
++  if [ -n "$TPID" ] && [ "$STOPPED" -eq 0 ]; then
++    stop_tracebox "$TPID" || true
++  fi
++}
++trap cleanup EXIT INT TERM
++rm -f C2.pftrace C2.pid C2.start.log C2.query.txt C2.status app.pid app.log
++
++# --system-sockets is required for the preload child to find the traced
++# producer. If the caller provides explicit PERFETTO_*_SOCK_NAME paths, use
++# those instead (e.g. when /tmp is not writable).
++SOCK_ARG="--system-sockets"
++if [ -n "${PERFETTO_PRODUCER_SOCK_NAME:-}" ] || [ -n "${PERFETTO_CONSUMER_SOCK_NAME:-}" ]; then
++  SOCK_ARG=""
++fi
++
++echo "C2 start $(date)" > C2.start.log
++"$TRACEBOX" $SOCK_ARG --txt -c C2-worker-native-alloc.pbtxt -o C2.pftrace \
++  --background > C2.pid 2>> C2.start.log
++TPID=$(cat C2.pid)
++echo "C2 started tracebox_pid=$TPID"
++
++# 2. Wait until the tracing service answers. This proves the service is up,
++# not that heapprofd is already registered (the preload child registers it).
++_i=0
++while [ "$_i" -lt 50 ]; do
++  if "$TRACEBOX" perfetto --query >/dev/null 2>&1; then
++    break
++  fi
++  _i=$((_i + 1))
++  sleep 0.2
++done
++if ! "$TRACEBOX" perfetto --query >/dev/null 2>&1; then
++  echo "C2 FAIL: tracing service not queryable" >&2
++  stop_tracebox "$TPID" || true
++  exit 2
++fi
++"$TRACEBOX" perfetto --query --long > C2.query.txt 2>&1 || true
++
++# 3. Start the test process. LD_PRELOAD must be present at process start.
++if [ ! -f "$WORK/libheapprofd_glibc_preload.so" ]; then
++  echo "C2 FAIL: missing $WORK/libheapprofd_glibc_preload.so" >&2
++  stop_tracebox "$TPID" || true
++  exit 2
++fi
++cd "$APP_DIR"
++echo "C2 app start $(date)" > "$WORK/app.log"
++set -f
++env LD_PRELOAD="$WORK/libheapprofd_glibc_preload.so" \
++    PERFETTO_HEAPPROFD_BLOCKING_INIT=1 \
++    "$APP_CMD" $APP_ARGS >> "$WORK/app.log" 2>&1 &
++APID=$!
++set +f
++echo "$APID" > "$WORK/app.pid"
++echo "C2 started app_pid=$APID"
++
++sleep 2
++if ! kill -0 "$APID" 2>/dev/null; then
++  echo "C2 FAIL: test process exited during startup" >&2
++  tail -50 "$WORK/app.log" >&2 || true
++  stop_tracebox "$TPID" || true
++  exit 5
++fi
++
++# 4. The preload child registers android.heapprofd after the process starts.
++# Wait for it before observation; if it never appears, the session would have
++# no target data, so fail instead of pretending capture succeeded.
++# Visibility proves registration/connection, not that samples exist; the host
++# must still verify heap_profile_allocation after pull.
++_i=0
++while [ "$_i" -lt 50 ]; do
++  "$TRACEBOX" perfetto --query --long > C2.query.txt 2>&1 || true
++  if grep -Eqi 'heapprofd' C2.query.txt; then
++    break
++  fi
++  _i=$((_i + 1))
++  sleep 0.2
++done
++if ! grep -Eqi 'heapprofd' C2.query.txt; then
++  echo "C2 FAIL: heapprofd producer/data source not visible after 10 s" >&2
++  kill -TERM "$APID" 2>/dev/null || true
++  stop_tracebox "$TPID" || true
++  exit 6
++fi
++echo "C2 heapprofd producer visible"
++
++# 5. Observe multiple jitter cycles.
++sleep "$OBSERVE_S"
++if ! kill -0 "$TPID" 2>/dev/null; then
++  echo "C2 FAIL: tracebox exited before the observation window ended" >&2
++  kill -TERM "$APID" 2>/dev/null || true
++  exit 7
++fi
++
++# 6. Stop the test process, then allow heapprofd to flush.
++kill -TERM "$APID" 2>/dev/null || true
++_i=0
++while kill -0 "$APID" 2>/dev/null; do
++  _i=$((_i + 1))
++  if [ "$_i" -ge 20 ]; then
++    kill -KILL "$APID" 2>/dev/null || true
++    break
++  fi
++  sleep 0.5
++done
++sleep 2
++# App was launched from APP_DIR; return to WORK before touching trace files.
++cd "$WORK"
++
++# 7. Stop the trace session and require a non-empty file.
++if ! stop_tracebox "$TPID"; then
++  echo "C2 FAIL: tracebox did not exit after SIGINT/SIGTERM" >&2
++  exit 8
++fi
++STOPPED=1
++# The file may become visible slightly after the PID disappears. Do not
++# declare failure on a single stat immediately after exit.
++if ! wait_nonempty_file C2.pftrace 5; then
++  echo "C2 FAIL: C2.pftrace missing or empty" >&2
++  exit 9
++fi
++
++echo "C2 DONE size_bytes=$(wc -c < C2.pftrace)" > C2.status
++cat C2.status
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/remote_c3.sh v2_test_fix1/scripts/remote_c3.sh
+--- v2_test/scripts/remote_c3.sh	1970-01-01 08:00:00.000000000 +0800
++++ v2_test_fix1/scripts/remote_c3.sh	2026-10-17 20:19:07.736378993 +0800
+@@ -0,0 +1,37 @@
++#!/bin/sh
++# C3: linux.perf CPU profile. Runs on the X5 board.
++# Completion: tracebox exits, output file non-empty, else exit non-zero.
++set -eu
++SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
++. "$SCRIPT_DIR/remote_lib.sh"
++
++cd "$WORK"
++TPID=""
++cleanup() { [ -n "$TPID" ] && stop_tracebox "$TPID" || true; }
++trap cleanup EXIT INT TERM
++rm -f C3.pftrace C3.pid C3.log C3.status
++
++# C3 duration_ms is 30000; allow 45 s wall clock, then SIGINT + 15 s flush.
++echo "C3 start $(date)" > C3.log
++"$TRACEBOX" --txt -c C3-worker-cpu-profile.pbtxt -o C3.pftrace \
++  --background > C3.pid 2>> C3.log
++TPID=$(cat C3.pid)
++echo "C3 started tracebox_pid=$TPID"
++
++if ! wait_pid_exit "$TPID" 45; then
++  echo "C3 TIMEOUT: sending SIGINT for flush" >&2
++  if ! stop_tracebox "$TPID"; then
++    echo "C3 FAIL: tracebox did not exit after SIGINT/SIGTERM" >&2
++    exit 3
++  fi
++fi
++TPID=""   # tracebox has exited; avoid signaling a reused PID in cleanup
++
++# The output file may become visible slightly after the PID disappears.
++if ! wait_nonempty_file C3.pftrace 5; then
++  echo "C3 FAIL: C3.pftrace missing or empty" >&2
++  exit 4
++fi
++
++echo "C3 DONE size_bytes=$(wc -c < C3.pftrace)" > C3.status
++cat C3.status
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/remote_lib.sh v2_test_fix1/scripts/remote_lib.sh
+--- v2_test/scripts/remote_lib.sh	1970-01-01 08:00:00.000000000 +0800
++++ v2_test_fix1/scripts/remote_lib.sh	2026-10-17 20:10:03.628961283 +0800
+@@ -0,0 +1,64 @@
++#!/bin/sh
++# Common board-side helpers. Runs on the X5, not on the Ubuntu host.
++# All variables used by the remote scripts are resolved here, on the board.
++set -eu
++
++WORK=${WORK:-/data/perfetto-worker}
++mkdir -p "$WORK"
++
++if [ -z "${TRACEBOX:-}" ]; then
++  if command -v tracebox >/dev/null 2>&1; then
++    TRACEBOX=$(command -v tracebox)
++  else
++    TRACEBOX=/data/tracebox
++  fi
++fi
++if [ ! -x "$TRACEBOX" ]; then
++  echo "ERROR: tracebox is not executable: $TRACEBOX" >&2
++  exit 127
++fi
++
++# Wait for a PID to disappear. Returns 1 on timeout.
++wait_pid_exit() {
++  _pid=$1
++  _timeout_s=$2
++  _i=0
++  while kill -0 "$_pid" 2>/dev/null; do
++    _i=$((_i + 1))
++    if [ "$_i" -ge "$_timeout_s" ]; then
++      return 1
++    fi
++    sleep 1
++  done
++  return 0
++}
++
++# Wait until a regular file exists and is non-empty. Returns 1 on timeout.
++wait_nonempty_file() {
++  _f=$1
++  _timeout_s=$2
++  _i=0
++  while [ ! -s "$_f" ]; do
++    _i=$((_i + 1))
++    if [ "$_i" -ge "$_timeout_s" ]; then
++      return 1
++    fi
++    sleep 1
++  done
++  return 0
++}
++
++# Stop a tracebox background PID gracefully and wait for flush/exit.
++stop_tracebox() {
++  _pid=$1
++  if ! kill -0 "$_pid" 2>/dev/null; then
++    return 0
++  fi
++  kill -INT "$_pid" 2>/dev/null || true
++  if wait_pid_exit "$_pid" 10; then
++    return 0
++  fi
++  kill -TERM "$_pid" 2>/dev/null || true
++  wait_pid_exit "$_pid" 10 || return 1
++  return 0
++}
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/scripts/remote_stop.sh v2_test_fix1/scripts/remote_stop.sh
+--- v2_test/scripts/remote_stop.sh	1970-01-01 08:00:00.000000000 +0800
++++ v2_test_fix1/scripts/remote_stop.sh	2026-10-17 20:12:02.064635871 +0800
+@@ -0,0 +1,25 @@
++#!/bin/sh
++# Manual early stop for C1/C2/C3 tracebox session. Runs on the X5.
++# Usage: remote_stop.sh C1|C2|C3
++# Sends SIGINT, waits for flush, then checks the trace file is non-empty.
++set -eu
++SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
++. "$SCRIPT_DIR/remote_lib.sh"
++
++NAME=${1:?usage: remote_stop.sh C1|C2|C3}
++PIDFILE="$WORK/$NAME.pid"
++TRACEFILE="$WORK/$NAME.pftrace"
++if [ ! -f "$PIDFILE" ]; then
++  echo "STOP FAIL: missing $PIDFILE" >&2
++  exit 1
++fi
++TPID=$(cat "$PIDFILE")
++if ! stop_tracebox "$TPID"; then
++  echo "STOP FAIL: tracebox did not exit" >&2
++  exit 2
++fi
++if ! wait_nonempty_file "$TRACEFILE" 5; then
++  echo "STOP FAIL: $TRACEFILE missing or empty" >&2
++  exit 3
++fi
++echo "STOP OK: $NAME size_bytes=$(wc -c < "$TRACEFILE")"
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/10-cpu-thread-buckets.sql v2_test_fix1/sql/10-cpu-thread-buckets.sql
+--- v2_test/sql/10-cpu-thread-buckets.sql	2026-10-17 19:51:29.263877428 +0800
++++ v2_test_fix1/sql/10-cpu-thread-buckets.sql	2026-10-17 20:18:53.495391578 +0800
+@@ -1,19 +1,37 @@
+ -- 10-cpu-thread-buckets.sql
+ -- Per-thread CPU time in 100 ms buckets for the target process.
+--- Purpose: see whether the "CPU rise every few seconds" is a real, periodic,
+--- per-thread burst, and which thread carries it.
+--- UI: Counter Track; Timestamp=bucket_100ms (or ts_ns below); Value=cpu_ms; Pivot=thread.
+--- Fill target_name, then verify the resolved UPID against 00-inventory.sql.
+-WITH params AS (
++--
++-- FIX (r1): an interval [ts, ts+dur) is split by INTERSECTION with each
++-- bucket. It is NOT charged entirely to the bucket containing ts. This
++-- matters for 90-120 ms sched slices/thread states that cross a 100 ms edge.
++--
++-- Buckets are aligned to trace_bounds.start_ts. Overlap is:
++--   min(ts + dur, bucket_end) - max(ts, bucket_start)
++-- and is only counted when positive.
++--
++-- UI: Counter Track; Timestamp=ts_ns; Value=cpu_ms; Pivot=thread_name.
++-- Fill target_name; verify the resolved UPID against 00-inventory.sql.
++WITH RECURSIVE
++params AS (
+   SELECT 'worker_app' AS target_name
+-), target_threads AS (
++),
++target_threads AS (
+   SELECT th.utid, th.tid, th.name AS thread_name, p.upid, p.pid, p.name AS process_name
+   FROM thread th
+   JOIN process p USING (upid), params
+   WHERE p.name = params.target_name
+      OR p.name GLOB '*/' || params.target_name
+-), bounds AS (
+-  SELECT start_ts FROM trace_bounds
++),
++bounds AS (
++  SELECT start_ts, end_ts FROM trace_bounds
++),
++buckets(bucket) AS (
++  SELECT 0
++  UNION ALL
++  SELECT bucket + 1
++  FROM buckets
++  WHERE bucket + 1 <
++        (SELECT CAST((end_ts - start_ts + 99999999) / 100000000 AS INTEGER) FROM bounds)
+ )
+ SELECT
+   t.utid,
+@@ -21,13 +39,25 @@
+   t.thread_name,
+   t.upid,
+   t.pid,
+-  b.start_ts + CAST((s.ts - b.start_ts) / 100000000 AS INTEGER) * 100000000 AS ts_ns,
+-  CAST((s.ts - b.start_ts) / 100000000 AS INTEGER) AS bucket_100ms,
+-  SUM(s.dur) / 1000000.0 AS cpu_ms,
+-  COUNT(*) AS on_cpu_slices
++  b.start_ts + bk.bucket * 100000000 AS ts_ns,
++  bk.bucket AS bucket_100ms,
++  SUM(
++    MIN(s.ts + s.dur, b.start_ts + (bk.bucket + 1) * 100000000)
++    - MAX(s.ts, b.start_ts + bk.bucket * 100000000)
++  ) / 1000000.0 AS cpu_ms,
++  COUNT(*) AS overlapping_slices
+ FROM sched_slice s
+ JOIN target_threads t USING (utid)
+ CROSS JOIN bounds b
+-WHERE s.ts >= b.start_ts
++JOIN buckets bk
++  ON s.ts < b.start_ts + (bk.bucket + 1) * 100000000
++ AND s.ts + s.dur > b.start_ts + bk.bucket * 100000000
++WHERE s.dur > 0
++  AND s.ts < b.end_ts
+ GROUP BY t.utid, t.tid, t.thread_name, t.upid, t.pid, ts_ns, bucket_100ms
+ ORDER BY bucket_100ms, cpu_ms DESC;
++-- LIMIT: the recursive bucket CTE is sized to the trace duration; >100 s
++-- (1000+ buckets) can hit SQLite's recursive CTE limit. This delivery targets
++-- 30-90 s windows; split longer traces.
++-- Cross-check: for any single interval, SUM(cpu_ms) over its buckets must
++-- equal dur; see validation/tests/bucket_overlap_test.sql.
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/11-runnable-and-blocked.sql v2_test_fix1/sql/11-runnable-and-blocked.sql
+--- v2_test/sql/11-runnable-and-blocked.sql	2026-10-17 19:51:29.264146800 +0800
++++ v2_test_fix1/sql/11-runnable-and-blocked.sql	2026-10-17 20:18:53.495474303 +0800
+@@ -2,33 +2,71 @@
+ -- Runqueue latency and uninterruptible sleep in 100 ms buckets.
+ -- "R"/"R+" = runnable but not on CPU (wakeup -> running latency).
+ -- "D"     = uninterruptible sleep (often I/O or memory reclaim; inspect blocked_function).
+--- Purpose: separate "CPU busy" from "thread waited", which is the jitter that
+--- a CPU-usage percentage alone cannot show.
+-WITH params AS (
++--
++-- FIX (r1): every interval is intersected with each overlapping bucket, just
++-- like sql/10. A state that starts at 95 ms with 120 ms duration contributes
++-- 5 ms to bucket 0 and 100 ms + 15 ms to the following buckets; it is not
++-- charged entirely to bucket 0.
++--
++-- UI: Counter Track; Timestamp=ts_ns; Value=running_ms/runnable_ms/d_state_ms;
++-- Pivot=thread_name. runnable_overlaps counts overlaps, not distinct episodes.
++WITH RECURSIVE
++params AS (
+   SELECT 'worker_app' AS target_name
+-), target_threads AS (
++),
++target_threads AS (
+   SELECT th.utid, th.tid, th.name AS thread_name, p.upid, p.pid
+   FROM thread th
+   JOIN process p USING (upid), params
+   WHERE p.name = params.target_name
+      OR p.name GLOB '*/' || params.target_name
+-), bounds AS (
+-  SELECT start_ts FROM trace_bounds
++),
++bounds AS (
++  SELECT start_ts, end_ts FROM trace_bounds
++),
++buckets(bucket) AS (
++  SELECT 0
++  UNION ALL
++  SELECT bucket + 1
++  FROM buckets
++  WHERE bucket + 1 <
++        (SELECT CAST((end_ts - start_ts + 99999999) / 100000000 AS INTEGER) FROM bounds)
++),
++overlaps AS (
++  SELECT
++    st.utid,
++    st.state,
++    st.blocked_function,
++    b.start_ts + bk.bucket * 100000000 AS bucket_start,
++    bk.bucket AS bucket_100ms,
++    MIN(st.ts + st.dur, b.start_ts + (bk.bucket + 1) * 100000000)
++      - MAX(st.ts, b.start_ts + bk.bucket * 100000000) AS overlap_ns
++  FROM thread_state st
++  CROSS JOIN bounds b
++  JOIN buckets bk
++    ON st.ts < b.start_ts + (bk.bucket + 1) * 100000000
++   AND st.ts + st.dur > b.start_ts + bk.bucket * 100000000
++  WHERE st.dur > 0
++    AND st.ts < b.end_ts
++    AND st.utid IN (SELECT utid FROM target_threads)
+ )
+ SELECT
+   t.utid,
+   t.tid,
+   t.thread_name,
+-  b.start_ts + CAST((st.ts - b.start_ts) / 100000000 AS INTEGER) * 100000000 AS ts_ns,
+-  CAST((st.ts - b.start_ts) / 100000000 AS INTEGER) AS bucket_100ms,
+-  SUM(CASE WHEN st.state = 'Running' THEN st.dur ELSE 0 END) / 1000000.0 AS running_ms,
+-  SUM(CASE WHEN st.state IN ('R', 'R+') THEN st.dur ELSE 0 END) / 1000000.0 AS runnable_ms,
+-  SUM(CASE WHEN st.state = 'D' THEN st.dur ELSE 0 END) / 1000000.0 AS d_state_ms,
+-  SUM(CASE WHEN st.state IN ('R', 'R+') THEN 1 ELSE 0 END) AS runnable_episodes,
+-  MAX(CASE WHEN st.state = 'D' THEN st.blocked_function END) AS d_blocked_function
+-FROM thread_state st
++  o.bucket_start AS ts_ns,
++  o.bucket_100ms,
++  SUM(CASE WHEN o.state = 'Running' THEN o.overlap_ns ELSE 0 END) / 1000000.0 AS running_ms,
++  SUM(CASE WHEN o.state IN ('R', 'R+') THEN o.overlap_ns ELSE 0 END) / 1000000.0 AS runnable_ms,
++  SUM(CASE WHEN o.state = 'D' THEN o.overlap_ns ELSE 0 END) / 1000000.0 AS d_state_ms,
++  SUM(CASE WHEN o.state IN ('R', 'R+') THEN 1 ELSE 0 END) AS runnable_overlaps,
++  MAX(CASE WHEN o.state = 'D' THEN o.blocked_function END) AS d_blocked_function
++FROM overlaps o
+ JOIN target_threads t USING (utid)
+-CROSS JOIN bounds b
+-WHERE st.ts >= b.start_ts
+ GROUP BY t.utid, t.tid, t.thread_name, ts_ns, bucket_100ms
+ ORDER BY bucket_100ms, runnable_ms DESC;
++-- LIMIT: the recursive bucket CTE is sized to the trace duration; >100 s
++-- (1000+ buckets) can hit SQLite's recursive CTE limit. This delivery targets
++-- 30-90 s windows; split longer traces.
++-- Cross-check: SUM(running_ms + runnable_ms + d_state_ms + S/I/... buckets)
++-- must be <= trace duration; see validation/tests/bucket_overlap_test.sql.
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/12-native-dump-timeline.sql v2_test_fix1/sql/12-native-dump-timeline.sql
+--- v2_test/sql/12-native-dump-timeline.sql	2026-10-17 19:51:29.264363361 +0800
++++ v2_test_fix1/sql/12-native-dump-timeline.sql	2026-10-17 20:07:28.523300735 +0800
+@@ -4,6 +4,12 @@
+ -- (start_timestamp not published). Treat a.row ts as the snapshot END and the
+ -- preceding dump_interval_ms as an UNKNOWN-width window; do not claim exact
+ -- per-malloc timestamps. See references/02-native.md "Dump 可见性".
++--
++-- SAMPLING SEMANTICS: alloc_count/free_count/bytes are heapprofd sampling
++-- ESTIMATES, not exact malloc/free call counts. The analysis table's count is
++-- already a processed estimate; do not multiply it by the sampling interval
++-- yourself. This table has no business-level latency; use an independent
++-- trace_marker/log/timestamp source for latency.
+ WITH params AS (
+   SELECT -1 AS target_upid, 'libc.malloc' AS target_heap
+ )
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/13-native-callsite-hotspots.sql v2_test_fix1/sql/13-native-callsite-hotspots.sql
+--- v2_test/sql/13-native-callsite-hotspots.sql	2026-10-17 19:51:29.264622756 +0800
++++ v2_test_fix1/sql/13-native-callsite-hotspots.sql	2026-10-17 20:07:28.523369732 +0800
+@@ -2,6 +2,10 @@
+ -- Leaf callsites by allocated and freed bytes/counts (not ancestor-cumulative).
+ -- Use sql/04-native-callstacks.sql when the caller chain is needed.
+ -- Requires symbols for source-level names; otherwise mapping/address only.
++--
++-- SAMPLING SEMANTICS: alloc_count/free_count/bytes are estimates from random
++-- byte sampling, not exact call counts. A hot callsite is a candidate, not a
++-- latency proof; business latency needs independent event/log evidence.
+ WITH params AS (
+   SELECT -1 AS target_upid, 'libc.malloc' AS target_heap
+ )
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/16-perf-spike-vs-quiet.sql v2_test_fix1/sql/16-perf-spike-vs-quiet.sql
+--- v2_test/sql/16-perf-spike-vs-quiet.sql	2026-10-17 19:51:29.265905301 +0800
++++ v2_test_fix1/sql/16-perf-spike-vs-quiet.sql	2026-10-17 20:07:20.810745370 +0800
+@@ -1,28 +1,50 @@
+ -- 16-perf-spike-vs-quiet.sql
+--- Compare self CPU samples in explicit spike vs quiet windows.
+--- Fill all four timestamps in ns, taken from C1's time selection.
+--- This answers "which function is hotter during the jitter", not "why".
+-WITH params AS (
++-- Compare self CPU samples in spike vs quiet windows of THIS trace.
++--
++-- FIX (r1): windows are RELATIVE to trace_bounds.start_ts, not absolute
++-- timestamps copied from C1. C1 and C3 are separate captures; their absolute
++-- ns values are not comparable without explicit clock-alignment evidence.
++-- Use a time range selected in the C3 trace itself and convert it to offsets
++-- from C3's trace start. If you must use absolute ns, first prove alignment
++-- (shared clock, simultaneous capture, or a common marker) and document it.
++--
++-- 16a-perf-window-check.sql validates the offsets against trace_bounds.
++-- This answers "which function is hotter in that window", not "why".
++WITH bounds AS (
++  SELECT start_ts, end_ts FROM trace_bounds
++), params AS (
+   SELECT
+-    'worker_app' AS target_name,
+-    0 AS spike_start_ts,
+-    0 AS spike_end_ts,
+-    0 AS quiet_start_ts,
+-    0 AS quiet_end_ts
++    5000  AS spike_start_ms,
++    6000  AS spike_end_ms,
++    20000 AS quiet_start_ms,
++    21000 AS quiet_end_ms
++), windows AS (
++  SELECT
++    b.start_ts,
++    b.end_ts,
++    b.start_ts + p.spike_start_ms * 1000000 AS spike_start_ts,
++    b.start_ts + p.spike_end_ms   * 1000000 AS spike_end_ts,
++    b.start_ts + p.quiet_start_ms * 1000000 AS quiet_start_ts,
++    b.start_ts + p.quiet_end_ms   * 1000000 AS quiet_end_ts
++  FROM bounds b, params p
++), valid AS (
++  SELECT * FROM windows
++  WHERE spike_start_ts >= start_ts AND spike_end_ts <= end_ts
++    AND quiet_start_ts >= start_ts AND quiet_end_ts <= end_ts
++    AND spike_start_ts < spike_end_ts
++    AND quiet_start_ts < quiet_end_ts
+ ), target_threads AS (
+   SELECT th.utid
+   FROM thread th
+-  JOIN process p USING (upid), params
+-  WHERE p.name = params.target_name
+-     OR p.name GLOB '*/' || params.target_name
++  JOIN process p USING (upid)
++  WHERE p.name = 'worker_app'
++     OR p.name GLOB '*/' || 'worker_app'
+ ), tagged AS (
+   SELECT
+     ps.id,
+     CASE
+-      WHEN ps.ts >= (SELECT spike_start_ts FROM params)
+-       AND ps.ts <  (SELECT spike_end_ts   FROM params) THEN 'spike'
+-      WHEN ps.ts >= (SELECT quiet_start_ts FROM params)
+-       AND ps.ts <  (SELECT quiet_end_ts   FROM params) THEN 'quiet'
++      WHEN ps.ts >= w.spike_start_ts AND ps.ts < w.spike_end_ts THEN 'spike'
++      WHEN ps.ts >= w.quiet_start_ts AND ps.ts < w.quiet_end_ts THEN 'quiet'
+       ELSE 'excluded'
+     END AS phase,
+     COALESCE(f.name, '<unknown>') AS frame_name,
+@@ -32,6 +54,7 @@
+   JOIN stack_profile_callsite c ON c.id = ps.callsite_id
+   JOIN stack_profile_frame f ON f.id = c.frame_id
+   LEFT JOIN stack_profile_mapping m ON m.id = f.mapping
++  CROSS JOIN valid w
+ )
+ SELECT phase, frame_name, mapping_name, COUNT(*) AS samples
+ FROM tagged
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/16a-perf-window-check.sql v2_test_fix1/sql/16a-perf-window-check.sql
+--- v2_test/sql/16a-perf-window-check.sql	1970-01-01 08:00:00.000000000 +0800
++++ v2_test_fix1/sql/16a-perf-window-check.sql	2026-10-17 20:07:20.822745291 +0800
+@@ -0,0 +1,41 @@
++-- 16a-perf-window-check.sql
++-- Companion to 16-perf-spike-vs-quiet.sql.
++-- Purpose: prove the relative windows are inside THIS trace before trusting
++-- an empty/non-empty sample comparison.
++--
++-- Edit the four *_ms offsets in params. They are relative to this trace's
++-- trace_bounds.start_ts. Do NOT paste absolute timestamps from C1 here.
++WITH bounds AS (
++  SELECT start_ts, end_ts FROM trace_bounds
++), params AS (
++  SELECT
++    5000  AS spike_start_ms,
++    6000  AS spike_end_ms,
++    20000 AS quiet_start_ms,
++    21000 AS quiet_end_ms
++), windows AS (
++  SELECT
++    b.start_ts,
++    b.end_ts,
++    b.start_ts + p.spike_start_ms * 1000000 AS spike_start_ts,
++    b.start_ts + p.spike_end_ms   * 1000000 AS spike_end_ts,
++    b.start_ts + p.quiet_start_ms * 1000000 AS quiet_start_ts,
++    b.start_ts + p.quiet_end_ms   * 1000000 AS quiet_end_ts
++  FROM bounds b, params p
++)
++SELECT
++  start_ts,
++  end_ts,
++  spike_start_ts,
++  spike_end_ts,
++  quiet_start_ts,
++  quiet_end_ts,
++  CASE
++    WHEN spike_start_ts < start_ts OR spike_end_ts > end_ts
++      OR quiet_start_ts < start_ts OR quiet_end_ts > end_ts
++    THEN 'OUT_OF_TRACE'
++    WHEN spike_start_ts >= spike_end_ts OR quiet_start_ts >= quiet_end_ts
++    THEN 'INVALID_RANGE'
++    ELSE 'OK'
++  END AS window_check
++FROM windows;
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/17-alloc-vs-cpu.sql v2_test_fix1/sql/17-alloc-vs-cpu.sql
+--- v2_test/sql/17-alloc-vs-cpu.sql	2026-10-17 19:51:29.266152347 +0800
++++ v2_test_fix1/sql/17-alloc-vs-cpu.sql	2026-10-17 20:07:31.319835950 +0800
+@@ -7,6 +7,8 @@
+ --   * v57.1 collector may publish no window start (dur=0);
+ --   * 1 s CPU bucket and 2 s dump interval are different resolutions.
+ -- Therefore this is a screen for follow-up, not by itself proof of causation.
++-- alloc_count/alloc_bytes are heapprofd sampling estimates (not exact calls);
++-- latency must come from an independent event/log/sched timeline.
+ WITH params AS (
+   SELECT
+     -1 AS target_upid,
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/sql/20-jitter-cycles.sql v2_test_fix1/sql/20-jitter-cycles.sql
+--- v2_test/sql/20-jitter-cycles.sql	2026-10-17 19:51:29.266935256 +0800
++++ v2_test_fix1/sql/20-jitter-cycles.sql	2026-10-17 20:07:11.818803904 +0800
+@@ -2,6 +2,14 @@
+ -- Collapse high-CPU 1 s buckets into episodes, so the period and duty cycle of
+ -- the "every few seconds" burst can be measured instead of eyeballed.
+ -- Set spike_cpu_ms from the C1 baseline (e.g. baseline + 2..3x).
++--
++-- FIX (r1): numbering must happen AFTER filtering to spike buckets. The old
++-- order (ROW_NUMBER over all buckets, then WHERE spike=1) merged separate
++-- spikes separated by quiet buckets into one episode.
++--
++-- Counterexample with quiet gap is in
++-- validation/tests/jitter_cycles_counterexample.sql:
++--   buckets 0,1 high; 2,3 low; 4,5 high -> two episodes, not one.
+ WITH params AS (
+   SELECT 'worker_app' AS target_name, 100.0 AS spike_cpu_ms
+ ), bounds AS (
+@@ -20,10 +28,12 @@
+   SELECT bucket_s, cpu_ms,
+          CASE WHEN cpu_ms >= (SELECT spike_cpu_ms FROM params) THEN 1 ELSE 0 END AS spike
+   FROM cpu
+-), grouped AS (
+-  SELECT bucket_s, cpu_ms, spike,
++), spikes AS (
++  -- Filter first: only spike buckets participate in the run numbering.
++  SELECT bucket_s, cpu_ms,
+          bucket_s - ROW_NUMBER() OVER (ORDER BY bucket_s) AS grp
+   FROM flagged
++  WHERE spike = 1
+ )
+ SELECT
+   (SELECT start_ts FROM bounds) + MIN(bucket_s) * 1000000000 AS ts,
+@@ -33,8 +43,7 @@
+   COUNT(*) AS buckets_in_episode,
+   MAX(cpu_ms) AS peak_cpu_ms,
+   AVG(cpu_ms) AS avg_cpu_ms
+-FROM grouped
+-WHERE spike = 1
++FROM spikes
+ GROUP BY grp
+ ORDER BY first_bucket_s;
+ -- UI: Slice Track; Timestamp=ts; Duration=dur; Name=<literal>; Pivot=<literal>.
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/SKILL_GAP.md v2_test_fix1/validation/SKILL_GAP.md
+--- v2_test/validation/SKILL_GAP.md	1970-01-01 08:00:00.000000000 +0800
++++ v2_test_fix1/validation/SKILL_GAP.md	2026-10-17 20:18:07.037643809 +0800
+@@ -0,0 +1,31 @@
++# 首轮错误与 Skill 规则/实现缺口
++
++本文件只做归因，不修改或部署 `perfetto-memory-debugging` Skill，也不把修正版表现
++当作首轮盲测成绩。
++
++分类口径：
++
++- **规则未落实**：Skill 参考文档已经写了该约束，首轮交付没有照做。
++- **缺少可复用实现**：Skill 有原则/片段，但没有可直接运行、可回归的脚本或 SQL；
++  首轮只能自行实现，因而出现缺陷。
++- 两者可以同时成立。
++
++| # | 首轮问题 | Skill 中已有的规则/片段 | 归因 |
++|---|---|---|---|
++| 1 | `$TRACEBOX` 未定义；SSH 双引号导致 `$!`/`$(...)` 在主机展开 | `05-platforms.md` 要求区分【主机】/【目标机】并给完整执行顺序；但没有可复用的远程执行器/变量作用域封装 | **规则未落实 + 缺少实现**：没有 runner，首轮又直接拼双引号命令 |
++| 2 | C2 启动 app 后缺少观测/停止/flush，可能立即杀进程 | `05-platforms.md` 3.2 给出 Linux heapprofd 的 preload/`--background-wait` 流程，并写明“只有上一步返回成功才继续”；但没有 start→producer→observe→stop→flush 状态机 | **规则未落实 + 缺少实现**：原则存在，首轮没有生命周期；Skill 无脚本 |
++| 3 | C1/C3 后台采集完成条件、PID、SCP 失败仍宣称成功 | `06-quality.md` 明确四级验收、采集后检查、不能只看文件存在；但没有 host pull/失败传播脚本 | **规则未落实 + 缺少实现**：首轮未按验收规则；Skill 无 pull 脚本 |
++| 4 | `10/11` 把完整 `dur` 计入起始桶 | `01-counters.md` 强调 `rss_stat` 是绝对量、不能 sum，但没有“把任意区间按 100 ms 桶切分”的可复用 SQL | **缺少实现**：Skill 无 bucket-intersection SQL；首轮自行实现错误 |
++| 5 | `20` 先编号后筛高 CPU，安静间隔被合并 | Skill 没有 jitter/episode 分组规则或 SQL；`01-counters.md` 只提醒轮询/事件可能合流 | **缺少实现**：无 episode 归并 SQL；首轮自行实现错误 |
++| 6 | `16` 直接用 C1 绝对时间戳筛 C3 | `06-quality.md` 要求窗口/UPID/时间口径一致；`00-routing.md` 强调关联不等于因果；但没有跨 trace 对齐检查工具 | **规则未落实 + 缺少实现**：首轮忽略时间口径；Skill 无 window guard |
++| 7 | 把 heapprofd `count` 当精确调用次数；业务延迟无独立证据 | `02-native.md` 明确随机采样、`Total` 不证明 CPU/延迟；`00-routing.md` 要求业务标记/延迟证据 | **规则未落实**：规则写得很清楚，首轮 SQL/PLAN 没有把口径带下去 |
++
++## 结论
++
++- 第 4/5/6 条主要是**首轮 SQL/实现缺陷**；其中 4/5 也暴露 Skill 缺少可复用的区间/事件 SQL。
++- 第 1/2/3 条主要是**执行流程实现缺陷**；Skill 的原则存在，但没有 runner/生命周期/pull 脚本，
++  首轮在落地时放大了风险。
++- 第 7 条是**明确的 Skill 规则未落实**，不是 Skill 规则缺失。
++
++本修正版新增的 `scripts/`、`sql/16a`、`validation/tests/` 只是本交付的补丁，
++不代表 Skill 已获得这些能力，也没有修改 Skill。
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/VALIDATION.md v2_test_fix1/validation/VALIDATION.md
+--- v2_test/validation/VALIDATION.md	2026-10-17 19:51:26.503050104 +0800
++++ v2_test_fix1/validation/VALIDATION.md	2026-10-17 20:14:40.792734947 +0800
+@@ -111,3 +111,50 @@
+ - 未验证 `worker_app` 的符号、Build ID、frame pointer、启动参数。
+ - 未打开 Perfetto UI 查看本次采集结果；未生成截图/曲线。
+ - 未证明任何性能因果关系。
++
++## 7. 修正版 r1 增补验证
++
++本节只覆盖本轮 7 项修正，不改变首轮 `v2_test`。
++
++### 7.1 配置 schema
++
++C2 的 `duration_ms` 从 45000 改为 90000（安全上限），三份配置重新用 v58.2 descriptor
++校验，均 PASS。原始输出：`tests/outputs/schema_validation.txt`。
++
++### 7.2 SQL 正例/反例
++
++| 测试 | 正例/反例 | 结果 |
++|---|---|---|
++| `tests/bucket_overlap_test.sql` | 90/120 ms 跨 100 ms 边界正例 | 每个区间 `sum(overlap)==dur`，`diff_ns=0` |
++| `tests/real_trace_overlap_test.sql` | 真实 trace 5 条 90–120 ms slice | 5 条 `diff_ns=0` |
++| `tests/bucket_overlap_old_vs_new.sql` | 旧逻辑全记起始桶 | OLD 90 ms@bucket0；FIXED 5+85 ms |
++| `tests/jitter_cycles_counterexample.sql` | 含安静间隔反例 | OLD 1 段；FIXED 2 段 |
++| `tests/perf_window_guard_test.sql` | 窗口在/不在 trace | `OK` / `OUT_OF_TRACE` |
++| `16a` 真实 trace 偏移 | 有效/越界 | `OK` / `OUT_OF_TRACE` |
++| `16` perf trace | 本 trace 相对窗口 | 正常输出 spike/quiet 样本 |
++
++原始输出在 `tests/outputs/`；测试 trace 不是 `worker_app`，只用于 SQL 逻辑验证。
++
++### 7.3 Shell 生命周期 dry-run
++
++`tests/shell_lifecycle_dryrun.sh` 用 mock tracebox/app 验证：
++
++- C2：服务查询 → 起 app → 等 heapprofd → 观测 → 停 app → flush → SIGINT → 非空；
++- C1/C3：后台 PID、完成、非空输出；
++- `host_pull.sh`：成功返回 0；scp 失败/空文件返回非零。
++
++原始输出：`tests/outputs/shell_lifecycle_dryrun.txt`。
++这只是脚本控制流测试，**不证明**板端真实 tracebox/heapprofd 行为。
++
++### 7.4 版本边界（修正后仍适用）
++
++- v57.1 采集端不发布 heapprofd `start_timestamp`，v58.2 上 `dur=0` 常见；精确窗口 UNKNOWN。
++- 本方案 SQL 使用 v58.2 表名；v57.1 TP 无 `heap_profile` 时用 `10-native-dump-capability.sql` 降级。
++- 仅 v58.2 descriptor 静态校验；v57.1 运行期未验证。
++- heapprofd `count/size` 是采样估计；业务延迟需独立日志/打点/trace_marker。
++
++### 7.5 仍未验证
++
++- 未上板；未运行真实 tracebox/survey/heapprofd/perf。
++- 未验证 C2 producer 注册与 SIGINT flush 的真实时序。
++- 未验证 `worker_app` trace、符号、UI、性能因果。
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/TEST_RECORD.md v2_test_fix1/validation/tests/TEST_RECORD.md
+--- v2_test/validation/tests/TEST_RECORD.md	1970-01-01 08:00:00.000000000 +0800
++++ v2_test_fix1/validation/tests/TEST_RECORD.md	2026-10-17 20:18:39.958227476 +0800
+@@ -0,0 +1,210 @@
++# 修正版测试记录
++
++- 日期：2026-10-17
++- 主机 Trace Processor：`Perfetto v58.2-add693d8b`
++- 测试目的：验证本轮 7 项修正中的 SQL 与脚本控制流；**不用于 worker_app 结论**。
++- 原始输出：`validation/tests/outputs/`。
++- 测试 trace 仅用于表/语法和区间数学验证，不是 `worker_app` 采集：
++  - `combined_traceput.pftrace` sha256 `56b42293e757f273c182091c8cf8517eededc9d9b7de2112518930e4cbba8663`
++  - `perf_cpu.pftrace` sha256 `27d2008ffe00dee75d3ff456625d0d453dd94338f1d13723553e2371ea111487`
++
++## 1. Schema（v58.2 descriptor）
++
++```bash
++python3 <candidate>/scripts/validate_config.py configs/C1-worker-timeline.pbtxt \
++  --descriptor-set validation/trace_config-v58.2.desc
++# C2/C3 同样
++```
++
++结果：三份均 `[PASS] schema: parsed with supplied descriptor`。
++边界：这不是 v57.1 descriptor 校验，也不证明运行期数据源存在。
++
++原始输出：`outputs/schema_validation.txt`。
++
++## 2. 10/11 区间交集：90/120 ms 跨 100 ms 边界（正例）
++
++```bash
++TP query -f validation/tests/bucket_overlap_test.sql combined_traceput.pftrace
++```
++
++实际输出（节选）：
++
++```text
++"A_90ms_cross",0,5000000
++"A_90ms_cross",1,85000000
++"B_120ms_cross",0,5000000
++"B_120ms_cross",1,100000000
++"B_120ms_cross",2,15000000
++"C_exact_100ms",1,100000000
++"D_250ms_span",0,50000000
++"D_250ms_span",1,100000000
++"D_250ms_span",2,100000000
++"E_1ns_edge",0,1
++"E_1ns_edge",1,999999
++
++"name","dur","total_overlap_ns","diff_ns"
++"A_90ms_cross",90000000,90000000,0
++"B_120ms_cross",120000000,120000000,0
++"C_exact_100ms",100000000,100000000,0
++"D_250ms_span",250000000,250000000,0
++"E_1ns_edge",1000000,1000000,0
++```
++
++期望：每个区间 `sum(overlap)==dur`，`diff_ns=0`；90/120 ms 均跨边界拆分。
++实际：全部满足。
++
++## 3. 10/11 旧逻辑 vs 修正逻辑（反例）
++
++```bash
++TP query -f validation/tests/bucket_overlap_old_vs_new.sql combined_traceput.pftrace
++```
++
++实际输出：
++
++```text
++"logic","bucket","ms"
++"FIXED",0,5.000000
++"FIXED",1,85.000000
++"OLD",0,90.000000
++```
++
++期望：旧逻辑把 90 ms 全记到起始桶；修正逻辑拆成 5 ms + 85 ms。实际一致。
++
++## 4. 真实 trace 的 90–120 ms sched slice
++
++```bash
++TP query -f validation/tests/real_trace_overlap_test.sql combined_traceput.pftrace
++```
++
++实际输出：
++
++```text
++"id","ts","dur","total_overlap_ns","diff_ns"
++330,134020026855,98948542,98948542,0
++683,134247831855,100901292,100901292,0
++697,134251485230,113173708,113173708,0
++1127,134503817855,92436584,92436584,0
++5533,137146273106,115747459,115747459,0
++```
++
++期望：5 条跨桶 slice 的 `sum(overlap)==dur`。实际全部 `diff_ns=0`。
++该测试只说明区间数学正确，不代表 `worker_app` 的 CPU 分布。
++
++## 5. 20 抖动 episode：含安静间隔的反例
++
++```bash
++TP query -f validation/tests/jitter_cycles_counterexample.sql combined_traceput.pftrace
++```
++
++输入：1 s 桶 `0,1` 高；`2,3` 低；`4,5` 高；`6` 低。
++
++实际输出：
++
++```text
++"logic","first_bucket_s","last_bucket_s"
++"FIXED_splits",0,1
++"FIXED_splits",4,5
++"OLD_merges",0,5
++
++"old_episode_count","fixed_episode_count"
++1,2
++```
++
++期望：旧逻辑合并成 1 段（0–5），修正逻辑拆成 2 段（0–1、4–5）。实际一致。
++`sql/20` 已改为先 `WHERE spike=1` 再 `ROW_NUMBER()`。
++
++## 6. 16/16a：窗口必须属于被查询的 trace
++
++### 6.1 合成窗口检查
++
++```bash
++TP query -f validation/tests/perf_window_guard_test.sql combined_traceput.pftrace
++```
++
++实际：
++
++```text
++"name","window_check"
++"inside","OK"
++"outside","OUT_OF_TRACE"
++```
++
++### 6.2 真实 trace 的有效窗口
++
++```text
++16a with offsets 1000/2000/3000/4000 ms
++"window_check"
++"OK"
++```
++
++### 6.3 真实 trace 的越界窗口
++
++```text
++16a with offsets 20000/21000/22000/23000 ms
++"window_check"
++"OUT_OF_TRACE"
++```
++
++### 6.4 16 在 perf trace 上按本 trace 相对窗口取样
++
++```bash
++# target 改为测试进程 dd；窗口为 1000-2000 ms / 3000-4000 ms
++TP query -f /tmp/q16test.sql perf_cpu.pftrace
++```
++
++实际输出含 `spike` / `quiet` 两组函数样本（见 `outputs/16_perf_sample.txt`）。
++这只验证查询能按本 trace 窗口筛选；具体热点属于测试 trace 的 `dd`，与 `worker_app` 无关。
++
++## 7. Shell 生命周期 dry-run（mock，不上板）
++
++```bash
++sh validation/tests/shell_lifecycle_dryrun.sh
++```
++
++实际输出：
++
++```text
++== C2 lifecycle dry run ==
++C2 started tracebox_pid=...
++C2 started app_pid=...
++C2 heapprofd producer visible
++C2 DONE size_bytes=11
++PASS: C2 lifecycle, trace non-empty
++== C1/C3 completion dry run ==
++C1 DONE size_bytes=21
++C3 DONE size_bytes=21
++PASS: C1/C3 completion, non-empty outputs
++== remote_stop dry run ==
++STOP OK: C1 size_bytes=21
++STOP FAIL: missing .../MISSING.pid
++PASS: missing pid propagated
++== host_pull success ==
++PULL OK: C1.pftrace size=21 sha256=...
++PASS: pull success
++== host_pull missing file ==
++PULL FAIL: scp ...
++PASS: pull failure propagated
++== host_pull empty file ==
++PULL FAIL: .../EMPTY.pftrace is missing or empty
++PASS: empty file rejected
++```
++
++验证点：
++
++- C2 不立即杀 app：先服务查询、起 app、等 `heapprofd`、`OBSERVE_S=2`、停 app、flush、
++  SIGINT tracebox、非空检查。
++- C1/C3 的后台 PID、完成、非空文件。
++- `remote_stop.sh` 对已有 PID 成功 flush；对缺失 PID 返回非零。
++- `host_pull.sh` 对成功文件返回 0；对 scp 失败返回非 0；空文件也返回非 0。
++
++边界：mock 不是真实 tracebox；不能证明板端 `--system-sockets`、heapprofd 注册、
++SIGINT flush 时序。真实板端仍标记未验证。
++
++## 8. 未验证
++
++- 未上板，未运行真实 `tracebox`/`survey.sh`/heapprofd/perf。
++- 未验证 C2 `heapprofd` producer 真实可见性、flush 时长、`--system-sockets` 在 `/tmp`
++  只读时的行为。
++- 未验证 v57.1 descriptor。
++- 未验证 `worker_app` 的真实 trace、符号、UI。
++- 未证明任何性能因果关系。
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/bucket_overlap_old_vs_new.sql v2_test_fix1/validation/tests/bucket_overlap_old_vs_new.sql
+--- v2_test/validation/tests/bucket_overlap_old_vs_new.sql	1970-01-01 08:00:00.000000000 +0800
++++ v2_test_fix1/validation/tests/bucket_overlap_old_vs_new.sql	2026-10-17 20:13:48.409815882 +0800
+@@ -0,0 +1,30 @@
++-- Demonstrates the old vs fixed bucket attribution for a 90 ms interval
++-- starting at 95 ms. OLD: all 90 ms is charged to bucket 0. FIXED: 5 ms in
++-- bucket 0 and 85 ms in bucket 1. This is the concrete 90-120 ms boundary case.
++WITH RECURSIVE
++params AS (SELECT 100000000 AS bucket_ns),
++buckets(bucket) AS (
++  SELECT 0 UNION ALL SELECT bucket + 1 FROM buckets WHERE bucket < 2
++),
++sample(name, ts, dur) AS (
++  VALUES ('A_90ms_cross', 95000000, 90000000)
++),
++old_attribution AS (
++  SELECT name, ts, dur,
++         CAST(ts / (SELECT bucket_ns FROM params) AS INTEGER) AS old_bucket,
++         dur AS old_ms
++  FROM sample
++),
++new_attribution AS (
++  SELECT s.name, bk.bucket,
++         (MIN(s.ts + s.dur, (bk.bucket + 1) * p.bucket_ns)
++          - MAX(s.ts, bk.bucket * p.bucket_ns)) / 1000000.0 AS new_ms
++  FROM sample s CROSS JOIN buckets bk CROSS JOIN params p
++  WHERE s.ts < (bk.bucket + 1) * p.bucket_ns
++    AND s.ts + s.dur > bk.bucket * p.bucket_ns
++)
++SELECT 'OLD' AS logic, old_bucket AS bucket, old_ms / 1000000.0 AS ms
++FROM old_attribution
++UNION ALL
++SELECT 'FIXED', bucket, new_ms FROM new_attribution
++ORDER BY logic, bucket;
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/bucket_overlap_test.sql v2_test_fix1/validation/tests/bucket_overlap_test.sql
+--- v2_test/validation/tests/bucket_overlap_test.sql	1970-01-01 08:00:00.000000000 +0800
++++ v2_test_fix1/validation/tests/bucket_overlap_test.sql	2026-10-17 20:07:39.258625235 +0800
+@@ -0,0 +1,69 @@
++-- Synthetic test for the interval/bucket intersection used by sql/10 and 11.
++-- Intervals are in ns; buckets are 100 ms.
++-- Expected: every "diff_ns" is 0; 90 ms and 120 ms intervals starting at
++-- 95 ms must split across the 100 ms boundary (5 ms in bucket 0, remainder
++-- in later buckets), not be charged entirely to bucket 0.
++WITH RECURSIVE
++params AS (SELECT 100000000 AS bucket_ns),
++buckets(bucket) AS (
++  SELECT 0
++  UNION ALL
++  SELECT bucket + 1 FROM buckets WHERE bucket < 4
++),
++intervals(name, ts, dur) AS (
++  VALUES
++    ('A_90ms_cross',   95000000,  90000000),
++    ('B_120ms_cross',  95000000, 120000000),
++    ('C_exact_100ms', 100000000, 100000000),
++    ('D_250ms_span',   50000000, 250000000),
++    ('E_1ns_edge',     99999999,   1000000)
++),
++overlapped AS (
++  SELECT
++    i.name,
++    i.ts,
++    i.dur,
++    bk.bucket,
++    MIN(i.ts + i.dur, (bk.bucket + 1) * p.bucket_ns)
++      - MAX(i.ts, bk.bucket * p.bucket_ns) AS overlap_ns
++  FROM intervals i
++  CROSS JOIN buckets bk
++  CROSS JOIN params p
++  WHERE i.ts < (bk.bucket + 1) * p.bucket_ns
++    AND i.ts + i.dur > bk.bucket * p.bucket_ns
++)
++SELECT name, bucket, overlap_ns
++FROM overlapped
++ORDER BY name, bucket;
++
++WITH RECURSIVE
++params AS (SELECT 100000000 AS bucket_ns),
++buckets(bucket) AS (
++  SELECT 0
++  UNION ALL
++  SELECT bucket + 1 FROM buckets WHERE bucket < 4
++),
++intervals(name, ts, dur) AS (
++  VALUES
++    ('A_90ms_cross',   95000000,  90000000),
++    ('B_120ms_cross',  95000000, 120000000),
++    ('C_exact_100ms', 100000000, 100000000),
++    ('D_250ms_span',   50000000, 250000000),
++    ('E_1ns_edge',     99999999,   1000000)
++),
++overlapped AS (
++  SELECT
++    i.name, i.dur,
++    MIN(i.ts + i.dur, (bk.bucket + 1) * p.bucket_ns)
++      - MAX(i.ts, bk.bucket * p.bucket_ns) AS overlap_ns
++  FROM intervals i
++  CROSS JOIN buckets bk
++  CROSS JOIN params p
++  WHERE i.ts < (bk.bucket + 1) * p.bucket_ns
++    AND i.ts + i.dur > bk.bucket * p.bucket_ns
++)
++SELECT name, dur, SUM(overlap_ns) AS total_overlap_ns,
++       SUM(overlap_ns) - dur AS diff_ns
++FROM overlapped
++GROUP BY name, dur
++ORDER BY name;
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/jitter_cycles_counterexample.sql v2_test_fix1/validation/tests/jitter_cycles_counterexample.sql
+--- v2_test/validation/tests/jitter_cycles_counterexample.sql	1970-01-01 08:00:00.000000000 +0800
++++ v2_test_fix1/validation/tests/jitter_cycles_counterexample.sql	2026-10-17 20:07:53.270538814 +0800
+@@ -0,0 +1,80 @@
++-- Counterexample for sql/20-jitter-cycles.sql.
++-- Seven 1 s buckets:
++--   0,1 high; 2,3 low (quiet gap); 4,5 high; 6 low.
++-- Expected: OLD logic (ROW_NUMBER over all buckets before filtering) reports
++-- one merged episode; FIXED logic reports two episodes [0,1] and [4,5].
++WITH sample(bucket_s, cpu_ms) AS (
++  VALUES
++    (0, 50.0),
++    (1, 60.0),
++    (2,  1.0),
++    (3,  1.0),
++    (4, 55.0),
++    (5, 45.0),
++    (6,  1.0)
++),
++params AS (SELECT 20.0 AS spike_cpu_ms),
++flagged AS (
++  SELECT bucket_s, cpu_ms,
++         CASE WHEN cpu_ms >= (SELECT spike_cpu_ms FROM params) THEN 1 ELSE 0 END AS spike
++  FROM sample
++),
++old_grouped AS (
++  SELECT bucket_s, cpu_ms, spike,
++         bucket_s - ROW_NUMBER() OVER (ORDER BY bucket_s) AS grp
++  FROM flagged
++),
++old_episodes AS (
++  SELECT MIN(bucket_s) AS first_bucket_s, MAX(bucket_s) AS last_bucket_s
++  FROM old_grouped
++  WHERE spike = 1
++  GROUP BY grp
++),
++fixed_spikes AS (
++  SELECT bucket_s, cpu_ms,
++         bucket_s - ROW_NUMBER() OVER (ORDER BY bucket_s) AS grp
++  FROM flagged
++  WHERE spike = 1
++),
++fixed_episodes AS (
++  SELECT MIN(bucket_s) AS first_bucket_s, MAX(bucket_s) AS last_bucket_s
++  FROM fixed_spikes
++  GROUP BY grp
++)
++SELECT 'OLD_merges' AS logic, first_bucket_s, last_bucket_s FROM old_episodes
++UNION ALL
++SELECT 'FIXED_splits', first_bucket_s, last_bucket_s FROM fixed_episodes
++ORDER BY logic, first_bucket_s;
++
++WITH sample(bucket_s, cpu_ms) AS (
++  VALUES
++    (0, 50.0), (1, 60.0), (2, 1.0), (3, 1.0),
++    (4, 55.0), (5, 45.0), (6, 1.0)
++),
++params AS (SELECT 20.0 AS spike_cpu_ms),
++flagged AS (
++  SELECT bucket_s, cpu_ms,
++         CASE WHEN cpu_ms >= (SELECT spike_cpu_ms FROM params) THEN 1 ELSE 0 END AS spike
++  FROM sample
++),
++old_grouped AS (
++  SELECT bucket_s, cpu_ms, spike,
++         bucket_s - ROW_NUMBER() OVER (ORDER BY bucket_s) AS grp
++  FROM flagged
++),
++old_episodes AS (
++  SELECT MIN(bucket_s) AS first_bucket_s, MAX(bucket_s) AS last_bucket_s
++  FROM old_grouped WHERE spike = 1 GROUP BY grp
++),
++fixed_spikes AS (
++  SELECT bucket_s, cpu_ms,
++         bucket_s - ROW_NUMBER() OVER (ORDER BY bucket_s) AS grp
++  FROM flagged WHERE spike = 1
++),
++fixed_episodes AS (
++  SELECT MIN(bucket_s) AS first_bucket_s, MAX(bucket_s) AS last_bucket_s
++  FROM fixed_spikes GROUP BY grp
++)
++SELECT
++  (SELECT COUNT(*) FROM old_episodes) AS old_episode_count,
++  (SELECT COUNT(*) FROM fixed_episodes) AS fixed_episode_count;
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/perf_window_guard_test.sql v2_test_fix1/validation/tests/perf_window_guard_test.sql
+--- v2_test/validation/tests/perf_window_guard_test.sql	1970-01-01 08:00:00.000000000 +0800
++++ v2_test_fix1/validation/tests/perf_window_guard_test.sql	2026-10-17 20:08:00.018506997 +0800
+@@ -0,0 +1,32 @@
++-- Guard test for sql/16a-perf-window-check.sql.
++-- Windows are relative to this trace's trace_bounds.start_ts.
++-- Expected: 'inside' -> OK, 'outside' -> OUT_OF_TRACE.
++WITH bounds AS (
++  SELECT start_ts, end_ts FROM trace_bounds
++), cases(name, spike_start_ms, spike_end_ms, quiet_start_ms, quiet_end_ms) AS (
++  VALUES
++    ('inside',  1000, 2000,  3000,  4000),
++    ('outside', 20000, 21000, 22000, 23000)
++), windows AS (
++  SELECT
++    c.name,
++    b.start_ts + c.spike_start_ms * 1000000 AS spike_start_ts,
++    b.start_ts + c.spike_end_ms   * 1000000 AS spike_end_ts,
++    b.start_ts + c.quiet_start_ms * 1000000 AS quiet_start_ts,
++    b.start_ts + c.quiet_end_ms   * 1000000 AS quiet_end_ts,
++    b.start_ts,
++    b.end_ts
++  FROM bounds b, cases c
++)
++SELECT
++  name,
++  CASE
++    WHEN spike_start_ts < start_ts OR spike_end_ts > end_ts
++      OR quiet_start_ts < start_ts OR quiet_end_ts > end_ts
++    THEN 'OUT_OF_TRACE'
++    WHEN spike_start_ts >= spike_end_ts OR quiet_start_ts >= quiet_end_ts
++    THEN 'INVALID_RANGE'
++    ELSE 'OK'
++  END AS window_check
++FROM windows
++ORDER BY name;
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/real_trace_overlap_test.sql v2_test_fix1/validation/tests/real_trace_overlap_test.sql
+--- v2_test/validation/tests/real_trace_overlap_test.sql	1970-01-01 08:00:00.000000000 +0800
++++ v2_test_fix1/validation/tests/real_trace_overlap_test.sql	2026-10-17 20:07:47.374576227 +0800
+@@ -0,0 +1,42 @@
++-- Real-trace regression for the bucket intersection (sql/10 formula).
++-- This does NOT use worker_app data; it uses any trace containing sched
++-- slices of 90-120 ms that cross a 100 ms bucket edge.
++-- Expected: total_overlap_ns == dur, diff_ns == 0 for every sampled slice.
++WITH RECURSIVE
++bounds AS (SELECT start_ts, end_ts FROM trace_bounds),
++buckets(bucket) AS (
++  SELECT 0
++  UNION ALL
++  SELECT bucket + 1 FROM buckets
++  WHERE bucket + 1 <
++        (SELECT CAST((end_ts - start_ts + 99999999) / 100000000 AS INTEGER) FROM bounds)
++),
++samples AS (
++  SELECT s.id, s.ts, s.dur
++  FROM sched_slice s, bounds b
++  WHERE s.dur BETWEEN 90000000 AND 120000000
++    AND s.ts >= b.start_ts
++    AND s.ts < b.end_ts
++    AND CAST((s.ts - b.start_ts) / 100000000 AS INTEGER)
++        <> CAST((s.ts + s.dur - 1 - b.start_ts) / 100000000 AS INTEGER)
++  ORDER BY s.ts
++  LIMIT 5
++),
++overlapped AS (
++  SELECT
++    s.id,
++    s.ts,
++    s.dur,
++    MIN(s.ts + s.dur, b.start_ts + (bk.bucket + 1) * 100000000)
++      - MAX(s.ts, b.start_ts + bk.bucket * 100000000) AS overlap_ns
++  FROM samples s
++  CROSS JOIN bounds b
++  JOIN buckets bk
++    ON s.ts < b.start_ts + (bk.bucket + 1) * 100000000
++   AND s.ts + s.dur > b.start_ts + bk.bucket * 100000000
++)
++SELECT id, ts, dur, SUM(overlap_ns) AS total_overlap_ns,
++       SUM(overlap_ns) - dur AS diff_ns
++FROM overlapped
++GROUP BY id, ts, dur
++ORDER BY ts;
+diff -ruN '--exclude=SHA256SUMS' '--exclude=CHANGES.diff' '--exclude=outputs' v2_test/validation/tests/shell_lifecycle_dryrun.sh v2_test_fix1/validation/tests/shell_lifecycle_dryrun.sh
+--- v2_test/validation/tests/shell_lifecycle_dryrun.sh	1970-01-01 08:00:00.000000000 +0800
++++ v2_test_fix1/validation/tests/shell_lifecycle_dryrun.sh	2026-10-17 20:18:16.530128841 +0800
+@@ -0,0 +1,108 @@
++#!/bin/sh
++# Host-side dry run for the remote lifecycle scripts. No board, no real
++# tracebox, no worker_app: it uses mock binaries to verify PID handling,
++# observation time, stop/flush ordering, and pull failure propagation.
++set -eu
++
++FIX=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
++ROOT=$(mktemp -d "${TMPDIR:-/tmp}/perfetto-lifecycle.XXXXXX")
++trap 'rm -rf "$ROOT"' EXIT
++
++mkdir -p "$ROOT/bin" "$ROOT/work" "$ROOT/app" "$ROOT/pull"
++
++cat > "$ROOT/bin/tracebox" <<'EOF'
++#!/bin/sh
++if [ "${1:-}" = "--version" ]; then echo "v57.1-mock"; exit 0; fi
++if [ "${1:-}" = "perfetto" ]; then echo "PRODUCERS: heapprofd"; exit 0; fi
++out=""
++prev=""
++for a in "$@"; do
++  if [ "$prev" = "-o" ]; then out=$a; fi
++  prev=$a
++done
++[ -n "$out" ] || { echo "mock tracebox: no -o" >&2; exit 2; }
++case "$*" in
++  *C1-worker-timeline*|*C3-worker-cpu-profile*)
++    ( sleep 2; printf "mock-scheduled-trace\n" > "$out"; exit 0 ) &
++    echo $!
++    exit 0
++    ;;
++esac
++(
++  trap 'printf "mock-trace\n" > "$out"; exit 0' INT TERM
++  while :; do sleep 0.1; done
++) &
++echo $!
++EOF
++chmod +x "$ROOT/bin/tracebox"
++
++cat > "$ROOT/app/worker_app" <<'EOF'
++#!/bin/sh
++echo "mock app started"
++trap 'echo "mock app term"; exit 0' TERM INT
++while :; do sleep 0.2; done
++EOF
++chmod +x "$ROOT/app/worker_app"
++
++: > "$ROOT/work/libheapprofd_glibc_preload.so"
++: > "$ROOT/work/C2-worker-native-alloc.pbtxt"
++: > "$ROOT/work/C1-worker-timeline.pbtxt"
++: > "$ROOT/work/C3-worker-cpu-profile.pbtxt"
++printf "mock C1 trace\n" > "$ROOT/work/C1.pftrace"
++
++echo "== C2 lifecycle dry run =="
++WORK="$ROOT/work" TRACEBOX="$ROOT/bin/tracebox" OBSERVE_S=2 \
++  sh "$FIX/scripts/remote_c2.sh" "$ROOT/app" "$ROOT/app/worker_app" ""
++[ -s "$ROOT/work/C2.pftrace" ] || { echo "FAIL: C2 trace empty"; exit 1; }
++grep -q "C2 DONE" "$ROOT/work/C2.status" || { echo "FAIL: no DONE"; exit 1; }
++echo "PASS: C2 lifecycle, trace non-empty"
++
++echo "== C1/C3 completion dry run =="
++WORK="$ROOT/work" TRACEBOX="$ROOT/bin/tracebox" sh "$FIX/scripts/remote_c1.sh"
++WORK="$ROOT/work" TRACEBOX="$ROOT/bin/tracebox" sh "$FIX/scripts/remote_c3.sh"
++[ -s "$ROOT/work/C1.pftrace" ] || { echo "FAIL: C1 empty"; exit 1; }
++[ -s "$ROOT/work/C3.pftrace" ] || { echo "FAIL: C3 empty"; exit 1; }
++grep -q "C1 DONE" "$ROOT/work/C1.status" || { echo "FAIL: C1 no DONE"; exit 1; }
++grep -q "C3 DONE" "$ROOT/work/C3.status" || { echo "FAIL: C3 no DONE"; exit 1; }
++echo "PASS: C1/C3 completion, non-empty outputs"
++
++echo "== remote_stop dry run =="
++WORK="$ROOT/work" TRACEBOX="$ROOT/bin/tracebox" sh "$FIX/scripts/remote_stop.sh" C1
++if WORK="$ROOT/work" TRACEBOX="$ROOT/bin/tracebox" sh "$FIX/scripts/remote_stop.sh" MISSING; then
++  echo "FAIL: stop of missing pid returned success"; exit 1
++else
++  echo "PASS: missing pid propagated"
++fi
++
++cat > "$ROOT/bin/scp" <<'EOF'
++#!/bin/sh
++# fake scp: -q SRC DST
++src=$2; dst=$3
++case "$src" in
++  *MISSING*) echo "fake scp: no such file" >&2; exit 1;;
++esac
++cp "${FAKE_SCP_SRC:?}" "$dst"
++EOF
++chmod +x "$ROOT/bin/scp"
++
++echo "== host_pull success =="
++PATH="$ROOT/bin:$PATH" WORK="$ROOT/work" FAKE_SCP_SRC="$ROOT/work/C1.pftrace" \
++  sh "$FIX/scripts/host_pull.sh" fakeboard "$ROOT/pull" C1.pftrace
++echo "PASS: pull success"
++
++echo "== host_pull missing file =="
++if PATH="$ROOT/bin:$PATH" WORK="$ROOT/work" FAKE_SCP_SRC="$ROOT/work/C1.pftrace" \
++  sh "$FIX/scripts/host_pull.sh" fakeboard "$ROOT/pull" MISSING.pftrace; then
++  echo "FAIL: pull of missing file returned success"; exit 1
++else
++  echo "PASS: pull failure propagated"
++fi
++
++echo "== host_pull empty file =="
++: > "$ROOT/work/EMPTY.pftrace"
++if PATH="$ROOT/bin:$PATH" WORK="$ROOT/work" FAKE_SCP_SRC="$ROOT/work/EMPTY.pftrace" \
++  sh "$FIX/scripts/host_pull.sh" fakeboard "$ROOT/pull" EMPTY.pftrace; then
++  echo "FAIL: pull of empty file returned success"; exit 1
++else
++  echo "PASS: empty file rejected"
++fi

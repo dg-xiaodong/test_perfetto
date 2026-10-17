@@ -1,0 +1,35 @@
+Command: production 10/11 with cam-service on /root/sdk_md_x5_1.1.1/perfetto/captures/combined_traceput.pftrace
+Loading trace: 0.00 MBLoading trace: 1.09 MB[298.717]     common_flags.cc:525 Trace loaded: 1.09 MB in 0.05s (21.4 MB/s)
+
+
+Trace health issues:
+
+  Import errors
+    slice_max_depth_exceeded: 11120 | A slice was dropped because the slice nesting depth exceeded the max supported limit.
+
+[298.725]            query.cc:191 Query execution time: 7 ms
+2,657,"cam-service",1,587,144448075771,112,5.701668,12
+2,657,"cam-service",1,587,144548075771,113,5.563208,12
+2,657,"cam-service",1,587,144648075771,114,5.623958,12
+2,657,"cam-service",1,587,144748075771,115,5.545499,12
+2,657,"cam-service",1,587,144848075771,116,5.658000,12
+2,657,"cam-service",1,587,144948075771,117,5.838750,12
+2,657,"cam-service",1,587,145048075771,118,5.615209,12
+2,657,"cam-service",1,587,145148075771,119,4.840457,9
+Loading trace: 0.00 MBLoading trace: 1.09 MB[298.794]     common_flags.cc:525 Trace loaded: 1.09 MB in 0.05s (20.8 MB/s)
+
+
+Trace health issues:
+
+  Import errors
+    slice_max_depth_exceeded: 11120 | A slice was dropped because the slice nesting depth exceeded the max supported limit.
+
+[298.809]            query.cc:191 Query execution time: 14 ms
+2,657,"cam-service",144448075771,112,5.701668,0.000000,0.000000,0,"[NULL]"
+2,657,"cam-service",144548075771,113,5.563208,0.000000,0.000000,0,"[NULL]"
+2,657,"cam-service",144648075771,114,5.623958,0.000000,0.000000,0,"[NULL]"
+2,657,"cam-service",144748075771,115,5.545499,0.000000,0.000000,0,"[NULL]"
+2,657,"cam-service",144848075771,116,5.658000,0.000000,0.000000,0,"[NULL]"
+2,657,"cam-service",144948075771,117,5.838750,0.000000,0.000000,0,"[NULL]"
+2,657,"cam-service",145048075771,118,5.615209,0.000000,0.000000,0,"[NULL]"
+2,657,"cam-service",145148075771,119,4.840457,0.000000,0.000000,0,"[NULL]"

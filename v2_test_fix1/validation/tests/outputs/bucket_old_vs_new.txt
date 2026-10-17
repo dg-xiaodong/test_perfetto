@@ -1,0 +1,14 @@
+Command: /root/code_1.0.20/tmp/perfetto582/linux-amd64/trace_processor_shell query -f validation/tests/bucket_overlap_old_vs_new.sql /root/sdk_md_x5_1.1.1/perfetto/captures/combined_traceput.pftrace
+Loading trace: 0.00 MBLoading trace: 1.09 MB[006.738]     common_flags.cc:525 Trace loaded: 1.09 MB in 0.06s (19.2 MB/s)
+
+
+Trace health issues:
+
+  Import errors
+    slice_max_depth_exceeded: 11120 | A slice was dropped because the slice nesting depth exceeded the max supported limit.
+
+[006.738]            query.cc:191 Query execution time: 0 ms
+"logic","bucket","ms"
+"FIXED",0,5.000000
+"FIXED",1,85.000000
+"OLD",0,90.000000

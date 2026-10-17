@@ -1,0 +1,32 @@
+Command: 16 with target dd and valid relative offsets on perf_cpu trace
+Loading trace: 0.00 MBLoading trace: 0.54 MB[007.051]     common_flags.cc:525 Trace loaded: 0.54 MB in 0.03s (19.3 MB/s)
+
+
+Trace health issues:
+
+  Data losses
+    perf_cpu_lost_records[2]: 316 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[4]: 316 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[5]: 12 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+
+[007.054]            query.cc:191 Query execution time: 2 ms
+"phase","frame_name","mapping_name","samples"
+"quiet","chacha_permute","/kernel",200
+"quiet","chacha_block_generic","/kernel",47
+"quiet","_copy_to_iter","/kernel",21
+"quiet","__arch_copy_to_user","/kernel",16
+"quiet","__might_resched","/kernel",9
+"quiet","__memset___pi_memset","/kernel",8
+"quiet","get_random_bytes_user","/kernel",8
+"quiet","__might_sleep","/kernel",6
+"quiet","__might_fault","/kernel",5
+"spike","chacha_permute","/kernel",198
+"spike","chacha_block_generic","/kernel",60
+"spike","_copy_to_iter","/kernel",16
+"spike","__arch_copy_to_user","/kernel",13
+"spike","__might_resched","/kernel",7
+"spike","__memset___pi_memset","/kernel",6
+"spike","__might_fault","/kernel",6
+"spike","__might_sleep","/kernel",6
+"spike","get_random_bytes_user","/kernel",6
+"spike","arch_local_save_flags","/kernel",2

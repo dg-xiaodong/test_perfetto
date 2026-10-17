@@ -1,0 +1,10 @@
+Command: python3 /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/scripts/validate_config.py <config> --descriptor-set validation/trace_config-v58.2.desc
+===== configs/C1-worker-timeline.pbtxt
+[PASS] schema: parsed with supplied descriptor (runtime support NOT tested)
+[NOTE] runtime not verified by preflight: pass/fail above covers only static premises; readiness/injection/stop/flush still need runtime evidence
+===== configs/C2-worker-native-alloc.pbtxt
+[PASS] schema: parsed with supplied descriptor (runtime support NOT tested)
+[NOTE] runtime not verified by preflight: pass/fail above covers only static premises; readiness/injection/stop/flush still need runtime evidence
+===== configs/C3-worker-cpu-profile.pbtxt
+[PASS] schema: parsed with supplied descriptor (runtime support NOT tested)
+[NOTE] runtime not verified by preflight: pass/fail above covers only static premises; readiness/injection/stop/flush still need runtime evidence
