@@ -1,0 +1,1038 @@
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/MANIFEST.json /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/MANIFEST.json
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/MANIFEST.json	2026-10-17 11:10:04.767464709 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/MANIFEST.json	2026-10-17 19:00:22.538202715 +0800
+@@ -1,20 +1,21 @@
+ {
+   "name": "perfetto-memory-debugging",
+-  "version": "1.0.0",
++  "version": "1.0.1",
+   "sources_reviewed_on": "2026-10-14",
+   "entrypoint": "SKILL.md",
+   "verification": {
+-    "local_unit_tests_passed": 35,
++    "local_unit_tests_passed": 58,
+     "official_descriptor_validation": "not_executed",
+-    "trace_processor_execution": "not_executed",
++    "trace_processor_execution": "executed_on_x5_ab_traces_v58.2",
+     "perfetto_ui_inspection": "not_executed",
+-    "x5_or_android_execution": "not_executed",
+-    "independent_agent_ab_tests": "not_executed"
++    "x5_or_android_execution": "not_executed_in_1.0.1",
++    "independent_agent_ab_tests": "see tests/agent_ab (result recorded separately)"
+   },
+   "files": {
+-    "README.md": "8dac631d7b072947b0dd9e82d209413d97d1a34b2029e1f061975f19bbbe1b27",
+-    "SKILL.md": "4f5f6ae9ec20c6dd0fccab18409617cb575ad350e23febd2879397861119cba7",
+-    "TEST_REPORT.md": "386a2312fd544d06cb42ec1878fbf4aa44798c29d50d23cd6623958a69384e06",
++    "MANIFEST.json": "d0d659f533255f57bad8ab075ac3f86be4efe5168fa67152d532cdac41f606a3",
++    "README.md": "9081e666173999098b12f6d91861667fcef45a8880dcbdf2868bebc57d7f1125",
++    "SKILL.md": "70371e5bcbe06e8efdc9c47578111989001ad33d787106de649430bab53275d0",
++    "TEST_REPORT.md": "48176b7d378c70d35a692fabd52c2a9ce9149a0f47ba4be8b9982f821b4cd985",
+     "configs/android-lmk.pbtxt": "f602a30b1e9a907488fb4583eef6d0dea96584a4b256cdb3533518f6ad58997f",
+     "configs/java-alloc.pbtxt": "22d464dec025b932979adea285a3c452dabd0257d065a25e9cf3f926e33208e7",
+     "configs/java-graph.pbtxt": "048c3ae592100e18ff88f4a9523a0b4d3fd5e50d7e1f4509f5fdf3081bc0eb74",
+@@ -29,31 +30,41 @@
+     "examples/memprobe.c": "0595c4562e3cc6c1d66adca9b7a3f25a4618e550f3e1f5ceaf92d926f40c746f",
+     "references/00-routing.md": "a6a7c2749c427c323a20adf5d58861ed81a649566290e9ccf9e43df11c1321ee",
+     "references/01-counters.md": "9709f339c2637a8523d6f87b30c41ae263e1b7cb4be7d93d4bba0804165ab385",
+-    "references/02-native.md": "8b1854ae4c78226d76cd8d82c3074945558a2ae42f81f78f7dd08aaa513e1211",
++    "references/02-native.md": "21b8bd7a9ec8862b80a019a15916da0ab392f01574dd5ca98d81b083d266a0c9",
+     "references/03-managed.md": "e772fa7e171c3e04bd71a57c76fc0844d41c4ee2eefd400f4b9c804ced1c70e1",
+     "references/04-ui.md": "e9061ba1726d96ef7393d13e76e1d9f5607e4065cf00fe295dec45cd61f4444e",
+     "references/05-platforms.md": "20a4be3be898e0c4ab61ab97febc5d74e4cbe8004939dd375a97b2d24666ccd2",
+-    "references/06-quality.md": "5214e2a4e5c36c20d779c8a80226a9e7f8ed0e8491bbfb0cdbc0461f27515618",
++    "references/06-quality.md": "fdf5f2bc899d96615050afcbffbcd26e5fed9552ff98215078dba0fdc16a1a10",
+     "references/07-internals-and-pprof.md": "ad5936f6487777fda1ff9afa86021ca94a218450a14ef40606cbc44aa71966c3",
+     "references/08-worked-examples.md": "261ccbb50775d5b81c3092d4f1b4f3ed316664dfd4f36a8769e862463ef15bfb",
+     "references/09-advanced-configs.md": "731f08e171059e327d93a3934bf3849955c69e58a9f5c54e81f3e2dfc12966f4",
+     "references/sources.md": "ca4156344e7d791af2e403807a15d19100a18e495368977ed56fe55d562c647b",
+     "scripts/make_config.py": "7fc12b10626826d08a40cf881780f2e053c282356ad7293712ad6d2ccf50b959",
+     "scripts/survey.sh": "177174ef9bc97a634f819373701e56078866b97d3b62d1ebfb385a75c8645c72",
+-    "scripts/validate_config.py": "b2148c5039d5f398ec2bca98c927f78ef59c3dd114a550fdac9dc2a6a8a5d8ba",
+-    "sql/00-inventory.sql": "bac0e609ca1ec00d49558cbadc27ff6f2e7932d2f618e133721c1ad5360eb223",
++    "scripts/validate_config.py": "7f0a77561763bdd094e8172c15c098992fb4f5ddf269a2429ddb3c930a5cacff",
++    "sql/00-inventory.sql": "15395e29057af8992dc86987687ea9a824cc8b8b0e525d8e263e9061c2a7b0e8",
+     "sql/01-rss-timeline.sql": "bba8bd251ade106d03e07cf5ea838a0cfc2c4acb750c9aaa4102cfa200f1a81d",
+     "sql/02-counter-fallback.sql": "8ca84c3b038b164a81e53c3d9d9f1460bf0c7430aa42ade614b0a599c159cb46",
+-    "sql/03-native-live.sql": "1e77d60d2dd66d62b5404993c9636bb16591f474c634586d430fe9910b332949",
+-    "sql/04-native-callstacks.sql": "bb3bd4ce5fe3c1abd21bbb6b1b665aa05b134912286d7a716c9070837ef8212f",
++    "sql/03-native-live.sql": "c1098395bcb97415858560d591718269f9783c69b185588177256184c6b05e8a",
++    "sql/04-native-callstacks.sql": "cfc689b2f2c37c8f4d431dff815297fcbf66c9188bd47ea9246bd98e1e2f7298",
+     "sql/05-native-global-summary.sql": "b17abae2210d2cf61795e395833d188659a7112dd523bd447c8ba36e3909be33",
+     "sql/06-art-snapshots.sql": "313c16792b28937143fe10976e846203939923202984118ef4b28661d0c5ac95",
+     "sql/07-kernel-events.sql": "3b26b7cae2bd0df32adbb1db502a0f6b8647a1aea981c12d7b390fdae9aef795",
+     "sql/08-pprof.sql": "b310d8d3a67ef5184ecf246e779118c64820516d69341d91abbb155334296abf",
+-    "tests/scenarios.md": "b09d01836c0487c47e5d75e81c21a6e73493c61f00ba94c9043006e521df6890",
++    "sql/10-native-dump-capability.sql": "e03d64d0f24d5f1ffbeb25e6faa923b2e9ce254a4a46c1635a22f5b1b3b4a0c1",
++    "tests/agent_ab/R1_old_skill_raw.md": "8e6929511ac44756a5410d5fb7660dedcdde426bf9de33739c2ffa03bdd5bdee",
++    "tests/agent_ab/R2_candidate_skill_raw.md": "1cd39fea552aecab7d64ce01b8fe758ca2b17dd86ca1491dc744728cd000454c",
++    "tests/agent_ab/README.md": "38db587bd6f4a42ed5cdede91c4bae457e43dd233a719d8ed8960abbfeb18dc7",
++    "tests/agent_ab/T1_execution_prereq.md": "aa048a86fa03b6f8e3c5ba14ddeccbadfdc96f2e21a386d97ba53b2ba1fe3f7c",
++    "tests/agent_ab/T2_target_discovery.md": "64c0913f39035901a9a0b1f3fad77afccd24bc60b552d714ddcc5ebbb2fc0362",
++    "tests/agent_ab/T3_ab_interpretation.md": "aee49db0630d54ad3744a0db254692a123e9787234ed3ad04d355834e7d1bbcf",
++    "tests/agent_ab/rubric.md": "d07ad804d6b6c9d8134f12eede93d0e0b926fc3e5356e3ccb85bf73a27965f20",
++    "tests/scenarios.md": "e3c985b33408c2b009db41ea18f1005c6abc66c7e321be50d263fad1738b99bd",
+     "tests/test_accounting.py": "63910b7fbe6e4f5a600c4ecf49f8de4e2ab32deebd16f6c32bfe73777bb959af",
+     "tests/test_config.py": "40374d5dc0c1270fb9c6e4d5ef8c95aeed85957a5058ccf812f0d46a20288e31",
++    "tests/test_dump_capability.py": "459f4ec9dc095774154bf6d6210aedc0253bc8ef0daf014b087198dd1c5ff589",
+     "tests/test_package.py": "4f5b9d0e9266f7de7ef7980d1bf1ec9e3b8351296a1191f47868c9f168401a4b",
+-    "tests/test_validator.py": "ac3387caa958d2960bc47e6115bbf11f5d9bd4c5e5468e737c91976f723a2ba0"
++    "tests/test_targets.py": "b6f93c90b9bc65b2912ca4917dec737c8d26b7cac4a9dfddad1e4032262e8aa3",
++    "tests/test_validator.py": "57d5c8aada169b22719bc569c510f9b34c7af1b6e1688ce74cf246427d7dc2d7"
+   }
+ }
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/README.md /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/README.md
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/README.md	2026-10-17 11:10:04.750483061 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/README.md	2026-10-17 18:24:28.141997383 +0800
+@@ -72,6 +72,11 @@
+ ```bash
+ python3 scripts/validate_config.py memory.pbtxt \
+   --descriptor-set /absolute/work/trace_config.desc --binary-out memory.pb
++
++# 静态预检（不需要 descriptor；只证明静态一致，不证明运行期就绪/注入/停止/flush）
++python3 scripts/validate_config.py --check-resources
++python3 scripts/validate_config.py memory.pbtxt --deploy-name memprobe
++python3 scripts/validate_config.py --binary ./memprobe_arm64
+ ```
+ 
+ descriptor来自与采集器匹配的Perfetto源码，生成方法在[验收指南](references/06-quality.md)。该验证器需要主机Python protobuf；设备不需要。没有descriptor时不会假装schema已验证。
+@@ -94,7 +99,7 @@
+ ├── references/              场景、平台、原理、UI与官方来源
+ ├── configs/                 10份参考TraceConfig
+ ├── scripts/                 配置生成、只读探测、schema验证
+-├── sql/                     9份发现/分析/展示查询
++├── sql/                     10份发现/分析/展示查询（含 dump 可见性能力检查）
+ ├── examples/                有界C测试程序、示例事件清单
+ └── tests/                   契约/统计测试、28项Agent行为回归场景
+ ```
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/SKILL.md /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/SKILL.md
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/SKILL.md	2026-10-17 11:10:04.751015547 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/SKILL.md	2026-10-17 18:22:30.965238816 +0800
+@@ -27,6 +27,12 @@
+ 
+ 可运行 `sh scripts/survey.sh`；内核事件清单用 `sh scripts/survey.sh --events`。脚本不修改系统。X5 的历史环境来自用户报告，不能代替本次探测。
+ 
++### 2.1 资源完整性与复用
++
++- 选好路线后，先检查该路线依赖的 `references/`、`sql/`、`scripts/` 是否完整可读：`python3 scripts/validate_config.py --check-resources`。
++- 资源缺失或不可读时，**明确列出缺失项与降级范围**（例：缺 `sql/04-native-callstacks.sql` → 只能给调用栈思路，不能给可跑查询），不得称为完整 Skill 流程。
++- 优先复用包内已验证实现（`sql/`、`scripts/`、`configs/`），只调整明确的目标名、路径、版本与采集参数；不改写已验证的判据。
++
+ ## 3. 构造配置与执行
+ 
+ 优先调用 `python3 scripts/make_config.py --help`，按实际平台、目标和事件文件生成完整 pbtxt。十个常用场景已实现；高级变体按相应参考扩展，不把生成器选项当作能力全集。
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/TEST_REPORT.md /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/TEST_REPORT.md
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/TEST_REPORT.md	2026-10-17 11:10:04.751266098 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/TEST_REPORT.md	2026-10-17 19:00:22.516014469 +0800
+@@ -35,3 +35,19 @@
+ gcc在`-Wall -Wextra -Werror`下构建memprobe通过；heap模式使用1MiB/1ms/2轮，spike/churn/mmap各使用1MiB/1ms/1轮，均正常退出并打印结束事件。没有在这里执行300MiB压力测试。
+ 
+ 只读survey的临时tracefs fixture输出与输入事件文件逐字一致，tracing_on保持0；`sh -n`通过。独立CLI smoke中Native配置完整输出；在Linux上请求java-graph被拒绝且stdout没有残留半份配置。
++
++## 1.0.1 候选版（范围受限修改）
++
++新增测试：`test_targets.py`（候选发现/路径名/歧义）、`test_dump_capability.py`（可见 dump/零宽窗口/v57.1 降级）、`test_validator.py` 的 `PreflightTests`（资源完整性、deploy-name、ELF PT_INTERP、退出码）。
++
++- 本地单测：**58 项通过**（`python3 -m unittest discover -s tests`；含 2026-10-17 预检修复新增用例）。
++- 真实 TP 回归（v58.2 + X5 A/B 真实 trace）：候选查询各返回 2 行、唯一 data-bearing；`sql/10` 在 A 报 `dumps=1/dur=0`、B 报 `dumps=6/dur=0`；`sql/03` 在 B 得到 `8,8,8,0,0,0`。
++- 未执行：Perfetto UI 检查、X5 现场采集（本轮不要求）、独立 Agent A/B（材料见 `tests/agent_ab/`）。
++- 预检脚本只证明静态前提；**运行期就绪/注入/停止/flush 仍需运行期证据**（notify-fd 字节、trace 内容、stats/日志）。
++
++## 2026-10-17 修订（定点修复）
++
++- `scripts/validate_config.py`：支持同行/多目标/路径归一化；glob、无 cmdline、非 ELF、截断 ELF 判 UNKNOWN（rc=2）；configs 检查可读且非空；运行期未验证改为 `[NOTE]`，不影响退出码。
++- `references/02-native.md`：上界证据**不得**断言"实际持有与预期不符"。
++- `tests/agent_ab/rubric.md`：符号无数据接受 UNKNOWN；UNKNOWN 后禁用 interval 推断"不符"；重新评分 6/9 vs 8/9。
++- 真实 TP 回归脚本 `verify/tp_check.py` 加固断言并新增故障注入测试（8 例）。
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/references/02-native.md /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/references/02-native.md
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/references/02-native.md	2026-10-17 11:10:04.759453505 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/references/02-native.md	2026-10-17 18:59:41.241198729 +0800
+@@ -60,6 +60,28 @@
+ 
+ `android_heap_profile_summary_tree` 汇总整份 trace 的所有进程，并不带可供过滤的 upid/ts。单进程查询先在 allocation 表过滤，再按 callsite 聚合/递归到父栈；本包 `sql/04-native-callstacks.sql` 提供这种写法。cumulative 字节在祖先栈会重复出现，不能把所有函数 cumulative 相加当总内存。
+ 
++### Dump 可见性、去重与旧采集端元数据
++
++以下三条是**采集器行为**，不是分析器可选功能，直接决定"能看到几份 dump、时间窗是否可判"：
++
++1. **dump 的窗口结束时刻只随分配推进。** heapprofd 每份 dump 的 `window_end` 取 `HeapTracker::committed_timestamp_`；该值仅在提交**带非零 timestamp 的分配**时更新（v58.2 `src/profiling/memory/bookkeeping.cc` 的 `CommitOperation`：`if (operation.timestamp) committed_timestamp_ = operation.timestamp;`），而 `free` 以 `timestamp=0` 提交（`heapprofd_producer.cc` 的 `HandleFreeRecord` → `RecordFree(..., 0)`）。因此**长时间只持有、不新分配**时，所有周期 dump 的 `window_end` 相同。
++2. **分析器按 `(upid, window_end, heap_name)` 去重。** Trace Processor 对同一键只插入一行 `heap_profile`（`src/trace_processor/importers/proto/profile_module.cc` 的 `seen_heap_profiles_.Insert(...)`）。所以**配置里的 `dump_interval_ms` 不等于可见 dump 数**；触发次数是 `floor((运行时长-phase)/interval)+1`，可见行数还要求每次窗口有前进。
++3. **旧采集端不提供窗口起点。** `ProfilePacket.ProcessHeapSamples.start_timestamp` 标注 *Unset on older producers*；缺失时 TP 令 `ts == ts_end`，于是 `heap_profile.dur = 0`，**窗口区间不可知**（X5 tracebox v57.1 采集 + v58.2 TP 分析实测：6 份 dump、`dur` 全 0）。`dur=0` 不等于采集失败，只意味着"无法用 dump 窗口界定持有区间"。
++
++区分三种"存在"，不要混为一谈：
++
++| 层次 | 例子 | 能说明什么 |
++|---|---|---|
++| 采集端字段 | v57.1 不发 `start_timestamp` | 窗口起点永远缺失 |
++| 分析器表 | v58.2 TP 有 `heap_profile`；v57.1 TP 没有 | 表存在 ≠ 该 trace 有数据 |
++| 实际 trace 数据 | `heap_profile` 行数、allocation 行数 | 只到这一步才能谈"采到了" |
++
++能力检查：运行 `sql/10-native-dump-capability.sql`（先确认 `heap_profile` 是否存在；不存在时用文件内 v57.1 降级语句，只统计活动 dump）。判读：
++
++- `dumps` ≪ 预期且 `zero_dur_dumps = dumps` → 属于上面第 2/3 条，**不要**据此否定总量、分配/释放或符号结论；
++- 精确持有区间在 `dur=0` 时**不可判**（UNKNOWN），只能给上界证据；上界证据**不得**反过来断言"实际持有与预期不符"——那需要运行期时间戳，dump 窗口给不出（见 `references/06-quality.md` 三态）；
++- 想让可见 dump 变多，需要采集侧让窗口前进（例如持有期保留低开销分配），或换发布该字段的采集器版本；不改分析 SQL 阈值去"凑"通过。
++
+ ## 空 profile / 错栈排查
+ 
+ 先看目标进程是否匹配、存活并有分配；检查正确会话中的 heapprofd 数据源、运行/启动策略、并发 profiling 拒绝、权限、socket和预加载。再看 buffer_overran、disconnected、unwind failures 等日志/trace诊断；字段名称以实际版本为准，不把“文件存在”作为完成。
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/references/06-quality.md /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/references/06-quality.md
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/references/06-quality.md	2026-10-17 11:10:04.760335156 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/references/06-quality.md	2026-10-17 18:22:30.965858803 +0800
+@@ -89,3 +89,26 @@
+ ## 6. 输出结论的格式
+ 
+ 先写实际观察（UPID、窗口、指标与量级），再写推论及支持证据，最后写尚缺的因果环节。对没有执行的设备/UI测试明确标记未验证。完整图表应能追溯到配置、trace、SQL和版本，不依赖助手记忆中的一次结果。
++
++## 7. 判定三态与回归义务
++
++逐项判定，不用一个总状态代替：
++
++| 状态 | 含义 |
++|---|---|
++| **PASS** | 证据满足该检查项的条件 |
++| **FAIL** | 证据明确违反条件 |
++| **UNKNOWN** | 缺少该指标所需证据（字段不提供、窗口不可知、样本为空、未执行） |
++
++`UNKNOWN` 必须写清"哪个指标不可测、哪些结论仍可用"。例：`heap_profile.dur=0` 时，**精确持有区间是 UNKNOWN**，但总量、分配/释放、dump 数、符号仍是 PASS/FAIL 可判项；不要因为看到 `dur=0` 就把全部结论判未知。
++
++回归按改动类型选择，不重复无关测试：
++
++| 改动 | 必跑 |
++|---|---|
++| SQL（`sql/*.sql`） | 真实 Trace Processor 执行：一条正常例 + 一条反例 |
++| 预检脚本（`scripts/`） | 正确前提与错误前提各一条，检查退出码与消息 |
++| 文档/入口（`SKILL.md`、`references/`） | 独立 Agent 行为测试（`tests/scenarios.md`） |
++| 采集配置模板（`configs/`） | 生成器单测 + 匹配版本 schema 校验（能拿到 descriptor 时） |
++
++修复任一 SQL 后，回归必须覆盖"真实 TP + 反例"，SQLite fixture 单独通过不算完成。
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/scripts/validate_config.py /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/scripts/validate_config.py
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/scripts/validate_config.py	2026-10-17 11:10:04.761779638 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/scripts/validate_config.py	2026-10-17 18:59:11.029130770 +0800
+@@ -1,12 +1,153 @@
+ #!/usr/bin/env python3
+ """Validate pbtxt using a descriptor set from YOUR collector's Perfetto source.
+-Host dependency: Python protobuf. Schema success does not verify runtime support.
++
++Preflight checks (no descriptor needed):
++  --check-resources   required references/sql/scripts/tests exist AND are readable
++  --deploy-name NAME  launched basename is among config's process_cmdline targets
++  --binary PATH       ELF has PT_INTERP (dynamic preload target needs dynamic linking)
++
++Exit convention (static checks only):
++  0  every requested static check PASS
++  1  at least one requested static check FAIL
++  2  a requested static check could not be completed (UNKNOWN) or host dep missing
++
++Runtime readiness/injection/stop/flush are NOT proven by preflight; the tool prints a
++[NOTE] line for that and never turns it into a static FAIL.
+ """
+ from __future__ import annotations
+ import argparse
+ import pathlib
++import re
++import struct
+ import sys
+ 
++REQUIRED = [
++    'SKILL.md', 'README.md',
++    'references/00-routing.md', 'references/01-counters.md', 'references/02-native.md',
++    'references/03-managed.md', 'references/04-ui.md', 'references/05-platforms.md',
++    'references/06-quality.md', 'references/07-internals-and-pprof.md',
++    'references/08-worked-examples.md', 'references/09-advanced-configs.md',
++    'references/sources.md',
++    'sql/00-inventory.sql', 'sql/01-rss-timeline.sql', 'sql/02-counter-fallback.sql',
++    'sql/03-native-live.sql', 'sql/04-native-callstacks.sql', 'sql/05-native-global-summary.sql',
++    'sql/06-art-snapshots.sql', 'sql/07-kernel-events.sql', 'sql/08-pprof.sql',
++    'sql/10-native-dump-capability.sql',
++    'scripts/survey.sh', 'scripts/make_config.py', 'scripts/validate_config.py',
++    'tests/scenarios.md',
++]
++MIN_CONFIGS = 10
++CMD_RE = re.compile(r'process_cmdline\s*[:=]\s*(?:"([^"]*)"|\'([^\']*)\'|([^\s,;}\)]+))')
++
++
++def _readable_nonempty(path: pathlib.Path) -> bool:
++    try:
++        with open(path, 'rb') as f:
++            return len(f.read(512)) > 0
++    except OSError:
++        return False
++
++
++def check_resources(root: pathlib.Path):
++    """All required files readable & non-empty; every config readable & non-empty."""
++    bad = []
++    for rel in REQUIRED:
++        p = root / rel
++        if not p.is_file() or not _readable_nonempty(p):
++            bad.append(rel)
++    cfgs = sorted((root / 'configs').glob('*.pbtxt')) if (root / 'configs').is_dir() else []
++    if len(cfgs) < MIN_CONFIGS:
++        bad.append(f'configs/*.pbtxt (<{MIN_CONFIGS})')
++    for c in cfgs:
++        if not _readable_nonempty(c):
++            bad.append(f'configs/{c.name} (empty/unreadable)')
++    if bad:
++        return 'UNKNOWN', 'cannot complete resource check: ' + ', '.join(bad)
++    return 'PASS', f'{len(REQUIRED)} required files + {len(cfgs)} configs readable'
++
++
++def read_targets(config_text: str):
++    """Extract process_cmdline values anywhere in the text (same line/minified ok)."""
++    out = []
++    for m in CMD_RE.finditer(config_text):
++        val = next((g for g in m.groups() if g is not None), '')
++        if val:
++            out.append(val.strip())
++    return out
++
++
++def normalize_target(name: str):
++    """Return basename for a target name, or None if it contains a glob (unsupported)."""
++    n = name.strip().strip('"').strip("'")
++    if any(ch in n for ch in '*?['):
++        return None
++    return pathlib.PurePath(n).name
++
++
++def check_deploy_name(config_text: str, deploy_name: str):
++    """heapprofd matches argv[0] basename; compare against every configured target."""
++    targets = read_targets(config_text)
++    if not targets:
++        return 'UNKNOWN', 'config has no process_cmdline (not a heapprofd target config)'
++    got = pathlib.PurePath(deploy_name.strip()).name
++    if any(ch in got for ch in '*?['):
++        return 'UNKNOWN', f'launched name {deploy_name!r} contains a glob; cannot verify statically'
++    normalized = []
++    for t in targets:
++        nt = normalize_target(t)
++        if nt is None:
++            return 'UNKNOWN', f'target {t!r} contains a glob; heapprofd matches exact basename'
++        normalized.append(nt)
++    if got in normalized:
++        return 'PASS', f'launched basename={got!r} matches target(s) {targets!r}'
++    return 'FAIL', (f"launched basename={got!r} not in config targets {targets!r}; "
++                    'heapprofd will not match this process and BLOCKING_INIT may hang')
++
++
++def elf_has_interp(path: pathlib.Path):
++    """True/False for PT_INTERP; None (UNKNOWN) for non-ELF or truncated/corrupt ELF."""
++    try:
++        with open(path, 'rb') as f:
++            ident = f.read(16)
++            if len(ident) < 16 or ident[:4] != b'\x7fELF':
++                return None
++            cls, data = ident[4], ident[5]
++            if data not in (1, 2) or cls not in (1, 2):
++                return None
++            endian = '<' if data == 1 else '>'
++            if cls == 2:
++                f.seek(0x20); phoff = struct.unpack(endian + 'Q', f.read(8))[0]
++                f.seek(0x36); phentsize = struct.unpack(endian + 'H', f.read(2))[0]
++                f.seek(0x38); phnum = struct.unpack(endian + 'H', f.read(2))[0]
++            else:
++                f.seek(0x1C); phoff = struct.unpack(endian + 'I', f.read(4))[0]
++                f.seek(0x2A); phentsize = struct.unpack(endian + 'H', f.read(2))[0]
++                f.seek(0x2C); phnum = struct.unpack(endian + 'H', f.read(2))[0]
++            if phnum == 0 or phentsize < 8 or phoff <= 0:
++                return None
++            size = path.stat().st_size
++            if phoff + phnum * phentsize > size:
++                return None
++            for i in range(phnum):
++                f.seek(phoff + i * phentsize)
++                raw = f.read(4)
++                if len(raw) < 4:
++                    return None
++                if struct.unpack(endian + 'I', raw)[0] == 3:  # PT_INTERP
++                    return True
++            return False
++    except (OSError, struct.error, ValueError):
++        return None
++
++
++def check_binary(path: pathlib.Path):
++    has = elf_has_interp(path)
++    if has is None:
++        return 'UNKNOWN', f'{path} is not a readable/complete ELF; cannot judge dynamic linking'
++    if has:
++        return 'PASS', f'{path} is a dynamic ELF (PT_INTERP present)'
++    return 'FAIL', f'{path} has no PT_INTERP: statically linked targets ignore LD_PRELOAD'
++
++
+ def parse_config(descriptor_bytes: bytes, config_text: str):
+     from google.protobuf import descriptor_pb2, descriptor_pool, message_factory, text_format
+     desc = descriptor_pb2.FileDescriptorSet()
+@@ -31,22 +172,81 @@
+         raise ValueError('Missing required fields: ' + ', '.join(message.FindInitializationErrors()))
+     return message
+ 
++
+ def main() -> int:
+-    p = argparse.ArgumentParser(description=__doc__)
+-    p.add_argument('config', type=pathlib.Path)
+-    p.add_argument('--descriptor-set', type=pathlib.Path, required=True)
++    p = argparse.ArgumentParser(description=__doc__,
++                                formatter_class=argparse.RawDescriptionHelpFormatter)
++    p.add_argument('config', nargs='?', type=pathlib.Path)
++    p.add_argument('--descriptor-set', type=pathlib.Path)
+     p.add_argument('--binary-out', type=pathlib.Path)
++    p.add_argument('--check-resources', action='store_true')
++    p.add_argument('--deploy-name')
++    p.add_argument('--binary', type=pathlib.Path)
+     a = p.parse_args()
+-    try:
+-        msg = parse_config(a.descriptor_set.read_bytes(), a.config.read_text(encoding='utf-8'))
+-        if a.binary_out: a.binary_out.write_bytes(msg.SerializeToString())
+-    except ImportError:
+-        print('ERROR: install Python protobuf on the HOST.', file=sys.stderr)
++
++    root = pathlib.Path(__file__).resolve().parents[1]
++    ran = False
++    fail = False
++    unknown = False
++
++    if a.check_resources:
++        ran = True
++        st, detail = check_resources(root)
++        print(f'[{st}] resources: {detail}')
++        fail |= st == 'FAIL'
++        unknown |= st == 'UNKNOWN'
++
++    if a.deploy_name:
++        ran = True
++        if a.config is None:
++            print('[UNKNOWN] deploy-name: missing config path (cannot complete check)')
++            unknown = True
++        else:
++            st, detail = check_deploy_name(a.config.read_text(encoding='utf-8', errors='replace'),
++                                           a.deploy_name)
++            print(f'[{st}] deploy-name: {detail}')
++            fail |= st == 'FAIL'
++            unknown |= st == 'UNKNOWN'
++
++    if a.binary:
++        ran = True
++        st, detail = check_binary(a.binary)
++        print(f'[{st}] binary: {detail}')
++        fail |= st == 'FAIL'
++        unknown |= st == 'UNKNOWN'
++
++    if a.descriptor_set:
++        ran = True
++        if a.config is None:
++            print('[UNKNOWN] schema: missing config path (cannot complete check)')
++            unknown = True
++        else:
++            try:
++                msg = parse_config(a.descriptor_set.read_bytes(),
++                                   a.config.read_text(encoding='utf-8'))
++                if a.binary_out:
++                    a.binary_out.write_bytes(msg.SerializeToString())
++                print('[PASS] schema: parsed with supplied descriptor (runtime support NOT tested)')
++            except ImportError:
++                print('[UNKNOWN] schema: install Python protobuf on the HOST')
++                unknown = True
++            except Exception as e:
++                print(f'[FAIL] schema: {type(e).__name__}: {e}')
++                fail = True
++
++    if not ran:
++        print('[UNKNOWN] nothing to do: pass --descriptor-set and/or '
++              '--check-resources/--deploy-name/--binary')
+         return 2
+-    except Exception as e:
+-        print(f'INVALID: {type(e).__name__}: {e}', file=sys.stderr)
++
++    print('[NOTE] runtime not verified by preflight: pass/fail above covers only '
++          'static premises; readiness/injection/stop/flush still need runtime evidence')
++    if fail:
+         return 1
+-    print('SCHEMA OK using supplied descriptor; runtime support has NOT been tested.')
++    if unknown:
++        return 2
+     return 0
+ 
+-if __name__ == '__main__': raise SystemExit(main())
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/sql/00-inventory.sql /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/sql/00-inventory.sql
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/sql/00-inventory.sql	2026-10-17 11:10:04.763070848 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/sql/00-inventory.sql	2026-10-17 18:22:38.906602017 +0800
+@@ -16,3 +16,36 @@
+ FROM heap_profile_allocation GROUP BY upid, heap_name;
+ SELECT upid, graph_sample_ts, COUNT(*) AS objects
+ FROM heap_graph_object GROUP BY upid, graph_sample_ts;
++
++-- [CANDIDATES] Native 目标候选：upid/pid/name + 目标 heap 的 dump/记录数 + 歧义。
++-- 用法：把 params.target_name 改成目标名（不带路径；'memprobe' 可匹配 '/data/memprobe'）。
++-- 解析规则：仅当恰好一个候选 data_bearing=1 时用它；否则报"未解析"，不要静默取第一行。
++-- 若本机 TP 没有 heap_profile（v57.1），删掉 dumps 子查询，用 activity_dumps 代替。
++WITH params AS (
++  SELECT 'memprobe' AS target_name, 'libc.malloc' AS target_heap
++), cand AS (
++  SELECT p.upid, p.pid, p.name, p.start_ts, p.end_ts
++  FROM process p, params q
++  WHERE p.name = q.target_name OR p.name GLOB '*/' || q.target_name
++)
++SELECT c.upid, c.pid, c.name,
++  (SELECT COUNT(*) FROM heap_profile_allocation a, params q
++    WHERE a.upid = c.upid AND a.heap_name = q.target_heap) AS alloc_rows,
++  (SELECT COUNT(*) FROM heap_profile_allocation a, params q
++    WHERE a.upid = c.upid AND a.heap_name = q.target_heap AND a.size > 0) AS alloc_pos_rows,
++  (SELECT COUNT(DISTINCT a.ts) FROM heap_profile_allocation a, params q
++    WHERE a.upid = c.upid AND a.heap_name = q.target_heap) AS activity_dumps,
++  (SELECT COUNT(*) FROM heap_profile h, params q
++    WHERE h.upid = c.upid AND h.heap_name = q.target_heap) AS dumps,
++  CASE WHEN (SELECT COUNT(*) FROM heap_profile_allocation a, params q
++              WHERE a.upid = c.upid AND a.heap_name = q.target_heap) > 0
++       THEN 1 ELSE 0 END AS data_bearing,
++  CASE WHEN (SELECT COUNT(DISTINCT a.upid) FROM heap_profile_allocation a, params q
++              WHERE a.heap_name = q.target_heap
++                AND a.upid IN (SELECT upid FROM cand)) > 1
++       THEN 1 ELSE 0 END AS ambiguous
++FROM cand c
++ORDER BY data_bearing DESC, c.upid;
++-- 同名辅助进程是常态：Linux preload 客户端会 fork 一个继承 cmdline 的 heapprofd 子进程，
++-- 它通常 data_bearing=0；用户已给出 PID/UPID 时，沿用该值并核对其 identity，
++-- 不要因为"另一条记录有数据"而改选。
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/sql/03-native-live.sql /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/sql/03-native-live.sql
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/sql/03-native-live.sql	2026-10-17 11:10:04.763615330 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/sql/03-native-live.sql	2026-10-17 18:22:38.908892592 +0800
+@@ -1,3 +1,7 @@
++-- target_upid 必须来自 sql/00-inventory.sql 的 [CANDIDATES] 查询结果：
++--   * 仅当恰好一个候选 data_bearing=1 时才用它；有歧义 → 报未解析，不静默选。
++--   * 用户已指定 PID/UPID 时沿用该值，不因“另一条记录有数据”而改选。
++--   * 保持 -1 表示未解析：此时返回 0 行不代表“没有分配”，必须先解析目标。
+ -- Normal Native incremental profiles ONLY, not ART allocation or dump_at_max.
+ -- Fill params from inventory; byte values are already sampling estimates.
+ -- UI: Counter Track; ts / value / series. Snapshot resolution, NOT per-malloc.
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/sql/04-native-callstacks.sql /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/sql/04-native-callstacks.sql
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/sql/04-native-callstacks.sql	2026-10-17 11:10:04.763743633 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/sql/04-native-callstacks.sql	2026-10-17 18:22:38.908972962 +0800
+@@ -1,3 +1,7 @@
++-- target_upid 必须来自 sql/00-inventory.sql 的 [CANDIDATES] 查询结果：
++--   * 仅当恰好一个候选 data_bearing=1 时才用它；有歧义 → 报未解析，不静默选。
++--   * 用户已指定 PID/UPID 时沿用该值，不因“另一条记录有数据”而改选。
++--   * 保持 -1 表示未解析：此时返回 0 行不代表“没有分配”，必须先解析目标。
+ -- Normal Native allocation profiles ONLY. Filter BEFORE recursive aggregation.
+ -- This returns a TABLE of frame/callsite cumulative values, not a timeline.
+ -- Set params using actual trace UPID, heap and nanosecond timestamps.
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/sql/10-native-dump-capability.sql /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/sql/10-native-dump-capability.sql
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/sql/10-native-dump-capability.sql	1970-01-01 08:00:00.000000000 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/sql/10-native-dump-capability.sql	2026-10-17 18:22:38.909030676 +0800
+@@ -0,0 +1,37 @@
++-- Dump 可见性能力检查（配合 references/02-native.md 的“Dump 可见性”小节）
++-- 先确认分析器是否有 heap_profile 表；v57.1 的 TP 没有该表，用文件末尾的降级语句。
++-- 判读：dumps 少、zero_dur_dumps==dumps、distinct_ts_end==dumps 时，
++--       说明可见性受“分配推进窗口”/旧采集端无 start_timestamp 影响，不代表采集失败。
++-- 不要用本文件的结果去改验收阈值。
++
++-- [1] 表能力：这一版分析器提供了哪些表
++SELECT name FROM sqlite_master
++WHERE name IN ('heap_profile', 'heap_profile_allocation')
++ORDER BY name;
++
++-- [2] dump 轴（v58.2 分析器）：窗口、行数、零宽 dump 检测
++WITH params AS (SELECT -1 AS target_upid, 'libc.malloc' AS target_heap)
++SELECT h.ts, h.ts_end, h.dur, h.upid, h.heap_name,
++       (SELECT COUNT(*) FROM heap_profile_allocation a
++         WHERE a.upid = h.upid AND a.heap_name = h.heap_name AND a.ts = h.ts_end) AS alloc_rows
++FROM heap_profile h, params p
++WHERE h.upid = p.target_upid AND h.heap_name = p.target_heap
++ORDER BY h.ts_end;
++
++-- [3] 汇总：可见 dump 数、时间戳是否重复、零宽 dump 数（v58.2 分析器）
++WITH params AS (SELECT -1 AS target_upid, 'libc.malloc' AS target_heap)
++SELECT COUNT(*) AS dumps,
++       COUNT(DISTINCT h.ts_end) AS distinct_ts_end,
++       SUM(CASE WHEN h.dur = 0 THEN 1 ELSE 0 END) AS zero_dur_dumps,
++       MIN(h.ts_end) AS first_ts_end, MAX(h.ts_end) AS last_ts_end
++FROM heap_profile h, params p
++WHERE h.upid = p.target_upid AND h.heap_name = p.target_heap;
++
++-- [4] 降级（v57.1 分析器 / 无 heap_profile 表）：只能统计“活动 dump”
++WITH params AS (SELECT -1 AS target_upid, 'libc.malloc' AS target_heap)
++SELECT COUNT(DISTINCT a.ts) AS activity_dumps,
++       MIN(a.ts) AS first_ts, MAX(a.ts) AS last_ts,
++       SUM(CASE WHEN a.size > 0 THEN a.size ELSE 0 END) AS alloc_bytes,
++       SUM(CASE WHEN a.size < 0 THEN -a.size ELSE 0 END) AS free_bytes
++FROM heap_profile_allocation a, params p
++WHERE a.upid = p.target_upid AND a.heap_name = p.target_heap;
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/agent_ab/R1_old_skill_raw.md /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/agent_ab/R1_old_skill_raw.md
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/agent_ab/R1_old_skill_raw.md	1970-01-01 08:00:00.000000000 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/agent_ab/R1_old_skill_raw.md	2026-10-17 18:27:46.102439109 +0800
+@@ -0,0 +1,48 @@
++# 旧版（v1.0.0）首轮原始输出
++
++加载声明：读取 SKILL.md、references 02/04/05/06/07/08/09、sql 00/03/04、configs；未读 skill_candidate、历史会话、诊断报告。
++
++## T1 执行前提
++(1) 检查分层：
++- 只能静态完成（主机、不碰板端）：file/readelf 确认 aarch64 ELF、经 INTERP 动态链接、malloc/free 为动态未定义符号（静态链接程序不走 LD_PRELOAD）；preload .so 的架构、GLIBC_* 需求 ≤2.35、NEEDED 可解析；用与**板端采集器同版本**的 proto descriptor 跑 validate_config.py（语法通过≠数据源存在）；编译期 -g -O1 -fno-omit-frame-pointer -fno-optimize-sibling-calls。
++- 必须运行期证据：/data 挂载类型与余量（tmpfs 文件本身吃 RAM：32MiB trace + 8MiB shmem + 输出）；tracebox 版本与 heapprofd producer 真实存在（tracebox perfetto --query）；preload 是否真加载进目标进程；BLOCKING_INIT 是否生效且首次 malloc 不阻塞；目标 argv 是否真被匹配；采集后真有该 UPID 的 heap 行/符号/非零 stats。“映射了 glibc”只是必要条件，不证明 unwind/socket/daemon/ABI。
++(2) 实际名 memprobe_arm64 而配置写 process_cmdline: "memprobe" → 精确匹配不命中，trace 只剩系统 counters、heap 为空；这是**静默失败**，必须靠运行期验收（UPID 有无 heap 行）发现，绝不能把空 profile 读成“没有分配”。改名或改配置为 memprobe_arm64；不要拿 glob 当跨版本通用能力。
++(3) 命令：
++静态
++  file memprobe_arm64; readelf -h memprobe_arm64 | grep -E 'Class|Machine'
++  readelf -l memprobe_arm64 | grep INTERP
++  nm -D --undefined-only memprobe_arm64 | grep -wE 'malloc|free|calloc'
++  readelf -d libheapprofd_glibc_preload.so | grep NEEDED
++  readelf --version-info libheapprofd_glibc_preload.so | grep -o 'GLIBC_2\.[0-9]*' | sort -u
++  python3 scripts/validate_config.py native.pbtxt --descriptor-set trace_config.desc
++运行期（板端只读）
++  mount | grep ' /data '; df -h /data; df -i /data
++  /data/tracebox --version; /data/tracebox perfetto --query | grep -i heapprofd
++  P=$(pgrep -f memprobe | head -1); tr '\0' ' ' < /proc/$P/cmdline; echo
++  tr '\0' '\n' < /proc/$P/maps | grep -c heapprofd
++采集后必查 heap_profile_allocation 有该 UPID+libc.malloc、stats 无 data loss/断开、符号状态。
++
++## T2 目标发现与 SQL 参数
++(1) 候选发现 SQL：
++SELECT p.upid, p.pid, p.name, p.start_ts, p.end_ts,
++       COUNT(a.size) AS n_rows, COUNT(DISTINCT a.ts) AS dumps,
++       SUM(CASE WHEN a.size>0 THEN a.size ELSE 0 END)/1048576.0 AS alloc_mib,
++       SUM(CASE WHEN a.size<0 THEN -a.size ELSE 0 END)/1048576.0 AS free_mib,
++       MIN(a.ts) first_ts, MAX(a.ts) last_ts
++FROM process p LEFT JOIN heap_profile_allocation a
++  ON a.upid=p.upid AND a.heap_name='libc.malloc'
++WHERE p.name GLOB '*memprobe*'
++GROUP BY p.upid,p.pid,p.name ORDER BY p.upid;
++另查歧义：SELECT name,COUNT(*) FROM process WHERE name GLOB '*memprobe*' GROUP BY name;
++本例：191 有 1 dump/4 rows；193 n_rows=0（preload fork 的 heapprofd 子进程，同名不同 UPID）。
++(2) 解析规则：仅当 n_rows>0 且能唯一确定 UPID 才填参数；UPID 是 trace 内标识、跨 trace 不可复用，PID 复用须按 start_ts/end_ts 核对实例；“无 heap 行”只说明本次未被采样，≠没有分配。同名多进程即歧义：不能只用名字当键，按 pid+时间窗+复现动作对齐，或补采时用显式 pid:（配 no_startup:true），不猜。用户已给 PID/UPID 时以用户为准，但须校验该 UPID 存在、在 trace 窗口内、确有 heap 行；若它无数据，报告“该 UPID 无 heap rows/可能选错”，不要静默替换成另一个 UPID。
++(3) target_upid 填 191、target_heap='libc.malloc'，start_ts/end_ts 留 0..max（03 的前缀和发生在窗口过滤前，保留基线；04 必须先过滤再递归聚合）。留 -1 返回 0 行只说明占位符未替换（upid=-1 不存在），**不能当作“没有分配”**；即使真填无数据的 193 得 0 行，也只能说“这份 trace 该 UPID 无 heap 数据”。
++
++## T3 A/B 数据判读
++先定口径：dur=0 是 native 快照/增量表的正常属性（dump 是聚合快照，不是逐次 malloc 事件），dur 不承担时间含义 → 不能用它否定结论，也不能用它算区间；时间依据是各份 dump 的 ts。
++- dump 数与 interval：B PASS / A FAIL。启动必有一份 dump（phase 不能推迟首份），phase 3000+interval 2000 在约 11s 会话应为 1+5=6 份，B 吻合（仍须用实际 ts 差核对≈2000ms）；A 仅 1 份 = 只有启动 dump，连续 dump 未生效或会话早停/匹配过晚，A 不可当正常基线。
++- 总量与 free：PASS（两者）。28 vs 28.23MiB 差 ~0.8%，在采样估计方差内，不算显著差异；alloc≈free 说明配对释放，窗口内净变化≈0。
++- live 持有与回落：B PASS / A UNKNOWN。B 的 8,8,8,0,0,0 是 dump 级证据，支持“持有 8MiB→后来释放”；A max live=0 只是只有一份 dump、看不到持有过程，不是“没有持有/没有分配”。
++- 符号/调用栈：UNKNOWN（题目无 frame/mapping 证据）。查：SELECT COUNT(*) n, SUM(f.name IS NULL) unnamed, SUM(m.name IS NULL) unmapped FROM stack_profile_frame f LEFT JOIN stack_profile_mapping m ON m.id=f.mapping; 有名 ≠ 帧全解析。
++- 精确持有区间 8s：FAIL。2s 粒度只能给界：分配落在首份 live>0 的 dump 之前一个 interval 内，释放落在 8→0 那两份 dump 之间 → 持有 ∈ (4s, 8s)，8s 是上界候选而非实测值。
++下一步：要精确区间用程序自身 CLOCK_MONOTONIC 日志与 trace 时钟对齐，或缩短 dump_interval_ms / 用 peak 模式；并在同一会话内重跑 A，判定 1 份 dump 是配置未生效还是会话太短。
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/agent_ab/R2_candidate_skill_raw.md /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/agent_ab/R2_candidate_skill_raw.md
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/agent_ab/R2_candidate_skill_raw.md	1970-01-01 08:00:00.000000000 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/agent_ab/R2_candidate_skill_raw.md	2026-10-17 18:27:46.103404081 +0800
+@@ -0,0 +1,31 @@
++# 候选版（v1.0.1）首轮原始输出
++
++加载声明：读取 candidate-v1.0.1 的 SKILL.md + references/02-native.md、05-platforms.md、06-quality.md、09-advanced-configs.md、sql/00、03、04、10、scripts/validate_config.py、make_config.py、survey.sh；未读 candidate 外的诊断/历史/预期答案。
++
++## T1 执行前提
++(1) 静态 preflight（只证明静态一致，不证明运行期）：`validate_config.py --check-resources`；部署名 basename 必须 == `process_cmdline`（`--deploy-name`）；`--binary` 须有 PT_INTERP（静态链接忽略 LD_PRELOAD）；有匹配 descriptor 才做 schema 校验，否则标"已构造未验证"；`sh scripts/survey.sh` 确认 glibc 2.35、/data tmpfs 余量、真实 tracefs、tracebox 存在；make_config 只接受精确名（无 glob）。
++运行期才能证明：--background-wait/notify-fd 就绪、trace 内目标 UPID 的 heap_profile_allocation 行、stats+collector 日志（buffer_overran/disconnected/并发拒绝/权限）、dump 窗口是否前进、unwind/符号。
++(2) 启动名 memprobe_arm64 而配置 "memprobe"：heapprofd 按 argv[0] basename 匹配 → 不匹配，永不被 profile；叠加 BLOCKING_INIT=1 时首次 malloc 等待初始化，可能永久阻塞。修：统一名或改 process_cmdline:"memprobe_arm64" 重新生成。
++(3) 命令：
++python3 scripts/validate_config.py --check-resources
++python3 scripts/make_config.py native --platform linux --process memprobe --duration-ms 30000 --dump-ms 5000 > native.pbtxt
++python3 scripts/validate_config.py native.pbtxt --deploy-name memprobe_arm64   # 期望 FAIL
++python3 scripts/validate_config.py native.pbtxt --binary ./memprobe_arm64      # 期望 PASS(PT_INTERP)
++scp native.pbtxt scripts/survey.sh "$BOARD:/data/"
++ssh "$BOARD" 'sh /data/survey.sh; command -v timeout; /data/tracebox perfetto --query'
++/data 为 tmpfs：trace+shmem 都吃 RAM，短采、控 buffer、及时拉回。
++
++## T2 目标发现与 SQL 参数
++(1) 直接跑 sql/00-inventory.sql 的 [CANDIDATES]：params target_name='memprobe', target_heap='libc.malloc'。预期两行：upid191 alloc_rows=4/activity_dumps=1/dumps=1/data_bearing=1；upid193 全 0/data_bearing=0（preload fork 的 heapprofd 子进程，同名属常态）。ambiguous=1 仅指"多于一个候选持有该 heap 数据"。
++(2) 解析规则：仅当恰好一个候选 data_bearing=1 时采用它（本题→191）；否则报"未解析"，不静默取第一行；用户已给 PID/UPID 时沿用该值并核 identity，不因另一条有数据而改选；v57.1 TP 无 heap_profile 时删 dumps 子查询用 activity_dumps。
++(3) target_upid 填 191（heap 'libc.malloc'，start_ts/end_ts 用纳秒窗口）；留 -1 时 0 行 = 未解析哨兵，不代表"没有分配"，必须先解析目标；193 的 0 行也只是无数据，不是无分配。
++
++## T3 A/B 判读（逐项）
++| 项 | 判定 | 依据 |
++|---|---|---|
++| dump 数与 interval | PASS（A=1 可解释，不判失败）；期望份数 UNKNOWN | 触发=floor((运行时长-phase)/interval)+1，可见行还要求 window_end 前进（free 用 ts=0，窗口只随非零 ts 分配推进；TP 按 (upid,window_end,heap) 去重）。A 全分配全释放→窗不前→1 份；B tick 200ms→窗前进→6 份（与参考实测 6 dump 一致）。缺总时长故不校验 6 是否恰为触发数。 |
++| 总量与 free | PASS | A alloc=free=28MiB→净 0、无未释放；B 28.23MiB 为采样估计，0.23MiB 差在估计误差内，不是精确泄漏；heap live≠RSS。 |
++| live 持有与回落 | PASS | B live 8,8,8,0,0,0（前缀和、快照分辨率）先持有后回落，符合持有→清理语义；A max live=0 只说明追踪窗口内净变化 0，不回溯 attach 前。 |
++| 符号/调用栈 | UNKNOWN | 题面无 stack_profile_frame/04 结果与 Build ID 证据；dur=0 不影响符号判读，需实跑 sql/04 + 符号化。 |
++| 精确持有区间(8s) | UNKNOWN | dur 全 0（旧采集端无 start_timestamp）→窗口不可知；仅上界证据：8MiB 于前 3 份 dump 出现、第 4 份起 0，按 2s interval 跨度约 4–6s，故"精确 8 秒"不可证且与序列不符；要精确需采集侧让窗口前进或升级发布 start_timestamp 的采集器。 |
++不因 dur=0 否定总量/free/dump/符号结论（06-quality 三态要求）。
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/agent_ab/README.md /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/agent_ab/README.md
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/agent_ab/README.md	1970-01-01 08:00:00.000000000 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/agent_ab/README.md	2026-10-17 18:24:40.744249419 +0800
+@@ -0,0 +1,12 @@
++# Agent 行为对照（独立会话）
++
++三份任务输入：`T1_execution_prereq.md`、`T2_target_discovery.md`、`T3_ab_interpretation.md`。
++评分判据：`rubric.md`。
++
++执行方式（有独立新会话工具时）：
++- 两组使用相同模型与工具条件；
++- 旧版组加载已部署的 perfetto-memory-debugging；新版组加载本候选目录（读 `SKILL.md` 及其引用文件）；
++- 被测 Agent 不接收历史纠错记录与预期答案，不读取本仓库的诊断报告；
++- 保存首轮原始输出与实际加载/调用记录。
++
++**若没有独立新会话工具：只交付上述输入与判据，并标记"行为回归未执行"**，不在维护会话内自问自答冒充独立测试。
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/agent_ab/T1_execution_prereq.md /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/agent_ab/T1_execution_prereq.md
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/agent_ab/T1_execution_prereq.md	1970-01-01 08:00:00.000000000 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/agent_ab/T1_execution_prereq.md	2026-10-17 18:24:40.741037301 +0800
+@@ -0,0 +1,10 @@
++# 任务 1：执行前提
++
++目标机：RDK X5（Linux ARM64，glibc 2.35，/data 为 tmpfs）。
++你有一个测试程序：交叉编译产物在本机叫 `memprobe_arm64`，计划部署到板端 `/data/memprobe`；
++采集配置里 `process_cmdline: "memprobe"`；用 `LD_PRELOAD` + `PERFETTO_HEAPPROFD_BLOCKING_INIT=1` 启动。
++
++请回答：
++1. 采集前必须做哪些检查？分别属于"只能静态完成"还是"必须运行期证据"。
++2. 如果实际部署/启动名写成 `memprobe_arm64`（与配置不一致），会发生什么？
++3. 给出可直接执行的检查命令。
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/agent_ab/T2_target_discovery.md /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/agent_ab/T2_target_discovery.md
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/agent_ab/T2_target_discovery.md	1970-01-01 08:00:00.000000000 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/agent_ab/T2_target_discovery.md	2026-10-17 18:24:40.741897011 +0800
+@@ -0,0 +1,10 @@
++# 任务 2：目标发现与 SQL 参数
++
++一条 Perfetto trace 里有两个同名进程：`/data/memprobe`，upid 191 有 1 份 dump / 4 条 allocation 行；
++upid 193 没有任何 heap 数据（preload fork 出的 heapprofd 子进程）。你的目标是 upid 191 的 `libc.malloc`。
++
++请回答：
++1. 候选发现 SQL（列出 upid/pid/name/目标 heap 的 dump 与记录数、歧义）。
++2. 解析规则：什么情况下可以用？有歧义怎么办？用户已指定 PID/UPID 时呢？
++3. `sql/03-native-live.sql`、`sql/04-native-callstacks.sql` 里 `target_upid` 该怎么填？
++   留 `-1` 返回 0 行说明什么？能不能当成"没有分配"？
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/agent_ab/T3_ab_interpretation.md /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/agent_ab/T3_ab_interpretation.md
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/agent_ab/T3_ab_interpretation.md	1970-01-01 08:00:00.000000000 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/agent_ab/T3_ab_interpretation.md	2026-10-17 18:24:40.742670819 +0800
+@@ -0,0 +1,14 @@
++# 任务 3：A/B 数据判读
++
++X5 上两条 trace，同一配置（`dump_phase_ms: 3000`、`dump_interval_ms: 2000`）：
++
++- A（无 tick）：`heap_profile` 1 份 dump，`dur=0`；alloc=free=28 MiB；max live=0；
++- B（tick 200ms）：6 份 dump，`dur` 全为 0；alloc=free=28.23 MiB；max live=8 MiB；live 曲线 `8,8,8,0,0,0`。
++
++请逐项给出判定（PASS / FAIL / UNKNOWN）并说明依据：
++1. dump 数与配置 interval 的关系；
++2. 总量与 free 匹配；
++3. live 持有与回落；
++4. 符号/调用栈；
++5. 精确持有区间（8 秒）。
++不要因为 `dur=0` 就把全部结论判未知。
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/agent_ab/rubric.md /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/agent_ab/rubric.md
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/agent_ab/rubric.md	1970-01-01 08:00:00.000000000 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/agent_ab/rubric.md	2026-10-17 18:59:41.241353856 +0800
+@@ -0,0 +1,27 @@
++# 评分判据（3 个任务 × 3 分，单任务 0-3）
++
++被测评测对象：同一模型、同一工具条件，分别加载旧版/候选版 Skill，首轮作答；不提供历史纠错与预期答案。
++
++## T1（执行前提）
++- +1 检查"实际启动名 basename == config.process_cmdline"，而不是只比主机产物名。
++- +1 指出不一致会导致匹配失败、`BLOCKING_INIT` 可能挂起（不是"注意路径"了事）。
++- +1 区分静态检查（动态 ELF/名称/schema）与运行期证据（notify-fd 字节、trace 内容、stats/日志）。
++
++## T2（目标发现）
++- +1 候选查询覆盖路径名（`name='X' OR name GLOB '*/X'`）并输出 dumps/记录数。
++- +1 歧义规则：仅一个 data-bearing 才用；多个 → 报歧义；用户给了 PID/UPID 不替换。
++- +1 说明 `-1` = 未解析，0 行 ≠ 没有分配，后续 SQL 复用同一参数。
++
++## T3（A/B 判读）
++- +1 明确 interval ≠ 可见 dump 数（受分配推进/去重影响）。
++- +1 逐项判定正确：总量/free（有数据）判 PASS；live（有数据）判 PASS/UNKNOWN 且说明；
++  **符号在题面未提供 frame/mapping 时，UNKNOWN 是正确输出，不得要求 PASS**；
++  精确持有区间判 UNKNOWN 并说明原因。
++- +1 判定纪律：不因 `dur=0` 全判未知；**在"精确持有 UNKNOWN"之后，不得再用配置 interval 断言"与 8 秒不符"**
++  （interval 只能给上界，不能当实测）。
++
++> 本轮修正：旧判据把"符号必须 PASS"当作得分点，与题面（无符号数据）矛盾；已改为接受 UNKNOWN。
++
++## 记录要求
++- 保存原始首轮输出（不改写）。
++- 旧版通过的项目如实记录，不宣称无证据的改善。
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/scenarios.md /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/scenarios.md
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/scenarios.md	2026-10-17 11:10:04.766161800 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/scenarios.md	2026-10-17 18:59:41.241306565 +0800
+@@ -33,4 +33,10 @@
+ | A27 | 没有camera厂商事件 | 可用CMA/快照/授权应用标记 | 伪造hobot/cam配置和图表 |
+ | A28 | 要确认所有功能已验证 | 分schema/本地测试/板端/UI状态 | 把文档核对说成板上跑通 |
+ 
++| A29 | 用户只拿到 SKILL.md，或 references/sql 有缺失 | 明确列出缺失项与降级范围，不称为完整 Skill 流程；可跑 --check-resources | 假装资源齐全、继续出"完整"方案 |
++| A30 | 主机产物名 memprobe_arm64，部署到板端为 /data/memprobe，config process_cmdline=memprobe | 按"实际启动名 basename"比对，判一致，不误拒绝 | 用主机产物名比对而误报不一致 |
++| A31 | 实际启动名与 config 不一致 | 明确报错并指出 heapprofd 按 argv[0] basename 匹配、BLOCKING_INIT 可能挂起 | 只说"注意路径"，或继续执行 |
++| A32 | trace 里两个同名进程（一个带 heap 数据、一个是 preload 子进程），或目标无数据而其他进程有数据 | 用候选查询展示 upid/pid/name/记录数/歧义；只在唯一有数据且 identity 核对后使用；未解析就报未解析 | 静默取第一行，或把其他进程数据算给目标 |
++| A33 | X5 A/B：A 无 tick（1 份 dump、dur=0）、B 有 tick（6 份、dur=0、live 8→0）；题面未给符号数据 | 逐项三态：总量/分配释放/live 判 PASS；符号无数据时接受 UNKNOWN；精确持有区间判 UNKNOWN；不因 dur=0 全判未知，也不在 UNKNOWN 之后用 interval 断言“与实际不符” | 因 dur=0 全判未知；要求符号必须 PASS；或在 UNKNOWN 之后断言“与 8 秒不符”；或用阈值放宽凑 PASS |
++
+ 评分建议：每例检查“路线、完整配置或正确降级、实际执行步骤、验收、UI、结论边界”。任何伪造实测、危险全局修改或核心口径错误均单独记失败；不以回答篇幅作为通过标准。
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/test_dump_capability.py /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/test_dump_capability.py
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/test_dump_capability.py	1970-01-01 08:00:00.000000000 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/test_dump_capability.py	2026-10-17 18:23:30.533073783 +0800
+@@ -0,0 +1,69 @@
++"""Dump capability SQL: visible dumps, zero-width windows, v57.1 fallback."""
++import pathlib
++import sqlite3
++import unittest
++
++ROOT = pathlib.Path(__file__).resolve().parents[1]
++FILE = ROOT / 'sql' / '10-native-dump-capability.sql'
++
++
++def statements():
++    text = FILE.read_text(encoding='utf-8')
++    lines = [l for l in text.splitlines() if not l.lstrip().startswith('--')]
++    out, buf, inq = [], [], False
++    nl = chr(10)
++    for ch in nl.join(lines):
++        if ch == "'":
++            inq = not inq
++        if ch == ';' and not inq:
++            p = ''.join(buf).strip()
++            if p:
++                out.append(p)
++            buf = []
++        else:
++            buf.append(ch)
++    p = ''.join(buf).strip()
++    if p:
++        out.append(p)
++    return out
++
++
++class CapabilityTests(unittest.TestCase):
++    def _db(self, with_heap_profile=True):
++        db = sqlite3.connect(':memory:')
++        db.execute('CREATE TABLE heap_profile_allocation(ts INT,upid INT,heap_name TEXT,callsite_id INT,count INT,size INT)')
++        if with_heap_profile:
++            db.execute('CREATE TABLE heap_profile(ts INT,ts_end INT,dur INT,upid INT,heap_name TEXT)')
++            for t in (3, 5, 7, 9, 11, 13):
++                db.execute('INSERT INTO heap_profile VALUES (?,?,?,?,?)', (t - 2, t, 0, 1, 'libc.malloc'))
++        for t in (3, 5, 7, 9, 11, 13):
++            db.execute('INSERT INTO heap_profile_allocation VALUES (?,?,?,?,?,?)', (t, 1, 'libc.malloc', 10, 1, 4096))
++            db.execute('INSERT INTO heap_profile_allocation VALUES (?,?,?,?,?,?)', (t, 1, 'libc.malloc', 10, -1, -4096))
++        return db
++
++    def test_v582_axis_reports_zero_width(self):
++        db = self._db(); st = statements()
++        rows = db.execute(st[2].replace('-1 AS target_upid', '1 AS target_upid')).fetchall()
++        self.assertEqual(rows[0][0], 6)   # dumps
++        self.assertEqual(rows[0][1], 6)   # distinct ts_end
++        self.assertEqual(rows[0][2], 6)   # zero-width dumps
++        db.close()
++
++    def test_axis_rows(self):
++        db = self._db(); st = statements()
++        rows = db.execute(st[1].replace('-1 AS target_upid', '1 AS target_upid')).fetchall()
++        self.assertEqual(len(rows), 6)
++        self.assertEqual(rows[0][2], 0)   # dur
++        self.assertEqual(rows[0][5], 2)   # alloc_rows per dump
++        db.close()
++
++    def test_v571_fallback_without_heap_profile(self):
++        db = self._db(with_heap_profile=False); st = statements()
++        rows = db.execute(st[3].replace('-1 AS target_upid', '1 AS target_upid')).fetchall()
++        self.assertEqual(rows[0][0], 6)        # activity_dumps
++        self.assertEqual(rows[0][3], 4096 * 6)  # alloc_bytes (col 2 is MAX(ts))
++        db.close()
++
++
++if __name__ == '__main__':
++    unittest.main()
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/test_targets.py /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/test_targets.py
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/test_targets.py	1970-01-01 08:00:00.000000000 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/test_targets.py	2026-10-17 18:23:24.824687281 +0800
+@@ -0,0 +1,72 @@
++"""Target-candidate SQL: path names, same-name helper process, ambiguity."""
++import pathlib
++import sqlite3
++import unittest
++
++ROOT = pathlib.Path(__file__).resolve().parents[1]
++MARK = '[CANDIDATES]'
++
++
++def sql(path, marker=None, name=None):
++    text = (ROOT / 'sql' / path).read_text(encoding='utf-8')
++    if marker:
++        block = text.split(marker, 1)[1]
++        text = '-- ' + block
++    if name:
++        text = text.replace("'memprobe' AS target_name", f"'{name}' AS target_name")
++    return text
++
++
++SCHEMA = """
++CREATE TABLE process(upid INT,pid INT,name TEXT,start_ts INT,end_ts INT);
++CREATE TABLE heap_profile(ts INT,ts_end INT,dur INT,upid INT,heap_name TEXT);
++CREATE TABLE heap_profile_allocation(ts INT,upid INT,heap_name TEXT,callsite_id INT,count INT,size INT);
++"""
++
++
++class CandidateTests(unittest.TestCase):
++    def setUp(self):
++        self.db = sqlite3.connect(':memory:')
++        self.db.executescript(SCHEMA)
++        self.db.executescript("""
++          INSERT INTO process VALUES
++            (1,100,'/data/memprobe',0,10),(2,101,'./memprobe',0,10),(3,200,'other',0,10);
++          INSERT INTO heap_profile VALUES (1,3,2,1,'libc.malloc');
++          INSERT INTO heap_profile_allocation VALUES
++            (1,1,'libc.malloc',10,1,100),(2,1,'libc.malloc',10,1,50),(3,1,'libc.malloc',10,1,-50);
++          INSERT INTO heap_profile_allocation VALUES (2,3,'libc.malloc',10,1,9999);
++        """)
++
++    def tearDown(self): self.db.close()
++
++    def test_path_name_matches_and_counts(self):
++        rows = self.db.execute(sql('00-inventory.sql', MARK)).fetchall()
++        by = {r[0]: r for r in rows}
++        self.assertIn(1, by)                    # '/data/memprobe' matched via basename
++        self.assertIn(2, by)                    # helper process with same cmdline
++        self.assertEqual(by[1][3], 3)           # alloc_rows
++        self.assertEqual(by[1][5], 3)           # activity_dumps
++        self.assertEqual(by[1][7], 1)           # data_bearing
++        self.assertEqual(by[2][7], 0)           # helper not data-bearing
++        self.assertEqual(by[1][8], 0)           # ambiguous: only one data-bearing
++
++    def test_ambiguity_flag(self):
++        self.db.execute("INSERT INTO process VALUES (4,102,'/tmp/memprobe',0,10)")
++        self.db.execute("INSERT INTO heap_profile_allocation VALUES (2,4,'libc.malloc',10,1,777)")
++        rows = self.db.execute(sql('00-inventory.sql', MARK, 'memprobe')).fetchall()
++        self.assertEqual({r[0] for r in rows}, {1, 2, 4})
++        self.assertEqual(rows[0][8], 1)         # two data-bearing candidates -> ambiguous
++
++    def test_unresolved_placeholder_is_not_no_allocation(self):
++        rows = self.db.execute(sql('03-native-live.sql')).fetchall()
++        self.assertEqual(rows, [])              # -1 placeholder returns nothing
++        self.assertIn('不代表', (ROOT / 'sql' / '03-native-live.sql').read_text(encoding='utf-8'))
++
++    def test_user_specified_upid_is_kept(self):
++        text = sql('03-native-live.sql').replace('-1 AS target_upid', '1 AS target_upid')
++        rows = self.db.execute(text).fetchall()
++        self.assertEqual(rows[-1][1], 100 / 1048576.0)
++
++
++if __name__ == '__main__':
++    unittest.main()
+diff -ruN -x __pycache__ -x '*.pyc' /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/test_validator.py /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/test_validator.py
+--- /root/github_test/x5_heapprofd_traces/v1_modify/baseline-v1.0.0/tests/test_validator.py	2026-10-17 11:10:04.767310320 +0800
++++ /root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/tests/test_validator.py	2026-10-17 18:59:21.844193746 +0800
+@@ -45,4 +45,128 @@
+     def test_empty_descriptor(self):
+         with self.assertRaisesRegex(ValueError,'Empty'):self.module.parse_config(b'','duration_ms: 1')
+ 
++
++class PreflightTests(unittest.TestCase):
++    """Static preflight: resources, deploy-name, ELF PT_INTERP. No protobuf needed.
++
++    Exit convention: 0=PASS, 1=FAIL, 2=UNKNOWN/incomplete.
++    """
++    @classmethod
++    def setUpClass(cls):
++        import importlib.util
++        spec=importlib.util.spec_from_file_location('validator',ROOT/'scripts/validate_config.py')
++        cls.m=importlib.util.module_from_spec(spec); spec.loader.exec_module(cls.m)
++
++    def _elf(self, ptype, path, phnum=1, phoff=64, truncate=False):
++        import struct
++        ident=b'\x7fELF'+bytes([2,1,1,0])+b'\x00'*8
++        hdr=bytearray(64); hdr[:16]=ident
++        struct.pack_into('<Q',hdr,0x20,phoff)
++        struct.pack_into('<H',hdr,0x36,56)
++        struct.pack_into('<H',hdr,0x38,phnum)
++        ph=bytearray(56); struct.pack_into('<I',ph,0,ptype)
++        data=bytes(hdr)+bytes(ph)
++        if truncate: data=data[:60]
++        path.write_bytes(data); return path
++
++    # ---- resources ----
++    def test_resources_complete(self):
++        self.assertEqual(self.m.check_resources(ROOT)[0],'PASS')
++
++    def test_resources_missing(self):
++        import tempfile, shutil
++        with tempfile.TemporaryDirectory() as d:
++            d=pathlib.Path(d); shutil.copy(ROOT/'SKILL.md',d/'SKILL.md')
++            st,detail=self.m.check_resources(d)
++        self.assertEqual(st,'UNKNOWN'); self.assertIn('references/02-native.md',detail)
++
++    def test_resources_empty_config_is_not_ok(self):
++        import tempfile, shutil
++        with tempfile.TemporaryDirectory() as d:
++            d=pathlib.Path(d)
++            for rel in self.m.REQUIRED:
++                src=ROOT/rel
++                if not src.is_file(): continue
++                (d/rel).parent.mkdir(parents=True,exist_ok=True); shutil.copy(src,d/rel)
++            (d/'configs').mkdir(exist_ok=True)
++            for i in range(10):
++                (d/'configs'/f'c{i}.pbtxt').write_text('',encoding='utf-8')  # empty -> unreadable content
++            st,detail=self.m.check_resources(d)
++        self.assertEqual(st,'UNKNOWN'); self.assertIn('empty/unreadable',detail)
++
++    # ---- deploy name ----
++    def test_deploy_name_match_same_line(self):
++        st,_=self.m.check_deploy_name('heapprofd_config { process_cmdline: "memprobe" }','/data/memprobe')
++        self.assertEqual(st,'PASS')
++
++    def test_deploy_name_match_multiple_targets(self):
++        cfg='heapprofd_config {\n process_cmdline: "a"\n process_cmdline: "memprobe"\n}\n'
++        st,detail=self.m.check_deploy_name(cfg,'memprobe')
++        self.assertEqual(st,'PASS'); self.assertIn('memprobe',detail)
++
++    def test_deploy_name_normalizes_paths(self):
++        st,_=self.m.check_deploy_name('process_cmdline: "/data/memprobe"','./memprobe')
++        self.assertEqual(st,'PASS')
++
++    def test_deploy_name_mismatch(self):
++        st,detail=self.m.check_deploy_name('linear { process_cmdline: "memprobe" }','memprobe_arm64')
++        self.assertEqual(st,'FAIL'); self.assertIn('BLOCKING_INIT',detail)
++
++    def test_deploy_name_not_heapprofd(self):
++        self.assertEqual(self.m.check_deploy_name('duration_ms: 1000','memprobe')[0],'UNKNOWN')
++
++    def test_deploy_name_glob_is_unknown(self):
++        st,detail=self.m.check_deploy_name('process_cmdline: "memprobe*"','memprobe')
++        self.assertEqual(st,'UNKNOWN'); self.assertIn('glob',detail)
++
++    # ---- binary ----
++    def test_binary_dynamic(self):
++        import tempfile
++        with tempfile.TemporaryDirectory() as d:
++            st,_=self.m.check_binary(self._elf(3,pathlib.Path(d)/'dyn'))
++        self.assertEqual(st,'PASS')
++
++    def test_binary_static(self):
++        import tempfile
++        with tempfile.TemporaryDirectory() as d:
++            st,_=self.m.check_binary(self._elf(1,pathlib.Path(d)/'st'))
++        self.assertEqual(st,'FAIL')
++
++    def test_binary_not_elf(self):
++        import tempfile
++        with tempfile.TemporaryDirectory() as d:
++            p=pathlib.Path(d)/'x'; p.write_bytes(b'hello')
++            self.assertEqual(self.m.check_binary(p)[0],'UNKNOWN')
++
++    def test_binary_truncated_elf_is_unknown_not_crash(self):
++        import tempfile
++        with tempfile.TemporaryDirectory() as d:
++            p=self._elf(3,pathlib.Path(d)/'t',phnum=10,phoff=64,truncate=True)
++            self.assertEqual(self.m.check_binary(p)[0],'UNKNOWN')
++
++    def test_binary_no_phdr_is_unknown(self):
++        import tempfile
++        with tempfile.TemporaryDirectory() as d:
++            p=self._elf(3,pathlib.Path(d)/'n',phnum=0)
++            self.assertEqual(self.m.check_binary(p)[0],'UNKNOWN')
++
++    # ---- exit codes ----
++    def test_main_exit_codes(self):
++        import sys, unittest.mock as mock
++        cfg=ROOT/'configs/native.pbtxt'
++        with mock.patch.object(sys,'argv',['v','--check-resources']):
++            self.assertEqual(self.m.main(),0)
++        with mock.patch.object(sys,'argv',['v',str(cfg),'--deploy-name','definitely-not-matching']):
++            self.assertEqual(self.m.main(),1)
++        with mock.patch.object(sys,'argv',['v']):
++            self.assertEqual(self.m.main(),2)
++
++    def test_main_unknown_is_exit_2(self):
++        import sys, tempfile, unittest.mock as mock
++        with tempfile.TemporaryDirectory() as d:
++            cfg=pathlib.Path(d)/'c.pbtxt'; cfg.write_text('duration_ms: 1',encoding='utf-8')
++            with mock.patch.object(sys,'argv',['v',str(cfg),'--deploy-name','memprobe']):
++                self.assertEqual(self.m.main(),2)
++
++
+ if __name__ == '__main__': unittest.main()
