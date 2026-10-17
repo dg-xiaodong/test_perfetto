@@ -85,3 +85,39 @@ alloc/free 字节与 sql/03 的 live 序列都做实际比对；A 组由错误�
 - Perfetto UI 操作记录：**未包含**（本轮不涉及 UI 验证）；
 - 独立第三方评分：**没有**；`AGENT_AB.md` 的评分由维护者按 `rubric.md` 完成，样本量 1，已如实标注；
 - 候选版**未部署**到任何 Skill 目录；本目录只是交付副本。
+
+## 版本状态（2026-10-17 固定）
+
+| 角色 | 版本 | 位置 | 校验 / 提交 | 状态 |
+|---|---|---|---|---|
+| **正式部署** | **v1.0.0** | `/root/.dsh/skills/perfetto-memory-debugging` | 44 文件；与 `baseline-v1.0.0/` 逐文件 sha256 一致 | 继续生效，**不被候选覆盖** |
+| **基线快照** | v1.0.0 | `v1_modify/baseline-v1.0.0/`（只读） | `baseline-v1.0.0.SHA256SUMS`（44 条） | 冻结，不改不删 |
+| **候选版** | **v1.0.1** | `v1_modify/candidate-v1.0.1/`（54 文件） | GitHub 提交 **`f16f68a`**；`candidate-v1.0.1.SHA256SUMS`（54 条） | **待独立场景验收**，未发布 |
+
+关键文件 sha256（便于快速核对）：
+
+```
+baseline-v1.0.0/SKILL.md        4f5f6ae9ec20c6dd0fccab18409617cb575ad350e23febd2879397861119cba7
+candidate-v1.0.1/SKILL.md       70371e5bcbe06e8efdc9c47578111989001ad33d787106de649430bab53275d0
+candidate-v1.0.1/MANIFEST.json  57e0dcb15d1cbfe103da2674684aa7efeb9b8db3285959ec1572c81f4fdd96ed
+```
+
+### 加载方式（无需覆盖部署目录）
+
+候选版是**自包含目录**（54 文件，内部无 `/root/...` 绝对路径依赖）。独立会话可按下述方式加载：
+
+> 读取 `…/v1_modify/candidate-v1.0.1/SKILL.md` 及其引用的 references/sql/scripts，按其规则作答。
+
+已有证据：独立会话 `d54aefe7-…` 曾按该路径加载并作答（工具调用记录见 `agent_records/R2_candidate_skill_calls.md`，15 次调用均指向候选目录）。
+
+### 候选版待验收事项（尚未开始）
+
+- 新内存场景的首轮独立 Agent 测试（路线选择、配置、验收、UI 指令、结论边界）；
+- 首轮结果评审通过前，**不升级部署版本**；
+- 升级动作（若批准）需另行执行并记录，不在本状态内。
+
+### 核对结果
+
+- 部署目录仍为 v1.0.0，与基线逐文件 sha256 一致（44/44）；
+- 候选版 54 个文件校验通过，且与提交 `f16f68a` 内容一致（工作树无未提交差异）；
+- 未发现部署状态与预期不一致。
