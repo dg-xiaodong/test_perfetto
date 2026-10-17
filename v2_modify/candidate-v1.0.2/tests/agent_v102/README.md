@@ -15,7 +15,7 @@
 对每个场景分别启动**新的独立会话**，把 `{{SKILL_DIR}}` 替换为：
 
 - v1.0.1：`v1_modify/candidate-v1.0.1`
-- v1.0.2：`v1_modify/candidate-v1.0.2`
+- v1.0.2：`v2_modify/candidate-v1.0.2`
 
 被测 Agent 不得读取其他候选目录或历史报告。把原始回答保存到
 `results/v101_B1.md`、`results/v102_B1.md` 等；不在场景文本中提供评分答案。

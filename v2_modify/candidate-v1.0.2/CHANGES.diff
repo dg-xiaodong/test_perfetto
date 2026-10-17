@@ -1,6 +1,6 @@
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/MANIFEST.json candidate-v1.0.2/MANIFEST.json
---- candidate-v1.0.1/MANIFEST.json	2026-10-17 19:51:10.354125213 +0800
-+++ candidate-v1.0.2/MANIFEST.json	2026-10-17 21:15:20.586906224 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/MANIFEST.json v2_modify/candidate-v1.0.2/MANIFEST.json
+--- v1_modify/candidate-v1.0.1/MANIFEST.json	2026-10-17 19:51:10.354125213 +0800
++++ v2_modify/candidate-v1.0.2/MANIFEST.json	2026-10-17 21:23:57.545826560 +0800
 @@ -1,21 +1,22 @@
  {
    "name": "perfetto-memory-debugging",
@@ -70,7 +70,7 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +    "tests/agent_v102/B1_linux_lifecycle.md": "a2594258a1219ac05c068cc0239a6f33d3eaefc17bb1d6a5ed83857fd0dc80c4",
 +    "tests/agent_v102/B2_cpu_bucket_sql.md": "d71c563559b6be230de4929ef7119ea58ca39d541b5f286055c6433ae7a3692e",
 +    "tests/agent_v102/B3_evidence_causality.md": "40498aa1a683915c63f97fb8e5866b1b788ceac6b896704823ef4b4c0c03175a",
-+    "tests/agent_v102/README.md": "262b66c2e16b7870eeb28c7b46a9d10dd916cd2b41ae429fe0bc2b958aea695c",
++    "tests/agent_v102/README.md": "13a232897c4bd344d11e0ac14c66356a5b24bef95b6c53d828dfc80a1fe53b4c",
 +    "tests/agent_v102/results/COMPARISON.md": "bf8cd375ae5f6255cc911701cabcbf9b394278062813a0b7bb358b9215af301d",
 +    "tests/agent_v102/results/v101_B1.md": "dc2ea0360ed5e9826ce40a8c968e29b33868868b62457d883009c94063c01fd0",
 +    "tests/agent_v102/results/v101_B2.md": "96d8c1d8ed859a0ea42aadf61fa2646baa71ffc3a3aa593d39e817bdec2123a1",
@@ -93,9 +93,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +    "tests/tp_cpu_sql_v58.2.txt": "b89d491e6c535d63ecca0fba2c21aa5d7ce22fb896c8f2eee262cc76e12656e8"
    }
  }
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/README.md candidate-v1.0.2/README.md
---- candidate-v1.0.1/README.md	2026-10-17 19:51:10.354319093 +0800
-+++ candidate-v1.0.2/README.md	2026-10-17 21:13:18.641623101 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/README.md v2_modify/candidate-v1.0.2/README.md
+--- v1_modify/candidate-v1.0.1/README.md	2026-10-17 19:51:10.354319093 +0800
++++ v2_modify/candidate-v1.0.2/README.md	2026-10-17 21:13:18.641623101 +0800
 @@ -4,6 +4,9 @@
  
  适用Linux和Android；包含X5离线/只读rootfs部署参考。来源是用户列出的11篇官方内存文档，并补充官方proto、CLI、SQL标准库和UI说明。核心入口保持短小，按场景加载参考，不把全部文档塞进每次上下文。
@@ -143,9 +143,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +分别跑了 6 个独立子会话，原始输出与对照见该目录。单次行为烟雾测试，不是统计基准。
  
  维护时优先核对采集器版本的proto和真实CLI帮助。官方main/UI持续演进，来源核对日期不代表未来每个版本都无条件兼容。
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/SKILL.md candidate-v1.0.2/SKILL.md
---- candidate-v1.0.1/SKILL.md	2026-10-17 19:51:10.354319093 +0800
-+++ candidate-v1.0.2/SKILL.md	2026-10-17 20:51:38.300754498 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/SKILL.md v2_modify/candidate-v1.0.2/SKILL.md
+--- v1_modify/candidate-v1.0.1/SKILL.md	2026-10-17 19:51:10.354319093 +0800
++++ v2_modify/candidate-v1.0.2/SKILL.md	2026-10-17 20:51:38.300754498 +0800
 @@ -27,6 +27,8 @@
  
  可运行 `sh scripts/survey.sh`；内核事件清单用 `sh scripts/survey.sh --events`。脚本不修改系统。X5 的历史环境来自用户报告，不能代替本次探测。
@@ -174,9 +174,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
  - 图形服务于证据：使用原生轨道、火焰图、Heap Dump Explorer 或 SQL debug tracks；没有对应数据就不承诺对应图表。
  
  实操示例见 [完整演练](references/08-worked-examples.md)，回归场景见 [tests/scenarios.md](tests/scenarios.md)。
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/TEST_REPORT.md candidate-v1.0.2/TEST_REPORT.md
---- candidate-v1.0.1/TEST_REPORT.md	2026-10-17 19:51:10.354319093 +0800
-+++ candidate-v1.0.2/TEST_REPORT.md	2026-10-17 21:13:50.786730318 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/TEST_REPORT.md v2_modify/candidate-v1.0.2/TEST_REPORT.md
+--- v1_modify/candidate-v1.0.1/TEST_REPORT.md	2026-10-17 19:51:10.354319093 +0800
++++ v2_modify/candidate-v1.0.2/TEST_REPORT.md	2026-10-17 21:13:50.786730318 +0800
 @@ -56,3 +56,31 @@
  
  - `scripts/validate_config.py`：`process_cmdline` 改为**结构感知解析**——跳过注释与字符串、按整词匹配标识符、只接受 `heapprofd_config` 块内字段；括号/字符串不闭合或字段在块外 → UNKNOWN(rc=2)；归一化按 `NormalizeCmdLine`（截断首个 `@` 后取 basename）。
@@ -209,9 +209,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +- 未用 v57.1 descriptor 做 schema 校验；仅 v58.2 静态/TP 执行。
 +- 未打开 Perfetto UI 检查新 SQL 的 debug track。
 +- 未证明性能因果；C2 的真实 producer 注册/flush 时序仍未验证。
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/references/05-platforms.md candidate-v1.0.2/references/05-platforms.md
---- candidate-v1.0.1/references/05-platforms.md	2026-10-17 19:51:10.354739233 +0800
-+++ candidate-v1.0.2/references/05-platforms.md	2026-10-17 20:51:24.954685869 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/references/05-platforms.md v2_modify/candidate-v1.0.2/references/05-platforms.md
+--- v1_modify/candidate-v1.0.1/references/05-platforms.md	2026-10-17 19:51:10.354739233 +0800
++++ v2_modify/candidate-v1.0.2/references/05-platforms.md	2026-10-17 20:51:24.954685869 +0800
 @@ -113,7 +113,111 @@
  
  等待有限会话真正结束并完成flush后拉回native.pftrace和native.log；检查heap_profile_allocation有目标UPID数据、符号和采样质量。之后才考虑在可重启的测试环境运行cam-service；用户报告的“前提具备”不能升级成“业务已实测”。
@@ -325,9 +325,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
  
  先执行`trace_processor --help`或`trace_processor_shell --help`。最省版本歧义的交付方式是直接在UI Query(SQL)执行本包SQL；CLI使用该版本帮助列出的query/SQL文件参数，不能把统一trace_processor的子命令套到老trace_processor_shell上。
  
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/references/06-quality.md candidate-v1.0.2/references/06-quality.md
---- candidate-v1.0.1/references/06-quality.md	2026-10-17 19:51:10.354739233 +0800
-+++ candidate-v1.0.2/references/06-quality.md	2026-10-17 20:51:33.205020972 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/references/06-quality.md v2_modify/candidate-v1.0.2/references/06-quality.md
+--- v1_modify/candidate-v1.0.1/references/06-quality.md	2026-10-17 19:51:10.354739233 +0800
++++ v2_modify/candidate-v1.0.2/references/06-quality.md	2026-10-17 20:51:33.205020972 +0800
 @@ -11,6 +11,26 @@
  | 3. 数据 | 正确进程/窗口、非空样本、无影响结论的缺失 | 不证明SQL口径、符号或因果判断正确 |
  | 4. 分析/UI | 单位、UPID、时间窗口、图形与统计一致 | 相关性仍不自动等于因果 |
@@ -375,9 +375,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
  | 文档/入口（`SKILL.md`、`references/`） | 独立 Agent 行为测试（`tests/scenarios.md`） |
  | 采集配置模板（`configs/`） | 生成器单测 + 匹配版本 schema 校验（能拿到 descriptor 时） |
  
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/scripts/host_pull.sh candidate-v1.0.2/scripts/host_pull.sh
---- candidate-v1.0.1/scripts/host_pull.sh	1970-01-01 08:00:00.000000000 +0800
-+++ candidate-v1.0.2/scripts/host_pull.sh	2026-10-17 20:50:30.095841776 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/scripts/host_pull.sh v2_modify/candidate-v1.0.2/scripts/host_pull.sh
+--- v1_modify/candidate-v1.0.1/scripts/host_pull.sh	1970-01-01 08:00:00.000000000 +0800
++++ v2_modify/candidate-v1.0.2/scripts/host_pull.sh	2026-10-17 20:50:30.095841776 +0800
 @@ -0,0 +1,23 @@
 +#!/bin/sh
 +# Host-side pull with explicit failure propagation.
@@ -402,9 +402,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +  fi
 +  echo "PULL OK: $f size=$(wc -c < "$out") sha256=$(sha256sum "$out" | awk '{print $1}')"
 +done
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/scripts/linux_heapprofd_session.sh candidate-v1.0.2/scripts/linux_heapprofd_session.sh
---- candidate-v1.0.1/scripts/linux_heapprofd_session.sh	1970-01-01 08:00:00.000000000 +0800
-+++ candidate-v1.0.2/scripts/linux_heapprofd_session.sh	2026-10-17 21:14:46.388967311 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/scripts/linux_heapprofd_session.sh v2_modify/candidate-v1.0.2/scripts/linux_heapprofd_session.sh
+--- v1_modify/candidate-v1.0.1/scripts/linux_heapprofd_session.sh	1970-01-01 08:00:00.000000000 +0800
++++ v2_modify/candidate-v1.0.2/scripts/linux_heapprofd_session.sh	2026-10-17 21:14:46.388967311 +0800
 @@ -0,0 +1,124 @@
 +#!/bin/sh
 +# Generic Linux heapprofd session with LD_PRELOAD. Runs on the target.
@@ -530,9 +530,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +fi
 +echo "DONE size_bytes=$(wc -c < "$OUT.pftrace")" > "$OUT.status"
 +cat "$OUT.status"
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/scripts/linux_session_lib.sh candidate-v1.0.2/scripts/linux_session_lib.sh
---- candidate-v1.0.1/scripts/linux_session_lib.sh	1970-01-01 08:00:00.000000000 +0800
-+++ candidate-v1.0.2/scripts/linux_session_lib.sh	2026-10-17 20:50:21.391937864 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/scripts/linux_session_lib.sh v2_modify/candidate-v1.0.2/scripts/linux_session_lib.sh
+--- v1_modify/candidate-v1.0.1/scripts/linux_session_lib.sh	1970-01-01 08:00:00.000000000 +0800
++++ v2_modify/candidate-v1.0.2/scripts/linux_session_lib.sh	2026-10-17 20:50:21.391937864 +0800
 @@ -0,0 +1,46 @@
 +#!/bin/sh
 +# Shared target-side helpers for Linux tracebox sessions.
@@ -580,9 +580,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +  kill -TERM "$_pid" 2>/dev/null || true
 +  wait_pid_exit "$_pid" 10
 +}
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/scripts/linux_trace_session.sh candidate-v1.0.2/scripts/linux_trace_session.sh
---- candidate-v1.0.1/scripts/linux_trace_session.sh	1970-01-01 08:00:00.000000000 +0800
-+++ candidate-v1.0.2/scripts/linux_trace_session.sh	2026-10-17 20:50:21.403937732 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/scripts/linux_trace_session.sh v2_modify/candidate-v1.0.2/scripts/linux_trace_session.sh
+--- v1_modify/candidate-v1.0.1/scripts/linux_trace_session.sh	1970-01-01 08:00:00.000000000 +0800
++++ v2_modify/candidate-v1.0.2/scripts/linux_trace_session.sh	2026-10-17 20:50:21.403937732 +0800
 @@ -0,0 +1,41 @@
 +#!/bin/sh
 +# Generic Linux tracebox capture without LD_PRELOAD.
@@ -625,9 +625,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +fi
 +echo "DONE size_bytes=$(wc -c < "$OUT.pftrace")" > "$OUT.status"
 +cat "$OUT.status"
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/sql/11-cpu-time-buckets.sql candidate-v1.0.2/sql/11-cpu-time-buckets.sql
---- candidate-v1.0.1/sql/11-cpu-time-buckets.sql	1970-01-01 08:00:00.000000000 +0800
-+++ candidate-v1.0.2/sql/11-cpu-time-buckets.sql	2026-10-17 20:50:38.635757500 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/sql/11-cpu-time-buckets.sql v2_modify/candidate-v1.0.2/sql/11-cpu-time-buckets.sql
+--- v1_modify/candidate-v1.0.1/sql/11-cpu-time-buckets.sql	1970-01-01 08:00:00.000000000 +0800
++++ v2_modify/candidate-v1.0.2/sql/11-cpu-time-buckets.sql	2026-10-17 20:50:38.635757500 +0800
 @@ -0,0 +1,60 @@
 +-- 11-cpu-time-buckets.sql
 +-- Generic per-thread CPU time in fixed-size buckets.
@@ -689,9 +689,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +  AND s.ts + s.dur > b.start_ts
 +GROUP BY th.utid, th.tid, th.name, b.start_ts, b.bucket_ns, bk.bucket
 +ORDER BY ts, cpu_ms DESC;
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/sql/12-cpu-spike-episodes.sql candidate-v1.0.2/sql/12-cpu-spike-episodes.sql
---- candidate-v1.0.1/sql/12-cpu-spike-episodes.sql	1970-01-01 08:00:00.000000000 +0800
-+++ candidate-v1.0.2/sql/12-cpu-spike-episodes.sql	2026-10-17 20:50:38.647757369 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/sql/12-cpu-spike-episodes.sql v2_modify/candidate-v1.0.2/sql/12-cpu-spike-episodes.sql
+--- v1_modify/candidate-v1.0.1/sql/12-cpu-spike-episodes.sql	1970-01-01 08:00:00.000000000 +0800
++++ v2_modify/candidate-v1.0.2/sql/12-cpu-spike-episodes.sql	2026-10-17 20:50:38.647757369 +0800
 @@ -0,0 +1,79 @@
 +-- 12-cpu-spike-episodes.sql
 +-- Generic CPU spike episodes over fixed-size buckets.
@@ -772,9 +772,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +FROM spikes s CROSS JOIN bounds b
 +GROUP BY s.grp
 +ORDER BY ts;
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/tests/agent_v102/B1_linux_lifecycle.md candidate-v1.0.2/tests/agent_v102/B1_linux_lifecycle.md
---- candidate-v1.0.1/tests/agent_v102/B1_linux_lifecycle.md	1970-01-01 08:00:00.000000000 +0800
-+++ candidate-v1.0.2/tests/agent_v102/B1_linux_lifecycle.md	2026-10-17 20:53:16.026334327 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/agent_v102/B1_linux_lifecycle.md v2_modify/candidate-v1.0.2/tests/agent_v102/B1_linux_lifecycle.md
+--- v1_modify/candidate-v1.0.1/tests/agent_v102/B1_linux_lifecycle.md	1970-01-01 08:00:00.000000000 +0800
++++ v2_modify/candidate-v1.0.2/tests/agent_v102/B1_linux_lifecycle.md	2026-10-17 20:53:16.026334327 +0800
 @@ -0,0 +1,24 @@
 +# B1 — Linux 采集生命周期
 +
@@ -800,9 +800,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +
 +要求写清【主机】/【目标机】执行位置、变量作用域、启动顺序、观测/持续时间、停止与
 +flush、SCP 拉回、失败条件和采集验收。不要编造设备实测结果；未验证项要明确标出。
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/tests/agent_v102/B2_cpu_bucket_sql.md candidate-v1.0.2/tests/agent_v102/B2_cpu_bucket_sql.md
---- candidate-v1.0.1/tests/agent_v102/B2_cpu_bucket_sql.md	1970-01-01 08:00:00.000000000 +0800
-+++ candidate-v1.0.2/tests/agent_v102/B2_cpu_bucket_sql.md	2026-10-17 20:53:21.224867177 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/agent_v102/B2_cpu_bucket_sql.md v2_modify/candidate-v1.0.2/tests/agent_v102/B2_cpu_bucket_sql.md
+--- v1_modify/candidate-v1.0.1/tests/agent_v102/B2_cpu_bucket_sql.md	1970-01-01 08:00:00.000000000 +0800
++++ v2_modify/candidate-v1.0.2/tests/agent_v102/B2_cpu_bucket_sql.md	2026-10-17 20:53:21.224867177 +0800
 @@ -0,0 +1,18 @@
 +# B2 — CPU 时间桶与 spike episode
 +
@@ -822,9 +822,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +
 +请给出可运行 SQL、UI debug track 映射，以及至少一个能区分“正确实现”和“把完整
 +duration 记到起始桶”的反例。说明如何验证跨桶区间和安静间隔；未执行的部分明确标注。
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/tests/agent_v102/B3_evidence_causality.md candidate-v1.0.2/tests/agent_v102/B3_evidence_causality.md
---- candidate-v1.0.1/tests/agent_v102/B3_evidence_causality.md	1970-01-01 08:00:00.000000000 +0800
-+++ candidate-v1.0.2/tests/agent_v102/B3_evidence_causality.md	2026-10-17 20:53:21.230290098 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/agent_v102/B3_evidence_causality.md v2_modify/candidate-v1.0.2/tests/agent_v102/B3_evidence_causality.md
+--- v1_modify/candidate-v1.0.1/tests/agent_v102/B3_evidence_causality.md	1970-01-01 08:00:00.000000000 +0800
++++ v2_modify/candidate-v1.0.2/tests/agent_v102/B3_evidence_causality.md	2026-10-17 20:53:21.230290098 +0800
 @@ -0,0 +1,22 @@
 +# B3 — 证据边界与因果
 +
@@ -848,9 +848,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +
 +请逐条评估这些说法，说明哪些可以接受、哪些需要额外证据，并给出下一步最小补采/
 +验证建议。不要编造数据，不要给出没有证据的因果结论。
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/tests/agent_v102/README.md candidate-v1.0.2/tests/agent_v102/README.md
---- candidate-v1.0.1/tests/agent_v102/README.md	1970-01-01 08:00:00.000000000 +0800
-+++ candidate-v1.0.2/tests/agent_v102/README.md	2026-10-17 21:13:13.571377059 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/agent_v102/README.md v2_modify/candidate-v1.0.2/tests/agent_v102/README.md
+--- v1_modify/candidate-v1.0.1/tests/agent_v102/README.md	1970-01-01 08:00:00.000000000 +0800
++++ v2_modify/candidate-v1.0.2/tests/agent_v102/README.md	2026-10-17 21:23:57.519142257 +0800
 @@ -0,0 +1,28 @@
 +# v1.0.2 独立 Agent 行为测试
 +
@@ -869,7 +869,7 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +对每个场景分别启动**新的独立会话**，把 `{{SKILL_DIR}}` 替换为：
 +
 +- v1.0.1：`v1_modify/candidate-v1.0.1`
-+- v1.0.2：`v1_modify/candidate-v1.0.2`
++- v1.0.2：`v2_modify/candidate-v1.0.2`
 +
 +被测 Agent 不得读取其他候选目录或历史报告。把原始回答保存到
 +`results/v101_B1.md`、`results/v102_B1.md` 等；不在场景文本中提供评分答案。
@@ -880,9 +880,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +已执行 6 个独立子会话（B1/B2/B3 × v1.0.1/v1.0.2），原始输出在 `results/`，
 +对照见 `results/COMPARISON.md`。同模型/同编排、单次运行、无温度控制；这是行为烟雾测试，
 +不是统计基准。没有运行的结果必须标为“未执行”，不能用推测代替。
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/tests/agent_v102/rubric.md candidate-v1.0.2/tests/agent_v102/rubric.md
---- candidate-v1.0.1/tests/agent_v102/rubric.md	1970-01-01 08:00:00.000000000 +0800
-+++ candidate-v1.0.2/tests/agent_v102/rubric.md	2026-10-17 20:53:26.422245988 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/agent_v102/rubric.md v2_modify/candidate-v1.0.2/tests/agent_v102/rubric.md
+--- v1_modify/candidate-v1.0.1/tests/agent_v102/rubric.md	1970-01-01 08:00:00.000000000 +0800
++++ v2_modify/candidate-v1.0.2/tests/agent_v102/rubric.md	2026-10-17 20:53:26.422245988 +0800
 @@ -0,0 +1,35 @@
 +# 评分表（只给评审，不提供给被测 Agent）
 +
@@ -919,9 +919,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +
 +伪造实测、混用无对齐时间戳、把 dump 当逐次 malloc、把采样 count 当准确次数、
 +仅凭 profiler 成功断言因果、未标明未执行项。
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/tests/mock_linux_sessions.sh candidate-v1.0.2/tests/mock_linux_sessions.sh
---- candidate-v1.0.1/tests/mock_linux_sessions.sh	1970-01-01 08:00:00.000000000 +0800
-+++ candidate-v1.0.2/tests/mock_linux_sessions.sh	2026-10-17 20:52:05.570933117 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/mock_linux_sessions.sh v2_modify/candidate-v1.0.2/tests/mock_linux_sessions.sh
+--- v1_modify/candidate-v1.0.1/tests/mock_linux_sessions.sh	1970-01-01 08:00:00.000000000 +0800
++++ v2_modify/candidate-v1.0.2/tests/mock_linux_sessions.sh	2026-10-17 20:52:05.570933117 +0800
 @@ -0,0 +1,82 @@
 +#!/bin/sh
 +# Host-side mock regression for the generic Linux session scripts.
@@ -1005,9 +1005,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +else
 +  echo "PASS: host_pull failure propagated"
 +fi
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/tests/scenarios.md candidate-v1.0.2/tests/scenarios.md
---- candidate-v1.0.1/tests/scenarios.md	2026-10-17 19:51:10.355795138 +0800
-+++ candidate-v1.0.2/tests/scenarios.md	2026-10-17 21:14:40.498182053 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/scenarios.md v2_modify/candidate-v1.0.2/tests/scenarios.md
+--- v1_modify/candidate-v1.0.1/tests/scenarios.md	2026-10-17 19:51:10.355795138 +0800
++++ v2_modify/candidate-v1.0.2/tests/scenarios.md	2026-10-17 21:14:40.498182053 +0800
 @@ -40,3 +40,9 @@
  | A33 | X5 A/B：A 无 tick（1 份 dump、dur=0）、B 有 tick（6 份、dur=0、live 8→0）；题面未给符号数据 | 逐项三态：总量/分配释放/live 判 PASS；符号无数据时接受 UNKNOWN；精确持有区间判 UNKNOWN；不因 dur=0 全判未知，也不在 UNKNOWN 之后用 interval 断言“与实际不符” | 因 dur=0 全判未知；要求符号必须 PASS；或在 UNKNOWN 之后断言“与 8 秒不符”；或用阈值放宽凑 PASS |
  
@@ -1018,9 +1018,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +v1.0.2 另设三个独立 Agent 场景，聚焦 Linux 生命周期、CPU 时间桶/spike、证据边界：
 +`tests/agent_v102/B1_linux_lifecycle.md`、`B2_cpu_bucket_sql.md`、`B3_evidence_causality.md`。
 +v1.0.1/v1.0.2 各跑一次；原始输出与对照见 `tests/agent_v102/results/COMPARISON.md`。
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/tests/test_cpu_sql.py candidate-v1.0.2/tests/test_cpu_sql.py
---- candidate-v1.0.1/tests/test_cpu_sql.py	1970-01-01 08:00:00.000000000 +0800
-+++ candidate-v1.0.2/tests/test_cpu_sql.py	2026-10-17 20:51:56.477232912 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/test_cpu_sql.py v2_modify/candidate-v1.0.2/tests/test_cpu_sql.py
+--- v1_modify/candidate-v1.0.1/tests/test_cpu_sql.py	1970-01-01 08:00:00.000000000 +0800
++++ v2_modify/candidate-v1.0.2/tests/test_cpu_sql.py	2026-10-17 20:51:56.477232912 +0800
 @@ -0,0 +1,83 @@
 +"""CPU bucket/episode SQL: interval intersection and spike grouping."""
 +import pathlib
@@ -1105,9 +1105,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +
 +if __name__ == '__main__':
 +    unittest.main()
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/tests/test_linux_scripts.py candidate-v1.0.2/tests/test_linux_scripts.py
---- candidate-v1.0.1/tests/test_linux_scripts.py	1970-01-01 08:00:00.000000000 +0800
-+++ candidate-v1.0.2/tests/test_linux_scripts.py	2026-10-17 20:52:27.526741167 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/test_linux_scripts.py v2_modify/candidate-v1.0.2/tests/test_linux_scripts.py
+--- v1_modify/candidate-v1.0.1/tests/test_linux_scripts.py	1970-01-01 08:00:00.000000000 +0800
++++ v2_modify/candidate-v1.0.2/tests/test_linux_scripts.py	2026-10-17 20:52:27.526741167 +0800
 @@ -0,0 +1,31 @@
 +"""Contract tests for generic Linux session scripts (mock tracebox)."""
 +import pathlib
@@ -1140,9 +1140,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' c
 +
 +if __name__ == '__main__':
 +    unittest.main()
-diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' candidate-v1.0.1/tests/tp_cpu_sql_v58.2.txt candidate-v1.0.2/tests/tp_cpu_sql_v58.2.txt
---- candidate-v1.0.1/tests/tp_cpu_sql_v58.2.txt	1970-01-01 08:00:00.000000000 +0800
-+++ candidate-v1.0.2/tests/tp_cpu_sql_v58.2.txt	2026-10-17 21:13:54.898510882 +0800
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/tp_cpu_sql_v58.2.txt v2_modify/candidate-v1.0.2/tests/tp_cpu_sql_v58.2.txt
+--- v1_modify/candidate-v1.0.1/tests/tp_cpu_sql_v58.2.txt	1970-01-01 08:00:00.000000000 +0800
++++ v2_modify/candidate-v1.0.2/tests/tp_cpu_sql_v58.2.txt	2026-10-17 21:13:54.898510882 +0800
 @@ -0,0 +1,28 @@
 +Placeholder: Perfetto v58.2 Trace Processor; trace = local combined_traceput.pftrace
 +Target UPID 1 (cam-service, local test trace; NOT worker_app), 1 s buckets, window=trace bounds
