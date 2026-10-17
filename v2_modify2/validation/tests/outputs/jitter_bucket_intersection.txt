@@ -1,0 +1,21 @@
+Command: /root/code_1.0.20/tmp/perfetto582/linux-amd64/trace_processor_shell query -f v2_modify2/validation/tests/jitter_bucket_intersection_test.sql /root/sdk_md_x5_1.1.1/perfetto/captures/combined_traceput.pftrace
+Loading trace: 0.00 MBLoading trace: 1.09 MB[442.117]     common_flags.cc:525 Trace loaded: 1.09 MB in 0.06s (19.1 MB/s)
+
+
+Trace health issues:
+
+  Import errors
+    slice_max_depth_exceeded: 11120 | A slice was dropped because the slice nesting depth exceeded the max supported limit.
+
+[442.117]            query.cc:191 Query execution time: 0 ms
+"logic","name","bucket","ms","spike"
+"FIXED","A_200ms_900_1100",0,100.000000,0
+"FIXED","A_200ms_900_1100",1,100.000000,0
+"OLD","A_200ms_900_1100",0,200.000000,1
+"FIXED","B_350ms_900_1250",0,100.000000,0
+"FIXED","B_350ms_900_1250",1,250.000000,1
+"OLD","B_350ms_900_1250",0,350.000000,1
+
+"case_name","old_spike","fixed_spike"
+"A_200ms",1,0
+"B_350ms",1,1

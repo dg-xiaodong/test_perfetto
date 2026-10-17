@@ -1,0 +1,11 @@
+Command: sh v2_modify2/validation/tests/path_dryrun.sh
+PASS: repo-root paths exist
+== C1 via v2_modify/scripts from repo root ==
+C1 started tracebox_pid=18
+C1 DONE size_bytes=14
+PASS: C1 root-relative script/config
+== host_pull via v2_modify/scripts from repo root ==
+PULL OK: C1.pftrace size=14 sha256=fd8268c1021d2a7a90bbdcc8f9d56577b737c715e2141d906f023d0346a8d6d3
+PULL OK: C1.log size=38 sha256=2342beb51e725a2053853ef8540d3e4031071c1bbd01dc0b0d9df9eeae455817
+PULL OK: C1.status size=22 sha256=708d12bba0d7e57bb4c872d7f0d2df772f45c68a84cfd9abb75879ec9f0c66c8
+PASS: host_pull root-relative script

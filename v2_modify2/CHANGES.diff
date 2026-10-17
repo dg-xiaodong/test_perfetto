@@ -1,0 +1,999 @@
+--- v2_modify/PLAN.md	2026-10-17 20:29:13.285215645 +0800
++++ v2_modify2/PLAN.md	2026-10-17 20:38:08.943378948 +0800
+@@ -1,7 +1,8 @@
+ # RDK X5 `worker_app`：Perfetto 调试与分析方案
+ 
+-> **版本：v2_modify（首轮 v2_test 的范围受限修正）**
+-> 首轮 `v2_test/` 原样保留；本版只修明确列出的 7 项确定性问题及直接关联内容。
++> **版本：v2_modify2（v2_modify 的增量修正）**
++> 首轮 `v2_test/` 与已提交的 `v2_modify/` 均原样保留；本目录只修 PLAN 执行路径
++> 和 `v2_modify2/sql/20-jitter-cycles.sql` 的 1 秒桶区间交集。
+ > 这不是新的盲测成绩，不把修正后的表现冒充首轮首次交付质量。
+ >
+ > 方案只做设计与静态/离线验证，未连接开发板、未修改业务程序、未采集任何真实 trace。
+@@ -9,17 +10,17 @@
+ 
+ ## 0. Skill 加载记录
+ 
+-- 实际加载入口：`/root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/SKILL.md`
++- 实际加载入口（仓库根相对）：`v1_modify/candidate-v1.0.1/SKILL.md`
+ - 版本：`1.0.1`（`MANIFEST.json`），Git 提交：`f16f68ae1e3f112794af3b953881d1b18fa8415e`
+ - 工作树 HEAD：`3dcef36`；`git diff f16f68a HEAD -- v1_modify/candidate-v1.0.1` 为空，候选目录与该提交一致。
+-- 完整性：`SKILL.md` sha256 `70371e5b...`、`references/02-native.md` sha256 `21b8bd7a...`、`scripts/validate_config.py` sha256 `98c2f8f6...` 均与 `MANIFEST.json` 一致。
+-- 资源预检：`python3 scripts/validate_config.py --check-resources` → PASS（27 个必需文件 + 10 个配置可读）。
++- 完整性：`SKILL.md` sha256 `70371e5b...`、`v1_modify/candidate-v1.0.1/references/02-native.md` sha256 `21b8bd7a...`、`v1_modify/candidate-v1.0.1/scripts/validate_config.py` sha256 `98c2f8f6...` 均与 `MANIFEST.json` 一致。
++- 资源预检：`python3 v1_modify/candidate-v1.0.1/scripts/validate_config.py --check-resources` → PASS（27 个必需文件 + 10 个配置可读）。
+ - 未使用已部署的 v1.0.0：`/root/.dsh/skills/perfetto-memory-debugging/MANIFEST.json` 版本为 `1.0.0`，`SKILL.md` sha256 `4f5f6ae9...`，与候选版不同；本方案未以它为依据。
+ - 使用的主要参考：
+-  `references/00-routing.md`、`01-counters.md`、`02-native.md`、`04-ui.md`、`05-platforms.md`、`06-quality.md`、`07-internals-and-pprof.md`、`08-worked-examples.md`、`09-advanced-configs.md`、`sources.md`；
+-  `scripts/survey.sh`、`scripts/make_config.py --help`、`scripts/validate_config.py`；
+-  `sql/00-inventory.sql`、`01-rss-timeline.sql`、`03-native-live.sql`、`04-native-callstacks.sql`、`07-kernel-events.sql`、`10-native-dump-capability.sql`；
+-  `configs/overview.pbtxt`、`native.pbtxt`、`kernel-pressure.pbtxt`、`rss-spike.pbtxt`。
++  `v1_modify/candidate-v1.0.1/references/00-routing.md`、`01-counters.md`、`02-native.md`、`04-ui.md`、`05-platforms.md`、`06-quality.md`、`07-internals-and-pprof.md`、`08-worked-examples.md`、`09-advanced-configs.md`、`sources.md`；
++  `v1_modify/candidate-v1.0.1/scripts/survey.sh`、`v1_modify/candidate-v1.0.1/scripts/make_config.py --help`、`v1_modify/candidate-v1.0.1/scripts/validate_config.py`；
++  `v1_modify/candidate-v1.0.1/sql/00-inventory.sql`、`01-rss-timeline.sql`、`03-native-live.sql`、`04-native-callstacks.sql`、`07-kernel-events.sql`、`10-native-dump-capability.sql`；
++  `v1_modify/candidate-v1.0.1/configs/overview.pbtxt`、`native.pbtxt`、`kernel-pressure.pbtxt`、`rss-spike.pbtxt`。
+ - 未读取 `TEST_REPORT.md`、`tests/agent_ab/`、`agent_records/`、`verify/`、`AGENT_AB.md` 等开发/纠错/A-B 评分材料。
+ 
+ ## 1. 问题分析与假设
+@@ -84,11 +85,14 @@
+ 
+ ## 3. TraceConfig
+ 
+-三个配置均位于 `configs/`。已用本地 v58.2 源码生成的 descriptor 做静态 schema 校验（PASS）；**未做 v57.1 descriptor 校验，也未在板端解析**。
++三个配置均位于 `v2_modify/configs/`（本增量目录不复制配置）。
++Markdown 文件链接按本文件所在目录解析（`../v2_modify/`）；第 4 节命令按仓库根解析（`v2_modify/`）。
++
++已用本地 v58.2 源码生成的 descriptor 做静态 schema 校验（PASS）；**未做 v57.1 descriptor 校验，也未在板端解析**。
+ 
+ ### 3.1 C1：低开销时间线
+ 
+-完整文件：[C1-worker-timeline.pbtxt](configs/C1-worker-timeline.pbtxt)
++完整文件：[C1-worker-timeline.pbtxt](../v2_modify/configs/C1-worker-timeline.pbtxt)
+ 
+ 关键参数依据：
+ 
+@@ -103,7 +107,7 @@
+ 
+ ### 3.2 C2：native allocation 归因
+ 
+-完整文件：[C2-worker-native-alloc.pbtxt](configs/C2-worker-native-alloc.pbtxt)
++完整文件：[C2-worker-native-alloc.pbtxt](../v2_modify/configs/C2-worker-native-alloc.pbtxt)
+ 
+ 关键参数依据：
+ 
+@@ -116,11 +120,11 @@
+ - `duration_ms: 90000`：只是安全上限，不是观测时长。`remote_c2.sh` 在
+   producer 注册、`OBSERVE_S` 观测、停止 app 和 flush 后主动 SIGINT；90 s 让
+   “服务等待 + app 启动 + 30 s 观测 + 停止/ flush”不会先撞上 duration 上限。
+-- **重要版本事实**：v57.1 采集端不发 `ProfilePacket.ProcessHeapSamples.start_timestamp`，v58.2 TP 上常见 `heap_profile.dur = 0`。这不等于采集失败，只意味着“精确持有区间”不可判；总量、分配/释放、dump 数仍可判。用 `sql/10-native-dump-capability.sql` 检查，不要用 `dur=0` 否定总量结论。
++- **重要版本事实**：v57.1 采集端不发 `ProfilePacket.ProcessHeapSamples.start_timestamp`，v58.2 TP 上常见 `heap_profile.dur = 0`。这不等于采集失败，只意味着“精确持有区间”不可判；总量、分配/释放、dump 数仍可判。用 `v1_modify/candidate-v1.0.1/sql/10-native-dump-capability.sql` 检查，不要用 `dur=0` 否定总量结论。
+ 
+ ### 3.3 C3：CPU 调用栈归因
+ 
+-完整文件：[C3-worker-cpu-profile.pbtxt](configs/C3-worker-cpu-profile.pbtxt)
++完整文件：[C3-worker-cpu-profile.pbtxt](../v2_modify/configs/C3-worker-cpu-profile.pbtxt)
+ 
+ 关键参数依据：
+ 
+@@ -134,7 +138,7 @@
+ ## 4. 主机与板端操作
+ 
+ > **修正版 r1 重点**：首轮稿里 `$TRACEBOX` 未定义、SSH 双引号让 `$!`/`$(cat ...)`
+-> 在主机侧展开。本版把板端动作收进 `scripts/remote_*.sh`，由板端 shell 自己解析
++> 在主机侧展开。本版把板端动作收进 `v2_modify/scripts/remote_*.sh`，由板端 shell 自己解析
+ > 变量；主机只负责 scp/ssh/等待/拉回。以下命令仍未在本次会话上板执行。
+ 
+ ### 4.1 变量与执行位置
+@@ -167,21 +171,26 @@
+ ### 4.2 准备（主机 → 板端）
+ 
+ ```bash
++# 所有主机命令都从 GitHub 仓库根目录执行。
++R=$(git rev-parse --show-toplevel)
++cd "$R"
++
+ BOARD=root@<x5-ip>
+ WORK=/data/perfetto-worker
+-HOST=$PWD/output
++HOST=$R/output
+ TP=/path/to/trace_processor_shell        # 主机 v58.2
+ mkdir -p "$HOST"
+ 
+ ssh "$BOARD" "mkdir -p $WORK"
+-scp configs/*.pbtxt "$BOARD:$WORK/"
+-scp scripts/remote_lib.sh scripts/remote_c1.sh scripts/remote_c2.sh \
+-    scripts/remote_c3.sh scripts/remote_stop.sh "$BOARD:$WORK/"
++scp v2_modify/configs/*.pbtxt "$BOARD:$WORK/"
++scp v2_modify/scripts/remote_lib.sh v2_modify/scripts/remote_c1.sh \
++    v2_modify/scripts/remote_c2.sh v2_modify/scripts/remote_c3.sh \
++    v2_modify/scripts/remote_stop.sh "$BOARD:$WORK/"
+ scp v1_modify/candidate-v1.0.1/scripts/survey.sh "$BOARD:$WORK/"
+ ssh "$BOARD" "chmod +x $WORK/remote_*.sh $WORK/survey.sh"
+ ```
+ 
+-`scripts/host_pull.sh` 留在主机，不上板。
++`v2_modify/scripts/host_pull.sh` 留在主机，不上板。
+ 
+ 预检（远程只读命令用单引号，避免主机展开）：
+ 
+@@ -305,7 +314,7 @@
+ ### 4.7 拉回：SCP 失败不得宣称成功
+ 
+ ```bash
+-WORK=$WORK sh scripts/host_pull.sh "$BOARD" "$HOST" C1.pftrace C1.log C1.status
++WORK=$WORK sh v2_modify/scripts/host_pull.sh "$BOARD" "$HOST" C1.pftrace C1.log C1.status
+ # C2 追加：C2.pftrace C2.status C2.query.txt app.log
+ ```
+ 
+@@ -331,7 +340,7 @@
+ 
+ 1. **Schema**：配置能被采集器对应版本的 proto 解析。本次已用 v58.2 descriptor PASS；v57.1 descriptor 未获得，标记 UNKNOWN。
+ 2. **运行条件**：数据源/事件/权限/注入路径就绪。看 `tracebox perfetto --query --long`、`C*.log`、`C2.query.txt`、`app.log`。
+-3. **数据**：正确 UPID/窗口、非空样本、无影响结论的丢失。运行 `sql/18-data-quality.sql`、`sql/10-native-dump-capability.sql`、`sql/00-inventory.sql`。
++3. **数据**：正确 UPID/窗口、非空样本、无影响结论的丢失。运行 `v2_modify/sql/18-data-quality.sql`、`v1_modify/candidate-v1.0.1/sql/10-native-dump-capability.sql`、`v1_modify/candidate-v1.0.1/sql/00-inventory.sql`。
+ 4. **分析/UI**：单位、UPID、窗口、图与 SQL 一致；相关性仍不等于因果。
+ 
+ 逐遍检查：
+@@ -343,7 +352,7 @@
+ - **C2**：`remote_c2.sh` 退出 0；`C2.status` 存在；app 已停止；`host_pull.sh` 退出 0；
+   `C2.query.txt` 中能看到 `heapprofd` producer/data source；
+   `heap_profile_allocation` 中目标 UPID + `libc.malloc` 行数 >0；`heap_profile` dump 数合理；
+-  `stats` 无 heapprofd 错误。**`dur=0` 不是失败**，按 `sql/10` 判读。
++  `stats` 无 heapprofd 错误。**`dur=0` 不是失败**，按 `v1_modify/candidate-v1.0.1/sql/10-native-dump-capability.sql` 判读。
+ - **C3**：`remote_c3.sh` 退出 0；`C3.status` 存在；`host_pull.sh` 退出 0；
+   `perf_sample` 中目标 utid 样本 >0；`stats` 中 `perf_cpu_lost_records`/
+   `perf_samples_dropped` 为 0 或可解释；`unwind_error` 比例可接受；符号解析比例可接受。
+@@ -354,40 +363,46 @@
+ 
+ 包内已有（直接复用，先填参数）：
+ 
+-- `sql/00-inventory.sql`：trace bounds、UPID、track、stats、native 候选解析；把 `target_name` 改为 `worker_app`。
+-- `sql/01-rss-timeline.sql`：RSS 分类时间线（MiB），UI Counter Track。
+-- `sql/03-native-live.sql`：dump 级 live 估计（不是逐次 malloc）。
+-- `sql/04-native-callstacks.sql`：祖先调用栈累计（不能把结果相加当总内存）。
+-- `sql/07-kernel-events.sql`：回收/规整/CMA/OOM/rss_stat 事件标记。
+-- `sql/10-native-dump-capability.sql`：v58.2 `heap_profile` 与 v57.1 降级检查。
+-
+-本次新增（位于 `sql/`）：
+-
+-- `10-cpu-thread-buckets.sql`：每线程 100 ms CPU 时间；区间与桶**取交集**。
+-- `11-runnable-and-blocked.sql`：Running/Runnable/D；同样按区间交集，不整段计入起始桶。
+-- `12-native-dump-timeline.sql`：每个 dump end 的 alloc/free bytes/count（采样估计）。
+-- `13-native-callsite-hotspots.sql`：leaf callsite 的分配/释放热点（采样估计）。
+-- `14-perf-hot-functions.sql`：perf self 样本按函数聚合。
+-- `15-perf-allocator-share.sql`：allocator/free 样本占比。
+-- `16-perf-spike-vs-quiet.sql`：用**本 trace 的相对毫秒窗口**对比函数样本。
+-- `16a-perf-window-check.sql`：检查 16 的窗口是否落在本 trace；越界报 OUT_OF_TRACE。
+-- `17-alloc-vs-cpu.sql`：分配快照与 CPU 高/低桶的交叉筛查（有分辨率限制）。
+-- `18-data-quality.sql`：trace bounds、stats、事件类型、表行数、dump 轴。
+-- `19-cpu-frequency.sql`：cpufreq 时间线。
+-- `20-jitter-cycles.sql`：先筛高 CPU 桶再编号，安静间隔不会被合并；输出 episode。
++包内已有（路径均以仓库根为起点）：
++
++- `v1_modify/candidate-v1.0.1/sql/00-inventory.sql`：trace bounds、UPID、track、stats、native 候选解析。
++- `v1_modify/candidate-v1.0.1/sql/01-rss-timeline.sql`：RSS 分类时间线（MiB）。
++- `v1_modify/candidate-v1.0.1/sql/03-native-live.sql`：dump 级 live 估计。
++- `v1_modify/candidate-v1.0.1/sql/04-native-callstacks.sql`：祖先调用栈累计。
++- `v1_modify/candidate-v1.0.1/sql/07-kernel-events.sql`：回收/规整/CMA/OOM/rss_stat 事件标记。
++- `v1_modify/candidate-v1.0.1/sql/10-native-dump-capability.sql`：v58.2 `heap_profile` 与 v57.1 降级检查。
++
++本方案新增（未修改的 10–19、16a 仍在 `v2_modify/sql/`；本轮只改 20）：
++
++- `v2_modify/sql/10-cpu-thread-buckets.sql`：每线程 100 ms CPU；区间与桶取交集。
++- `v2_modify/sql/11-runnable-and-blocked.sql`：Running/Runnable/D；区间交集。
++- `v2_modify/sql/12-native-dump-timeline.sql`：dump end 的 alloc/free bytes/count（采样估计）。
++- `v2_modify/sql/13-native-callsite-hotspots.sql`：leaf callsite 分配/释放热点。
++- `v2_modify/sql/14-perf-hot-functions.sql`：perf self 样本按函数聚合。
++- `v2_modify/sql/15-perf-allocator-share.sql`：allocator/free 样本占比。
++- `v2_modify/sql/16-perf-spike-vs-quiet.sql`：本 trace 相对窗口对比。
++- `v2_modify/sql/16a-perf-window-check.sql`：窗口越界检查。
++- `v2_modify/sql/17-alloc-vs-cpu.sql`：分配快照与 CPU 高/低桶交叉筛查。
++- `v2_modify/sql/18-data-quality.sql`：trace bounds、stats、事件/表行数。
++- `v2_modify/sql/19-cpu-frequency.sql`：cpufreq 时间线。
++- **`v2_modify2/sql/20-jitter-cycles.sql`**：本轮修正版；1 秒桶也用区间交集，
++  先筛高 CPU 桶再编号。
++
++> 下文 `sql/10`、`sql/20` 等是简写；完整路径见本列表。
+ 
+ 核心查询（完整文件见上）：
+ 
+ ### 6.1 目标解析
+ 
+ ```sql
+--- 先运行 sql/00-inventory.sql 的 [CANDIDATES]，把 target_name 改成 worker_app。
++-- 先运行 v1_modify/candidate-v1.0.1/sql/00-inventory.sql 的 [CANDIDATES]，
++-- 把 target_name 改成 worker_app。
+ -- 仅当恰好一个 data_bearing=1 时采用；ambiguous=1 或 0 个候选都要停下来报“未解析”。
+ ```
+ 
+ ### 6.2 CPU 线程桶（区间交集）
+ 
+-完整实现见 `sql/10-cpu-thread-buckets.sql`。核心不是
++完整实现见 `v2_modify/sql/10-cpu-thread-buckets.sql`。核心不是
+ `GROUP BY ts/100ms`，而是对每个 `[ts, ts+dur)` 与每个桶求正交集：
+ 
+ ```sql
+@@ -426,7 +441,7 @@
+ 
+ UI：`Counter Track`，Timestamp=`ts_ns`，Value=`cpu_ms`，Pivot=`thread_name`。
+ 90 ms/120 ms 跨 100 ms 边界的正例、反例见
+-`validation/tests/bucket_overlap_test.sql` 与 `real_trace_overlap_test.sql`。
++`v2_modify/validation/tests/bucket_overlap_test.sql` 与 `real_trace_overlap_test.sql`。
+ 
+ ### 6.3 分配 dump 时间线
+ 
+@@ -484,6 +499,23 @@
+ 
+ `17-alloc-vs-cpu.sql` 把每个 dump 归到 1 s CPU 高/低桶，输出各 callsite 的 `spike/quiet` 分配量。它是**筛查**：dump 结束时刻 vs 1 s 桶、v57.1 无窗口起点、2 s dump 间隔都会造成错位；count/bytes 仍是采样估计。只有结合 `10/11` 的周期和 `14/16` 的 CPU 归因，才能谈关联。
+ 
++### 6.7 `20` 的 1 秒桶与 episode
++
++`v2_modify2/sql/20-jitter-cycles.sql` 使用与 10/11 相同的区间交集：
++
++```text
++overlap = min(s.ts + s.dur, bucket_end) - max(s.ts, bucket_start)
++```
++
++再按 `spike_cpu_ms` 标记桶，**先 `WHERE spike=1`，再 `ROW_NUMBER()`** 形成连续
++episode。反例：
++
++- Running slice 900–1100 ms，dur=200 ms，阈值 150 ms；
++- 正确：bucket0=100 ms、bucket1=100 ms，均不 spike；
++- 旧实现：bucket0=200 ms，产生假 spike。
++
++测试见 `v2_modify2/validation/tests/jitter_bucket_intersection_test.sql`。
++
+ ## 7. Perfetto UI 操作
+ 
+ 打开 <https://ui.perfetto.dev/> → “Open trace file” 选择本地 `.pftrace`。UI 在浏览器本地解析，不需要上传；主机需能加载 UI。
+@@ -571,7 +603,7 @@
+ | 符号缺失 | `trace_processor bundle --symbol-paths <unstripped>`；至少按 mapping/地址归因 | 源码行号/内联 |
+ | UI 无 StackSamples | SQL 表 + `Aggregate Profiles`（pprof）或升级 UI；板端不升级 | 时间轴火焰图 |
+ | 已有系统 traced | 不启动第二个 autostart 抢占；复用现有服务或用独立 socket 并显式导出 producer socket | 取决于现有配置 |
+-| v57.1 `dur=0` | 用 `sql/10` 降级：只统计活动 dump/总量；精确持有区间标 UNKNOWN | 精确窗口 |
++| v57.1 `dur=0` | 用 `v1_modify/candidate-v1.0.1/sql/10-native-dump-capability.sql` 降级：只统计活动 dump/总量；精确持有区间标 UNKNOWN | 精确窗口 |
+ | v57.1 descriptor 不可得 | 用 v58.2 descriptor 只做静态语法检查；板端以实际解析/log 为准 | 版本级 schema 保证 |
+ 
+ ## 10. 版本适用边界与本次验证
+@@ -586,7 +618,7 @@
+   仍可判。TP 还会按 `(upid, window_end, heap_name)` 去重，配置的 dump 间隔不等于可见 dump 数。
+ - **分析端 v58.2**：本方案 SQL 使用 `sched_slice`、`thread_state`、`perf_sample`、
+   `heap_profile`、`heap_profile_allocation`、`stats`、`ftrace_event` 等 v58.2 表/视图。
+-  若换用 v57.1 TP，`heap_profile` 可能不存在，需用 `sql/10-native-dump-capability.sql`
++  若换用 v57.1 TP，`heap_profile` 可能不存在，需用 `v1_modify/candidate-v1.0.1/sql/10-native-dump-capability.sql`
+   的降级语句；其他表名/列也可能不同，先跑 `00-inventory.sql`。
+ - **配置 schema**：本次只对 v58.2 descriptor 做静态校验；v57.1 实际解析/运行未验证。
+   配置中使用的字段在 v57.1 二进制中有对应字符串，但不等于正式 schema 验证。
+@@ -604,12 +636,18 @@
+ - C1/C2/C3 配置用本地 v58.2 源码生成的 descriptor 做 `validate_config.py` 静态校验，均 PASS；该 descriptor 与既有 `trace_config.desc` sha256 一致。
+ - SQL 语法在本机 v58.2 Trace Processor 上对现有 trace 执行过（只验证表/语法，不从这些 trace 得出 worker_app 结论）。
+ - 区间交集：合成 90/120 ms 跨 100 ms 边界样本、真实 trace 的 90–120 ms sched slice 均验证
+-  `sum(overlap) == dur`、`diff=0`（`validation/tests/`）。
++  `sum(overlap) == dur`、`diff=0`（`v2_modify/validation/tests/`）。
+ - jitter episode：含安静间隔的合成反例验证旧逻辑合并、新逻辑拆成 2 段。
++- 20 的 1 秒桶区间交集：900–1100 ms、dur=200 ms、阈值 150 ms 反例验证
++  旧逻辑第 0 秒 200 ms 假 spike、修正后 100+100 ms 无 spike；350 ms 正例验证
++  正确桶产生 spike（`v2_modify2/validation/tests/`）。
+ - 16/16a：合成窗口与真实 trace 偏移验证 `OK` / `OUT_OF_TRACE`。
+ - shell 生命周期 dry-run：mock tracebox/app 验证 C2 启动→producer→观测→停止→flush，
+   C1/C3 完成条件，`remote_stop.sh` 成功/缺失 PID，`host_pull.sh` 对 scp 失败/空文件
+   的非零退出。
++- 仓库根执行路径 dry-run：从 clone 根目录检查 `v2_modify/configs/`、
++  `v2_modify/scripts/`、`v1_modify/candidate-v1.0.1/`、`v2_modify2/sql/20...`，
++  并实际跑 C1 + host_pull。
+ - 板端 tracebox v57.1 二进制包含 `linux.perf`、`traced_perf`、`sched_switch`、`power/cpu_frequency`、`cpufreq_period_ms`、`record_process_runtime` 等字符串；不包含 `android.heapprofd` 注册串。
+ - 同版本 `libheapprofd_glibc_preload.so` 包含 `v57.1-c59f57dd4`、`android.heapprofd`，并导出 malloc/free/calloc/realloc hook。
+ - 本机 v58.2 TP 存在并可使用 `sched_slice`、`thread_state`、`perf_sample`、`heap_profile`、`heap_profile_allocation`、`stats`、`ftrace_event`。
+@@ -627,7 +665,7 @@
+ 
+ ### 10.3 首轮错误归因（规则未落实 vs 缺少实现）
+ 
+-详见 `validation/SKILL_GAP.md`。摘要：
++详见 `v2_modify/validation/SKILL_GAP.md`。摘要：
+ 
+ - **Skill 规则已写、首轮未落实**：主机/目标变量与执行位置、采集验收、heapprofd 采样估计、
+   业务延迟需独立证据。
+@@ -636,13 +674,14 @@
+ - **首轮 SQL/实现缺陷**：`10/11` 整段计入起始桶、`20` 先编号后筛、`16` 跨 trace 绝对时间戳。
+   其中 `10/11/20` 也说明 Skill 没有对应的可复用 SQL。
+ 
+-本修正版补了 `scripts/`、`16a` 和测试，但**没有修改或部署 Skill**；这些补丁不能算作
++本修正版补了 `v2_modify/scripts/`、`16a` 和测试，但**没有修改或部署 Skill**；这些补丁不能算作
+ Skill 已具备的能力。
+ 
+ ## 11. 建议的最小下一步
+ 
+ 1. 跑 4.1 预检，拿到 `survey.txt`、`available_events.txt`、`worker_app` 的 PID/命令行/构建信息。
+-2. 只跑 C1（30 s），用 `00/01/10/11/18/20` 确认：抖动是否真实、周期多少、是否有 reclaim/compaction/DVFS 混淆。
++2. 只跑 C1（30 s），用 `00/01/10/11/18/20`（完整路径见第 6 节）确认：
++   抖动是否真实、周期多少、是否有 reclaim/compaction/DVFS 混淆。
+ 3. 若 C1 指向用户态 CPU 且无内存压力，跑 C3（30 s），用 `14/15/16` 找热点函数与 allocator 占比。
+ 4. 若 C3 显示 allocator 占比在抖动窗上升，再跑 C2（测试实例 + preload，
+    `OBSERVE_S=30`；配置 90 s 只是安全上限），用 `10/12/13/17` 归因到 callsite。
+--- v2_modify/README.md	2026-10-17 20:29:13.284532787 +0800
++++ v2_modify2/README.md	2026-10-17 20:36:57.401809746 +0800
+@@ -1,108 +1,79 @@
+-# v2_modify — 首轮 `v2_test` 的范围受限技术修正
++# v2_modify2 — 最后两项定点修正（增量）
+ 
+-本目录是第二轮独立场景测试首轮交付 `v2_test` 的**独立修正版**。
+-首轮 `v2_test/` 原样保留，不覆盖、不改写 history；本版只修本轮明确列出的确定性问题
+-及其直接关联的文档、配置、SQL、脚本。
+-
+-> 这是一次技术修正，不是新的盲测成绩。不得把本版表现冒充首轮独立 Agent 的首交付质量。
+-
+-## 1. 修正范围
+-
+-1. **变量作用域**：消除未定义的 `$TRACEBOX`；把板端动作收进 `scripts/remote_*.sh`，
+-   由板端 shell 解析变量，避免 SSH 双引号在主机侧展开 `$!`/`$(...)`。
+-2. **C2 生命周期**：服务就绪 → 起测试进程（preload）→ 等 `heapprofd` producer →
+-   观测 `OBSERVE_S` → 停 app → flush → SIGINT tracebox → 非空校验；不再启动后立即杀进程。
+-3. **C1/C3 完成条件**：后台 PID、超时、SIGINT/SIGTERM、文件非空；
+-   `host_pull.sh` 对 scp 失败或空文件立即非零退出，不再“拉回失败仍宣称成功”。
+-4. **`10`/`11` 跨桶**：用 `min(ts+dur,bucket_end)-max(ts,bucket_start)` 做区间交集，
+-   不再把完整 `dur` 记到起始桶；用 90/120 ms 跨 100 ms 边界样本测试。
+-5. **`20` 抖动 episode**：先筛高 CPU 桶再 `ROW_NUMBER()`，安静间隔不会把两段合并；
+-   提供含安静间隔的反例。
+-6. **`16` 时间窗口**：改为相对当前 trace `trace_bounds.start_ts` 的毫秒偏移；
+-   新增 `16a` 检查窗口是否在本 trace。C1 的绝对 ns 不得直接用于 C3。
+-7. **采样语义**：明确 heapprofd `count/size` 是采样估计，不是精确调用次数；
+-   业务延迟需要独立日志/打点/trace_marker 证据。
++本目录是 `v2_modify/` 的**独立增量修正**，只处理两个已审核问题：
+ 
+-未修改：`worker_app`、既有实验数据、Skill 的安装/部署、首轮 `v2_test/` 内容。
++1. `PLAN.md` 的主机执行路径统一到 GitHub 仓库根目录。
++2. `20-jitter-cycles.sql` 的 1 秒 CPU 桶改为区间交集。
+ 
+-## 2. 目录
++`v2_test/` 与 `v2_modify/` 原样保留；本目录不重做性能方案，不修改 Skill，不上板。
++
++## 1. 内容
+ 
+ ```text
+-v2_modify/
++v2_modify2/
+ ├── README.md
+-├── PLAN.md                      完整方案（已替换第 4 节执行流程，补充版本边界/测试）
+-├── CHANGES.diff                 相对 v2_test 的 unified diff
+-├── configs/
+-│   ├── C1-worker-timeline.pbtxt
+-│   ├── C2-worker-native-alloc.pbtxt   duration 改为 90 s 安全上限
+-│   └── C3-worker-cpu-profile.pbtxt
+-├── scripts/
+-│   ├── remote_lib.sh            板端：WORK/TRACEBOX/PID/超时/stop
+-│   ├── remote_c1.sh             板端：C1 后台采集与完成条件
+-│   ├── remote_c2.sh             板端：C2 完整生命周期
+-│   ├── remote_c3.sh             板端：C3 后台采集与完成条件
+-│   ├── remote_stop.sh           板端：手工 SIGINT + flush + 非空检查
+-│   └── host_pull.sh             主机：scp + 非空 + sha256，失败即非零
++├── PLAN.md                        从仓库根执行的完整方案（路径已修正）
++├── CHANGES.diff                   相对 v2_modify 的 unified diff
+ ├── sql/
+-│   ├── 10-cpu-thread-buckets.sql        区间交集
+-│   ├── 11-runnable-and-blocked.sql      区间交集
+-│   ├── 12-native-dump-timeline.sql      采样估计说明
+-│   ├── 13-native-callsite-hotspots.sql  采样估计说明
+-│   ├── 14-perf-hot-functions.sql
+-│   ├── 15-perf-allocator-share.sql
+-│   ├── 16-perf-spike-vs-quiet.sql       本 trace 相对窗口
+-│   ├── 16a-perf-window-check.sql        窗口越界检查（新增）
+-│   ├── 17-alloc-vs-cpu.sql              采样估计说明
+-│   ├── 18-data-quality.sql
+-│   ├── 19-cpu-frequency.sql
+-│   └── 20-jitter-cycles.sql             先筛后编号
+-├── validation/
+-│   ├── VALIDATION.md
+-│   ├── SKILL_GAP.md                首轮错误 vs Skill 规则/实现缺口
+-│   ├── trace_config-v58.2.desc
+-│   └── tests/
+-│       ├── bucket_overlap_test.sql
+-│       ├── bucket_overlap_old_vs_new.sql
+-│       ├── real_trace_overlap_test.sql
+-│       ├── jitter_cycles_counterexample.sql
+-│       ├── perf_window_guard_test.sql
+-│       ├── shell_lifecycle_dryrun.sh
+-│       ├── TEST_RECORD.md
+-│       └── outputs/                    原始测试输出
+-└── SHA256SUMS
++│   └── 20-jitter-cycles.sql       1 秒桶区间交集 + 先筛 spike 后编号
++└── validation/
++    └── tests/
++        ├── jitter_bucket_intersection_test.sql
++        ├── path_dryrun.sh
++        ├── TEST_RECORD.md
++        └── outputs/
+ ```
+ 
+-## 3. 快速使用
++未修改的配置、脚本、10–19/16a SQL 仍位于 `v2_modify/`。
++
++## 2. 执行路径约定
++
++所有主机命令从 **GitHub 仓库根目录** 开始：
++
++- 配置：`v2_modify/configs/`
++- 执行脚本：`v2_modify/scripts/`
++- Skill 脚本/参考/SQL：`v1_modify/candidate-v1.0.1/`
++- 本增量修改的 SQL：`v2_modify2/sql/20-jitter-cycles.sql`
++- 本增量测试：`v2_modify2/validation/tests/`
++
++`PLAN.md` 第 4 节以 `R=$(git rev-parse --show-toplevel); cd "$R"` 开头；
++预检、scp、采集、拉回命令均按上述根相对路径书写。
++
++## 3. 20 的修正
++
++`sched_slice` 不再整段记到 `s.ts` 所在秒桶，而是：
++
++```text
++overlap = min(ts + dur, bucket_end) - max(ts, bucket_start)
++```
++
++然后按 `spike_cpu_ms` 标记，**先筛 spike 桶，再按 `bucket_s - ROW_NUMBER()` 编号**，
++连续高 CPU 桶才合并为 episode。
++
++反例：Running slice 900–1100 ms，dur=200 ms，阈值 150 ms：
++
++```text
++OLD:   bucket0 = 200 ms -> 假 spike
++FIXED: bucket0 = 100 ms, bucket1 = 100 ms -> 无 spike
++```
+ 
+-1. `PLAN.md` 第 3 节：三份配置与参数依据。
+-2. `PLAN.md` 第 4 节：变量作用域、预检、C1/C2/C3 生命周期、停止/拉回。
+-3. `PLAN.md` 第 6–8 节：SQL、UI、因果判据。
+-4. `validation/SKILL_GAP.md`：区分“Skill 规则未落实”与“Skill 缺少可复用实现”。
+-5. `validation/tests/TEST_RECORD.md`：本轮实际执行的 SQL/流程测试记录。
++350 ms 正例：bucket0=100、bucket1=250 → 只有 bucket1 是 spike。
+ 
+-## 4. 验证状态
++## 4. 已执行测试
+ 
+-| 项 | 状态 |
++| 测试 | 结果 |
+ |---|---|
+-| 首轮 `v2_test/` 未被修改 | 是（独立目录） |
+-| Skill 候选版路径/版本/commit/sha | 与首轮一致，未改 Skill |
+-| C1/C2/C3 对 v58.2 descriptor 静态 schema | PASS |
+-| v57.1 descriptor 校验 | **未执行** |
+-| 10/11 区间交集：90/120 ms 跨桶正例 | PASS（diff=0） |
+-| 10/11 真实 trace 90–120 ms slice | PASS（5 条，diff=0） |
+-| 20 含安静间隔反例 | OLD=1 段，FIXED=2 段 |
+-| 16/16a 本 trace 窗口检查 | `OK` / `OUT_OF_TRACE` 均验证 |
+-| shell 生命周期 dry-run（mock） | C2 生命周期、C1/C3 完成、pull 失败传播均 PASS |
+-| 板端 tracebox/heapprofd/perf 实跑 | **未执行** |
+-| worker_app 真实 trace / UI 截图 | **未执行** |
+-| 性能因果 | **未证明** |
+-
+-## 5. 版本边界（摘要）
+-
+-- 板端 tracebox v57.1；主机 Trace Processor v58.2。
+-- v57.1 heapprofd 不发布 `start_timestamp`，v58.2 上 `dur=0` 常见；精确窗口 UNKNOWN，
+-  总量/分配/释放/dump 数仍可判。
+-- SQL 使用 v58.2 表名；换 v57.1 TP 时先用 `00-inventory.sql`/`10-native-dump-capability.sql`
+-  检查并降级。
+-- v58.2 descriptor 只做静态校验，不等于 v57.1 运行期验证。
+-- heapprofd count/size 是采样估计；业务延迟需独立事件/日志证据。
++| 900–1100 ms、200 ms、阈值 150 ms 反例 | OLD spike=1；FIXED 100+100，spike=0 |
++| 900–1250 ms、350 ms 正例 | FIXED bucket1=250，spike=1 |
++| 修正后 20 在真实 trace（cam-service，阈值 5） | 正常输出 episode |
++| 仓库根路径 dry-run | 路径存在；C1 + host_pull 从根目录通过 |
++| v2_test / v2_modify 未修改 | 是（独立目录） |
++
++详见 `validation/tests/TEST_RECORD.md` 与 `validation/tests/outputs/`。
++
++## 5. 未验证
++
++- 未连接 X5，未运行真实 `tracebox`/heapprofd/perf。
++- 合成反例只验证区间数学与旧/新逻辑，不是 `worker_app` 数据。
++- 未验证 v57.1 descriptor、真实 C2 生命周期、UI。
++- 未修改或部署 Skill；不把本次修正表现冒充首轮盲测成绩。
+--- v2_modify/sql/20-jitter-cycles.sql	2026-10-17 20:07:11.818803904 +0800
++++ v2_modify2/sql/20-jitter-cycles.sql	2026-10-17 20:36:38.739983933 +0800
+@@ -3,32 +3,62 @@
+ -- the "every few seconds" burst can be measured instead of eyeballed.
+ -- Set spike_cpu_ms from the C1 baseline (e.g. baseline + 2..3x).
+ --
+--- FIX (r1): numbering must happen AFTER filtering to spike buckets. The old
+--- order (ROW_NUMBER over all buckets, then WHERE spike=1) merged separate
+--- spikes separated by quiet buckets into one episode.
++-- FIX r1: numbering happens AFTER filtering to spike buckets. The old order
++-- (ROW_NUMBER over all buckets, then WHERE spike=1) merged separate spikes
++-- separated by quiet buckets into one episode.
+ --
+--- Counterexample with quiet gap is in
+--- validation/tests/jitter_cycles_counterexample.sql:
+---   buckets 0,1 high; 2,3 low; 4,5 high -> two episodes, not one.
+-WITH params AS (
++-- FIX r2: a sched_slice is split by INTERSECTION with each 1 s bucket. It is
++-- NOT charged entirely to the bucket containing s.ts. A Running slice from
++-- 900 ms to 1100 ms (dur=200 ms) contributes 100 ms to bucket 0 and 100 ms to
++-- bucket 1; with a 150 ms threshold it must produce NO spike. Charging the
++-- full 200 ms to bucket 0 would create a false spike. This is the same
++-- interval-intersection rule as v2_modify/sql/10 and v2_modify/sql/11.
++--
++-- Counterexamples:
++--   v2_modify2/validation/tests/jitter_bucket_intersection_test.sql
++--   v2_modify/validation/tests/jitter_cycles_counterexample.sql
++WITH RECURSIVE
++params AS (
+   SELECT 'worker_app' AS target_name, 100.0 AS spike_cpu_ms
+-), bounds AS (
+-  SELECT start_ts FROM trace_bounds
+-), cpu AS (
++),
++bounds AS (
++  SELECT start_ts, end_ts FROM trace_bounds
++),
++buckets(bucket) AS (
++  SELECT 0
++  UNION ALL
++  SELECT bucket + 1
++  FROM buckets
++  WHERE bucket + 1 <
++        (SELECT CAST((end_ts - start_ts + 999999999) / 1000000000 AS INTEGER) FROM bounds)
++),
++cpu AS (
+   SELECT
+-    CAST((s.ts - b.start_ts) / 1000000000 AS INTEGER) AS bucket_s,
+-    SUM(s.dur) / 1000000.0 AS cpu_ms
++    b.start_ts + bk.bucket * 1000000000 AS ts,
++    bk.bucket AS bucket_s,
++    SUM(
++      MIN(s.ts + s.dur, b.start_ts + (bk.bucket + 1) * 1000000000)
++      - MAX(s.ts, b.start_ts + bk.bucket * 1000000000)
++    ) / 1000000.0 AS cpu_ms
+   FROM sched_slice s
+   JOIN thread th USING (utid)
+-  JOIN process p USING (upid), bounds b, params q
++  JOIN process p USING (upid)
++  CROSS JOIN bounds b
++  JOIN buckets bk
++    ON s.ts < b.start_ts + (bk.bucket + 1) * 1000000000
++   AND s.ts + s.dur > b.start_ts + bk.bucket * 1000000000
++  CROSS JOIN params q
+   WHERE (p.name = q.target_name OR p.name GLOB '*/' || q.target_name)
+-    AND s.ts >= b.start_ts
+-  GROUP BY bucket_s
+-), flagged AS (
++    AND s.dur > 0
++    AND s.ts < b.end_ts
++  GROUP BY bk.bucket, b.start_ts
++),
++flagged AS (
+   SELECT bucket_s, cpu_ms,
+          CASE WHEN cpu_ms >= (SELECT spike_cpu_ms FROM params) THEN 1 ELSE 0 END AS spike
+   FROM cpu
+-), spikes AS (
++),
++spikes AS (
+   -- Filter first: only spike buckets participate in the run numbering.
+   SELECT bucket_s, cpu_ms,
+          bucket_s - ROW_NUMBER() OVER (ORDER BY bucket_s) AS grp
+@@ -47,3 +77,5 @@
+ GROUP BY grp
+ ORDER BY first_bucket_s;
+ -- UI: Slice Track; Timestamp=ts; Duration=dur; Name=<literal>; Pivot=<literal>.
++-- LIMIT: recursive buckets cover the trace duration; >1000 s is outside the
++-- intended 30-90 s windows and may hit SQLite's recursive CTE limit.
+--- /dev/null	2026-10-17 12:02:07.650592396 +0800
++++ v2_modify2/validation/tests/jitter_bucket_intersection_test.sql	2026-10-17 20:35:24.042864353 +0800
+@@ -0,0 +1,86 @@
++-- Counterexample for sql/20-jitter-cycles.sql (r2 bucket intersection).
++-- Case A: one Running slice from 900 ms to 1100 ms, dur=200 ms.
++--   Correct: bucket0=100 ms, bucket1=100 ms; threshold=150 ms -> no spike.
++--   Old (full dur at s.ts): bucket0=200 ms -> false spike.
++-- Case B: 900-1250 ms, dur=350 ms.
++--   Correct: bucket0=100 ms, bucket1=250 ms -> bucket1 spike.
++--   Old: bucket0=350 ms -> spike in the wrong bucket.
++WITH RECURSIVE
++params AS (SELECT 1000000000 AS bucket_ns, 150.0 AS threshold_ms),
++buckets(bucket) AS (
++  SELECT 0
++  UNION ALL
++  SELECT bucket + 1 FROM buckets WHERE bucket < 2
++),
++samples(name, ts, dur) AS (
++  VALUES
++    ('A_200ms_900_1100', 900000000, 200000000),
++    ('B_350ms_900_1250', 900000000, 350000000)
++),
++old_attr AS (
++  SELECT s.name, s.ts, s.dur,
++         CAST(s.ts / (SELECT bucket_ns FROM params) AS INTEGER) AS bucket,
++         s.dur / 1000000.0 AS ms,
++         CASE WHEN s.dur / 1000000.0 >= (SELECT threshold_ms FROM params)
++              THEN 1 ELSE 0 END AS spike
++  FROM samples s
++),
++new_attr AS (
++  SELECT s.name, bk.bucket,
++         (MIN(s.ts + s.dur, (bk.bucket + 1) * p.bucket_ns)
++          - MAX(s.ts, bk.bucket * p.bucket_ns)) / 1000000.0 AS ms,
++         CASE WHEN (MIN(s.ts + s.dur, (bk.bucket + 1) * p.bucket_ns)
++                    - MAX(s.ts, bk.bucket * p.bucket_ns)) / 1000000.0
++                   >= p.threshold_ms
++              THEN 1 ELSE 0 END AS spike
++  FROM samples s
++  CROSS JOIN buckets bk
++  CROSS JOIN params p
++  WHERE s.ts < (bk.bucket + 1) * p.bucket_ns
++    AND s.ts + s.dur > bk.bucket * p.bucket_ns
++)
++SELECT 'OLD' AS logic, name, bucket, ms, spike
++FROM old_attr
++UNION ALL
++SELECT 'FIXED' AS logic, name, bucket, ms, spike
++FROM new_attr
++ORDER BY name, logic, bucket;
++
++WITH RECURSIVE
++params AS (SELECT 1000000000 AS bucket_ns, 150.0 AS threshold_ms),
++buckets(bucket) AS (
++  SELECT 0
++  UNION ALL
++  SELECT bucket + 1 FROM buckets WHERE bucket < 2
++),
++samples(name, ts, dur) AS (
++  VALUES
++    ('A_200ms_900_1100', 900000000, 200000000),
++    ('B_350ms_900_1250', 900000000, 350000000)
++),
++old_attr AS (
++  SELECT s.name,
++         CASE WHEN s.dur / 1000000.0 >= (SELECT threshold_ms FROM params)
++              THEN 1 ELSE 0 END AS spike
++  FROM samples s
++),
++new_attr AS (
++  SELECT s.name,
++         MAX(CASE WHEN (MIN(s.ts + s.dur, (bk.bucket + 1) * p.bucket_ns)
++                       - MAX(s.ts, bk.bucket * p.bucket_ns)) / 1000000.0
++                      >= p.threshold_ms
++                  THEN 1 ELSE 0 END) AS spike
++  FROM samples s
++  CROSS JOIN buckets bk
++  CROSS JOIN params p
++  WHERE s.ts < (bk.bucket + 1) * p.bucket_ns
++    AND s.ts + s.dur > bk.bucket * p.bucket_ns
++  GROUP BY s.name
++)
++SELECT 'A_200ms' AS case_name,
++       (SELECT spike FROM old_attr WHERE name = 'A_200ms_900_1100') AS old_spike,
++       (SELECT spike FROM new_attr WHERE name = 'A_200ms_900_1100') AS fixed_spike
++UNION ALL
++SELECT 'B_350ms',
++       (SELECT spike FROM old_attr WHERE name = 'B_350ms_900_1250'),
++       (SELECT spike FROM new_attr WHERE name = 'B_350ms_900_1250');
+--- /dev/null	2026-10-17 12:02:07.650592396 +0800
++++ v2_modify2/validation/tests/path_dryrun.sh	2026-10-17 20:36:23.802163639 +0800
+@@ -0,0 +1,65 @@
++#!/bin/sh
++# Host-side dry run for the repo-root execution paths used by PLAN.md.
++# No board, no real tracebox, no worker_app. It verifies that the root-relative
++# config/script/skill paths exist and that C1 + host_pull work from the clone root.
++set -eu
++
++ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
++cd "$ROOT"
++
++for f in \
++  v2_modify/configs/C1-worker-timeline.pbtxt \
++  v2_modify/configs/C2-worker-native-alloc.pbtxt \
++  v2_modify/configs/C3-worker-cpu-profile.pbtxt \
++  v2_modify/scripts/remote_lib.sh \
++  v2_modify/scripts/remote_c1.sh \
++  v2_modify/scripts/remote_c2.sh \
++  v2_modify/scripts/remote_c3.sh \
++  v2_modify/scripts/remote_stop.sh \
++  v2_modify/scripts/host_pull.sh \
++  v1_modify/candidate-v1.0.1/scripts/survey.sh \
++  v1_modify/candidate-v1.0.1/scripts/validate_config.py \
++  v2_modify2/sql/20-jitter-cycles.sql
++do
++  [ -f "$f" ] || { echo "PATH FAIL: missing $f"; exit 1; }
++done
++echo "PASS: repo-root paths exist"
++
++M=$(mktemp -d "${TMPDIR:-/tmp}/v2modify2-path.XXXXXX")
++trap 'rm -rf "$M"' EXIT
++mkdir -p "$M/bin" "$M/work" "$M/pull"
++cp v2_modify/configs/C1-worker-timeline.pbtxt "$M/work/"
++
++cat > "$M/bin/tracebox" <<'EOF'
++#!/bin/sh
++if [ "${1:-}" = "--version" ]; then echo "v57.1-mock"; exit 0; fi
++out=""; prev=""
++for a in "$@"; do
++  [ "$prev" = "-o" ] && out=$a
++  prev=$a
++done
++[ -n "$out" ] || { echo "mock tracebox: no -o" >&2; exit 2; }
++( sleep 2; printf "mock C1 trace\n" > "$out"; exit 0 ) &
++echo $!
++EOF
++chmod +x "$M/bin/tracebox"
++
++echo "== C1 via v2_modify/scripts from repo root =="
++WORK="$M/work" TRACEBOX="$M/bin/tracebox" sh v2_modify/scripts/remote_c1.sh
++[ -s "$M/work/C1.pftrace" ] || { echo "PATH FAIL: C1 empty"; exit 1; }
++grep -q "C1 DONE" "$M/work/C1.status" || { echo "PATH FAIL: no C1.status"; exit 1; }
++echo "PASS: C1 root-relative script/config"
++
++cat > "$M/bin/scp" <<'EOF'
++#!/bin/sh
++# fake scp: -q SRC DST; copy by basename from FAKE_SCP_ROOT
++src=$2; dst=$3
++base=$(basename "$src")
++cp "${FAKE_SCP_ROOT:?}/$base" "$dst"
++EOF
++chmod +x "$M/bin/scp"
++
++echo "== host_pull via v2_modify/scripts from repo root =="
++PATH="$M/bin:$PATH" WORK="$M/work" FAKE_SCP_ROOT="$M/work" \
++  sh v2_modify/scripts/host_pull.sh fakeboard "$M/pull" C1.pftrace C1.log C1.status
++echo "PASS: host_pull root-relative script"
+--- v2_modify/validation/tests/TEST_RECORD.md	2026-10-17 20:18:39.958227476 +0800
++++ v2_modify2/validation/tests/TEST_RECORD.md	2026-10-17 20:37:03.217750402 +0800
+@@ -1,210 +1,90 @@
+-# 修正版测试记录
++# v2_modify2 测试记录
+ 
+ - 日期：2026-10-17
+ - 主机 Trace Processor：`Perfetto v58.2-add693d8b`
+-- 测试目的：验证本轮 7 项修正中的 SQL 与脚本控制流；**不用于 worker_app 结论**。
+-- 原始输出：`validation/tests/outputs/`。
+-- 测试 trace 仅用于表/语法和区间数学验证，不是 `worker_app` 采集：
++- 测试 trace（仅用于 SQL 逻辑，不是 `worker_app`）：
+   - `combined_traceput.pftrace` sha256 `56b42293e757f273c182091c8cf8517eededc9d9b7de2112518930e4cbba8663`
+-  - `perf_cpu.pftrace` sha256 `27d2008ffe00dee75d3ff456625d0d453dd94338f1d13723553e2371ea111487`
+-
+-## 1. Schema（v58.2 descriptor）
+-
+-```bash
+-python3 <candidate>/scripts/validate_config.py configs/C1-worker-timeline.pbtxt \
+-  --descriptor-set validation/trace_config-v58.2.desc
+-# C2/C3 同样
+-```
+-
+-结果：三份均 `[PASS] schema: parsed with supplied descriptor`。
+-边界：这不是 v57.1 descriptor 校验，也不证明运行期数据源存在。
+-
+-原始输出：`outputs/schema_validation.txt`。
+-
+-## 2. 10/11 区间交集：90/120 ms 跨 100 ms 边界（正例）
+-
+-```bash
+-TP query -f validation/tests/bucket_overlap_test.sql combined_traceput.pftrace
+-```
+-
+-实际输出（节选）：
+-
+-```text
+-"A_90ms_cross",0,5000000
+-"A_90ms_cross",1,85000000
+-"B_120ms_cross",0,5000000
+-"B_120ms_cross",1,100000000
+-"B_120ms_cross",2,15000000
+-"C_exact_100ms",1,100000000
+-"D_250ms_span",0,50000000
+-"D_250ms_span",1,100000000
+-"D_250ms_span",2,100000000
+-"E_1ns_edge",0,1
+-"E_1ns_edge",1,999999
+-
+-"name","dur","total_overlap_ns","diff_ns"
+-"A_90ms_cross",90000000,90000000,0
+-"B_120ms_cross",120000000,120000000,0
+-"C_exact_100ms",100000000,100000000,0
+-"D_250ms_span",250000000,250000000,0
+-"E_1ns_edge",1000000,1000000,0
+-```
+-
+-期望：每个区间 `sum(overlap)==dur`，`diff_ns=0`；90/120 ms 均跨边界拆分。
+-实际：全部满足。
++- 原始输出：`validation/tests/outputs/`。
+ 
+-## 3. 10/11 旧逻辑 vs 修正逻辑（反例）
++## 1. 仓库根执行路径 dry-run
+ 
+ ```bash
+-TP query -f validation/tests/bucket_overlap_old_vs_new.sql combined_traceput.pftrace
++sh v2_modify2/validation/tests/path_dryrun.sh
+ ```
+ 
+ 实际输出：
+ 
+ ```text
+-"logic","bucket","ms"
+-"FIXED",0,5.000000
+-"FIXED",1,85.000000
+-"OLD",0,90.000000
+-```
+-
+-期望：旧逻辑把 90 ms 全记到起始桶；修正逻辑拆成 5 ms + 85 ms。实际一致。
+-
+-## 4. 真实 trace 的 90–120 ms sched slice
+-
+-```bash
+-TP query -f validation/tests/real_trace_overlap_test.sql combined_traceput.pftrace
++PASS: repo-root paths exist
++== C1 via v2_modify/scripts from repo root ==
++C1 started tracebox_pid=...
++C1 DONE size_bytes=14
++PASS: C1 root-relative script/config
++== host_pull via v2_modify/scripts from repo root ==
++PULL OK: C1.pftrace ...
++PULL OK: C1.log ...
++PULL OK: C1.status ...
++PASS: host_pull root-relative script
+ ```
+ 
+-实际输出：
++验证点：
+ 
+-```text
+-"id","ts","dur","total_overlap_ns","diff_ns"
+-330,134020026855,98948542,98948542,0
+-683,134247831855,100901292,100901292,0
+-697,134251485230,113173708,113173708,0
+-1127,134503817855,92436584,92436584,0
+-5533,137146273106,115747459,115747459,0
+-```
++- 从 clone 根目录能找到 `v2_modify/configs/`、`v2_modify/scripts/`、
++  `v1_modify/candidate-v1.0.1/`、`v2_modify2/sql/20-jitter-cycles.sql`；
++- `remote_c1.sh` 从根目录执行成功；
++- `host_pull.sh` 从根目录执行成功。
+ 
+-期望：5 条跨桶 slice 的 `sum(overlap)==dur`。实际全部 `diff_ns=0`。
+-该测试只说明区间数学正确，不代表 `worker_app` 的 CPU 分布。
++边界：mock tracebox，不是板端采集。
+ 
+-## 5. 20 抖动 episode：含安静间隔的反例
++## 2. 20 的 900–1100 ms / 200 ms / 150 ms 反例
+ 
+ ```bash
+-TP query -f validation/tests/jitter_cycles_counterexample.sql combined_traceput.pftrace
++TP query -f v2_modify2/validation/tests/jitter_bucket_intersection_test.sql \
++  combined_traceput.pftrace
+ ```
+ 
+-输入：1 s 桶 `0,1` 高；`2,3` 低；`4,5` 高；`6` 低。
+-
+ 实际输出：
+ 
+ ```text
+-"logic","first_bucket_s","last_bucket_s"
+-"FIXED_splits",0,1
+-"FIXED_splits",4,5
+-"OLD_merges",0,5
++"logic","name","bucket","ms","spike"
++"FIXED","A_200ms_900_1100",0,100.000000,0
++"FIXED","A_200ms_900_1100",1,100.000000,0
++"OLD","A_200ms_900_1100",0,200.000000,1
++"FIXED","B_350ms_900_1250",0,100.000000,0
++"FIXED","B_350ms_900_1250",1,250.000000,1
++"OLD","B_350ms_900_1250",0,350.000000,1
+ 
+-"old_episode_count","fixed_episode_count"
+-1,2
++"case_name","old_spike","fixed_spike"
++"A_200ms",1,0
++"B_350ms",1,1
+ ```
+ 
+-期望：旧逻辑合并成 1 段（0–5），修正逻辑拆成 2 段（0–1、4–5）。实际一致。
+-`sql/20` 已改为先 `WHERE spike=1` 再 `ROW_NUMBER()`。
++期望/实际：
+ 
+-## 6. 16/16a：窗口必须属于被查询的 trace
++- 200 ms 跨 900–1100 ms：FIXED 两个桶各 100 ms，均不 spike；OLD 在第 0 秒
++  记 200 ms，产生假 spike。
++- 350 ms 跨 900–1250 ms：FIXED 第 1 秒 250 ms，正确 spike；OLD 整段记第 0 秒。
+ 
+-### 6.1 合成窗口检查
++## 3. 修正后 20 在真实 trace 上的正例
+ 
+ ```bash
+-TP query -f validation/tests/perf_window_guard_test.sql combined_traceput.pftrace
+-```
+-
+-实际：
+-
+-```text
+-"name","window_check"
+-"inside","OK"
+-"outside","OUT_OF_TRACE"
+-```
+-
+-### 6.2 真实 trace 的有效窗口
+-
+-```text
+-16a with offsets 1000/2000/3000/4000 ms
+-"window_check"
+-"OK"
+-```
+-
+-### 6.3 真实 trace 的越界窗口
+-
+-```text
+-16a with offsets 20000/21000/22000/23000 ms
+-"window_check"
+-"OUT_OF_TRACE"
+-```
+-
+-### 6.4 16 在 perf trace 上按本 trace 相对窗口取样
+-
+-```bash
+-# target 改为测试进程 dd；窗口为 1000-2000 ms / 3000-4000 ms
+-TP query -f /tmp/q16test.sql perf_cpu.pftrace
+-```
+-
+-实际输出含 `spike` / `quiet` 两组函数样本（见 `outputs/16_perf_sample.txt`）。
+-这只验证查询能按本 trace 窗口筛选；具体热点属于测试 trace 的 `dd`，与 `worker_app` 无关。
+-
+-## 7. Shell 生命周期 dry-run（mock，不上板）
+-
+-```bash
+-sh validation/tests/shell_lifecycle_dryrun.sh
++# target=cam-service, spike_cpu_ms=5
++TP query -f /tmp/q20r2.sql combined_traceput.pftrace
+ ```
+ 
+ 实际输出：
+ 
+ ```text
+-== C2 lifecycle dry run ==
+-C2 started tracebox_pid=...
+-C2 started app_pid=...
+-C2 heapprofd producer visible
+-C2 DONE size_bytes=11
+-PASS: C2 lifecycle, trace non-empty
+-== C1/C3 completion dry run ==
+-C1 DONE size_bytes=21
+-C3 DONE size_bytes=21
+-PASS: C1/C3 completion, non-empty outputs
+-== remote_stop dry run ==
+-STOP OK: C1 size_bytes=21
+-STOP FAIL: missing .../MISSING.pid
+-PASS: missing pid propagated
+-== host_pull success ==
+-PULL OK: C1.pftrace size=21 sha256=...
+-PASS: pull success
+-== host_pull missing file ==
+-PULL FAIL: scp ...
+-PASS: pull failure propagated
+-== host_pull empty file ==
+-PULL FAIL: .../EMPTY.pftrace is missing or empty
+-PASS: empty file rejected
++"ts","dur","first_bucket_s","last_bucket_s","buckets_in_episode","peak_cpu_ms","avg_cpu_ms"
++133248075771,12000000000,0,11,12,59.316875,53.688805
+ ```
+ 
+-验证点：
++说明：查询能按区间交集得到每秒 CPU，并输出一个 episode。该 trace 不是 `worker_app`，
++不能用于性能结论。
++
++## 4. 未验证
+ 
+-- C2 不立即杀 app：先服务查询、起 app、等 `heapprofd`、`OBSERVE_S=2`、停 app、flush、
+-  SIGINT tracebox、非空检查。
+-- C1/C3 的后台 PID、完成、非空文件。
+-- `remote_stop.sh` 对已有 PID 成功 flush；对缺失 PID 返回非零。
+-- `host_pull.sh` 对成功文件返回 0；对 scp 失败返回非 0；空文件也返回非 0。
+-
+-边界：mock 不是真实 tracebox；不能证明板端 `--system-sockets`、heapprofd 注册、
+-SIGINT flush 时序。真实板端仍标记未验证。
+-
+-## 8. 未验证
+-
+-- 未上板，未运行真实 `tracebox`/`survey.sh`/heapprofd/perf。
+-- 未验证 C2 `heapprofd` producer 真实可见性、flush 时长、`--system-sockets` 在 `/tmp`
+-  只读时的行为。
+-- 未验证 v57.1 descriptor。
+-- 未验证 `worker_app` 的真实 trace、符号、UI。
+-- 未证明任何性能因果关系。
++- 未上板，未运行真实 tracebox/heapprofd/perf。
++- 合成反例不经过真实 `sched_slice` 表，只验证与 `sql/20` 相同的区间数学和旧/新逻辑。
++- 未验证 v57.1 descriptor、C2 真实生命周期、UI。
++- 未修改或部署 Skill。

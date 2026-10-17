@@ -1,0 +1,12 @@
+Command: v2_modify2/sql/20-jitter-cycles.sql with target=cam-service, threshold=5 on /root/sdk_md_x5_1.1.1/perfetto/captures/combined_traceput.pftrace
+Loading trace: 0.00 MBLoading trace: 1.09 MB[442.188]     common_flags.cc:525 Trace loaded: 1.09 MB in 0.05s (20.5 MB/s)
+
+
+Trace health issues:
+
+  Import errors
+    slice_max_depth_exceeded: 11120 | A slice was dropped because the slice nesting depth exceeded the max supported limit.
+
+[442.195]            query.cc:191 Query execution time: 6 ms
+"ts","dur","first_bucket_s","last_bucket_s","buckets_in_episode","peak_cpu_ms","avg_cpu_ms"
+133248075771,12000000000,0,11,12,59.316875,53.688805
