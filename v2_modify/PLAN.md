@@ -1,7 +1,9 @@
 # RDK X5 `worker_app`：Perfetto 调试与分析方案
 
-> **版本：v2_modify（首轮 v2_test 的范围受限修正）**
-> 首轮 `v2_test/` 原样保留；本版只修明确列出的 7 项确定性问题及直接关联内容。
+> **版本：v2_modify（含 r2 定点修复）**
+> `v2_test/` 与 v2_modify r1 的提交历史均保留；本版在 r1 基础上纳入：
+> PLAN 执行路径统一到仓库根，以及 `v2_modify/sql/20-jitter-cycles.sql`
+> 的 1 秒桶区间交集。
 > 这不是新的盲测成绩，不把修正后的表现冒充首轮首次交付质量。
 >
 > 方案只做设计与静态/离线验证，未连接开发板、未修改业务程序、未采集任何真实 trace。
@@ -9,17 +11,17 @@
 
 ## 0. Skill 加载记录
 
-- 实际加载入口：`/root/github_test/x5_heapprofd_traces/v1_modify/candidate-v1.0.1/SKILL.md`
+- 实际加载入口（仓库根相对）：`v1_modify/candidate-v1.0.1/SKILL.md`
 - 版本：`1.0.1`（`MANIFEST.json`），Git 提交：`f16f68ae1e3f112794af3b953881d1b18fa8415e`
 - 工作树 HEAD：`3dcef36`；`git diff f16f68a HEAD -- v1_modify/candidate-v1.0.1` 为空，候选目录与该提交一致。
-- 完整性：`SKILL.md` sha256 `70371e5b...`、`references/02-native.md` sha256 `21b8bd7a...`、`scripts/validate_config.py` sha256 `98c2f8f6...` 均与 `MANIFEST.json` 一致。
-- 资源预检：`python3 scripts/validate_config.py --check-resources` → PASS（27 个必需文件 + 10 个配置可读）。
+- 完整性：`SKILL.md` sha256 `70371e5b...`、`v1_modify/candidate-v1.0.1/references/02-native.md` sha256 `21b8bd7a...`、`v1_modify/candidate-v1.0.1/scripts/validate_config.py` sha256 `98c2f8f6...` 均与 `MANIFEST.json` 一致。
+- 资源预检：`python3 v1_modify/candidate-v1.0.1/scripts/validate_config.py --check-resources` → PASS（27 个必需文件 + 10 个配置可读）。
 - 未使用已部署的 v1.0.0：`/root/.dsh/skills/perfetto-memory-debugging/MANIFEST.json` 版本为 `1.0.0`，`SKILL.md` sha256 `4f5f6ae9...`，与候选版不同；本方案未以它为依据。
 - 使用的主要参考：
-  `references/00-routing.md`、`01-counters.md`、`02-native.md`、`04-ui.md`、`05-platforms.md`、`06-quality.md`、`07-internals-and-pprof.md`、`08-worked-examples.md`、`09-advanced-configs.md`、`sources.md`；
-  `scripts/survey.sh`、`scripts/make_config.py --help`、`scripts/validate_config.py`；
-  `sql/00-inventory.sql`、`01-rss-timeline.sql`、`03-native-live.sql`、`04-native-callstacks.sql`、`07-kernel-events.sql`、`10-native-dump-capability.sql`；
-  `configs/overview.pbtxt`、`native.pbtxt`、`kernel-pressure.pbtxt`、`rss-spike.pbtxt`。
+  `v1_modify/candidate-v1.0.1/references/00-routing.md`、`01-counters.md`、`02-native.md`、`04-ui.md`、`05-platforms.md`、`06-quality.md`、`07-internals-and-pprof.md`、`08-worked-examples.md`、`09-advanced-configs.md`、`sources.md`；
+  `v1_modify/candidate-v1.0.1/scripts/survey.sh`、`v1_modify/candidate-v1.0.1/scripts/make_config.py --help`、`v1_modify/candidate-v1.0.1/scripts/validate_config.py`；
+  `v1_modify/candidate-v1.0.1/sql/00-inventory.sql`、`01-rss-timeline.sql`、`03-native-live.sql`、`04-native-callstacks.sql`、`07-kernel-events.sql`、`10-native-dump-capability.sql`；
+  `v1_modify/candidate-v1.0.1/configs/overview.pbtxt`、`native.pbtxt`、`kernel-pressure.pbtxt`、`rss-spike.pbtxt`。
 - 未读取 `TEST_REPORT.md`、`tests/agent_ab/`、`agent_records/`、`verify/`、`AGENT_AB.md` 等开发/纠错/A-B 评分材料。
 
 ## 1. 问题分析与假设
@@ -84,7 +86,10 @@
 
 ## 3. TraceConfig
 
-三个配置均位于 `configs/`。已用本地 v58.2 源码生成的 descriptor 做静态 schema 校验（PASS）；**未做 v57.1 descriptor 校验，也未在板端解析**。
+三个配置均位于 `v2_modify/configs/`。
+Markdown 文件链接按本文件所在目录解析（`configs/`）；第 4 节命令按仓库根解析（`v2_modify/`）。
+
+已用本地 v58.2 源码生成的 descriptor 做静态 schema 校验（PASS）；**未做 v57.1 descriptor 校验，也未在板端解析**。
 
 ### 3.1 C1：低开销时间线
 
@@ -116,7 +121,7 @@
 - `duration_ms: 90000`：只是安全上限，不是观测时长。`remote_c2.sh` 在
   producer 注册、`OBSERVE_S` 观测、停止 app 和 flush 后主动 SIGINT；90 s 让
   “服务等待 + app 启动 + 30 s 观测 + 停止/ flush”不会先撞上 duration 上限。
-- **重要版本事实**：v57.1 采集端不发 `ProfilePacket.ProcessHeapSamples.start_timestamp`，v58.2 TP 上常见 `heap_profile.dur = 0`。这不等于采集失败，只意味着“精确持有区间”不可判；总量、分配/释放、dump 数仍可判。用 `sql/10-native-dump-capability.sql` 检查，不要用 `dur=0` 否定总量结论。
+- **重要版本事实**：v57.1 采集端不发 `ProfilePacket.ProcessHeapSamples.start_timestamp`，v58.2 TP 上常见 `heap_profile.dur = 0`。这不等于采集失败，只意味着“精确持有区间”不可判；总量、分配/释放、dump 数仍可判。用 `v1_modify/candidate-v1.0.1/sql/10-native-dump-capability.sql` 检查，不要用 `dur=0` 否定总量结论。
 
 ### 3.3 C3：CPU 调用栈归因
 
@@ -134,7 +139,7 @@
 ## 4. 主机与板端操作
 
 > **修正版 r1 重点**：首轮稿里 `$TRACEBOX` 未定义、SSH 双引号让 `$!`/`$(cat ...)`
-> 在主机侧展开。本版把板端动作收进 `scripts/remote_*.sh`，由板端 shell 自己解析
+> 在主机侧展开。本版把板端动作收进 `v2_modify/scripts/remote_*.sh`，由板端 shell 自己解析
 > 变量；主机只负责 scp/ssh/等待/拉回。以下命令仍未在本次会话上板执行。
 
 ### 4.1 变量与执行位置
@@ -167,21 +172,26 @@ ssh "$BOARD" "cd $WORK && $TRACEBOX ... --background & echo $! > app.pid"
 ### 4.2 准备（主机 → 板端）
 
 ```bash
+# 所有主机命令都从 GitHub 仓库根目录执行。
+R=$(git rev-parse --show-toplevel)
+cd "$R"
+
 BOARD=root@<x5-ip>
 WORK=/data/perfetto-worker
-HOST=$PWD/output
+HOST=$R/output
 TP=/path/to/trace_processor_shell        # 主机 v58.2
 mkdir -p "$HOST"
 
 ssh "$BOARD" "mkdir -p $WORK"
-scp configs/*.pbtxt "$BOARD:$WORK/"
-scp scripts/remote_lib.sh scripts/remote_c1.sh scripts/remote_c2.sh \
-    scripts/remote_c3.sh scripts/remote_stop.sh "$BOARD:$WORK/"
+scp v2_modify/configs/*.pbtxt "$BOARD:$WORK/"
+scp v2_modify/scripts/remote_lib.sh v2_modify/scripts/remote_c1.sh \
+    v2_modify/scripts/remote_c2.sh v2_modify/scripts/remote_c3.sh \
+    v2_modify/scripts/remote_stop.sh "$BOARD:$WORK/"
 scp v1_modify/candidate-v1.0.1/scripts/survey.sh "$BOARD:$WORK/"
 ssh "$BOARD" "chmod +x $WORK/remote_*.sh $WORK/survey.sh"
 ```
 
-`scripts/host_pull.sh` 留在主机，不上板。
+`v2_modify/scripts/host_pull.sh` 留在主机，不上板。
 
 预检（远程只读命令用单引号，避免主机展开）：
 
@@ -305,7 +315,7 @@ ssh "$BOARD" "WORK=$WORK sh $WORK/remote_stop.sh C1"
 ### 4.7 拉回：SCP 失败不得宣称成功
 
 ```bash
-WORK=$WORK sh scripts/host_pull.sh "$BOARD" "$HOST" C1.pftrace C1.log C1.status
+WORK=$WORK sh v2_modify/scripts/host_pull.sh "$BOARD" "$HOST" C1.pftrace C1.log C1.status
 # C2 追加：C2.pftrace C2.status C2.query.txt app.log
 ```
 
@@ -331,7 +341,7 @@ WORK=$WORK sh scripts/host_pull.sh "$BOARD" "$HOST" C1.pftrace C1.log C1.status
 
 1. **Schema**：配置能被采集器对应版本的 proto 解析。本次已用 v58.2 descriptor PASS；v57.1 descriptor 未获得，标记 UNKNOWN。
 2. **运行条件**：数据源/事件/权限/注入路径就绪。看 `tracebox perfetto --query --long`、`C*.log`、`C2.query.txt`、`app.log`。
-3. **数据**：正确 UPID/窗口、非空样本、无影响结论的丢失。运行 `sql/18-data-quality.sql`、`sql/10-native-dump-capability.sql`、`sql/00-inventory.sql`。
+3. **数据**：正确 UPID/窗口、非空样本、无影响结论的丢失。运行 `v2_modify/sql/18-data-quality.sql`、`v1_modify/candidate-v1.0.1/sql/10-native-dump-capability.sql`、`v1_modify/candidate-v1.0.1/sql/00-inventory.sql`。
 4. **分析/UI**：单位、UPID、窗口、图与 SQL 一致；相关性仍不等于因果。
 
 逐遍检查：
@@ -343,7 +353,7 @@ WORK=$WORK sh scripts/host_pull.sh "$BOARD" "$HOST" C1.pftrace C1.log C1.status
 - **C2**：`remote_c2.sh` 退出 0；`C2.status` 存在；app 已停止；`host_pull.sh` 退出 0；
   `C2.query.txt` 中能看到 `heapprofd` producer/data source；
   `heap_profile_allocation` 中目标 UPID + `libc.malloc` 行数 >0；`heap_profile` dump 数合理；
-  `stats` 无 heapprofd 错误。**`dur=0` 不是失败**，按 `sql/10` 判读。
+  `stats` 无 heapprofd 错误。**`dur=0` 不是失败**，按 `v1_modify/candidate-v1.0.1/sql/10-native-dump-capability.sql` 判读。
 - **C3**：`remote_c3.sh` 退出 0；`C3.status` 存在；`host_pull.sh` 退出 0；
   `perf_sample` 中目标 utid 样本 >0；`stats` 中 `perf_cpu_lost_records`/
   `perf_samples_dropped` 为 0 或可解释；`unwind_error` 比例可接受；符号解析比例可接受。
@@ -354,40 +364,46 @@ WORK=$WORK sh scripts/host_pull.sh "$BOARD" "$HOST" C1.pftrace C1.log C1.status
 
 包内已有（直接复用，先填参数）：
 
-- `sql/00-inventory.sql`：trace bounds、UPID、track、stats、native 候选解析；把 `target_name` 改为 `worker_app`。
-- `sql/01-rss-timeline.sql`：RSS 分类时间线（MiB），UI Counter Track。
-- `sql/03-native-live.sql`：dump 级 live 估计（不是逐次 malloc）。
-- `sql/04-native-callstacks.sql`：祖先调用栈累计（不能把结果相加当总内存）。
-- `sql/07-kernel-events.sql`：回收/规整/CMA/OOM/rss_stat 事件标记。
-- `sql/10-native-dump-capability.sql`：v58.2 `heap_profile` 与 v57.1 降级检查。
+包内已有（路径均以仓库根为起点）：
 
-本次新增（位于 `sql/`）：
+- `v1_modify/candidate-v1.0.1/sql/00-inventory.sql`：trace bounds、UPID、track、stats、native 候选解析。
+- `v1_modify/candidate-v1.0.1/sql/01-rss-timeline.sql`：RSS 分类时间线（MiB）。
+- `v1_modify/candidate-v1.0.1/sql/03-native-live.sql`：dump 级 live 估计。
+- `v1_modify/candidate-v1.0.1/sql/04-native-callstacks.sql`：祖先调用栈累计。
+- `v1_modify/candidate-v1.0.1/sql/07-kernel-events.sql`：回收/规整/CMA/OOM/rss_stat 事件标记。
+- `v1_modify/candidate-v1.0.1/sql/10-native-dump-capability.sql`：v58.2 `heap_profile` 与 v57.1 降级检查。
 
-- `10-cpu-thread-buckets.sql`：每线程 100 ms CPU 时间；区间与桶**取交集**。
-- `11-runnable-and-blocked.sql`：Running/Runnable/D；同样按区间交集，不整段计入起始桶。
-- `12-native-dump-timeline.sql`：每个 dump end 的 alloc/free bytes/count（采样估计）。
-- `13-native-callsite-hotspots.sql`：leaf callsite 的分配/释放热点（采样估计）。
-- `14-perf-hot-functions.sql`：perf self 样本按函数聚合。
-- `15-perf-allocator-share.sql`：allocator/free 样本占比。
-- `16-perf-spike-vs-quiet.sql`：用**本 trace 的相对毫秒窗口**对比函数样本。
-- `16a-perf-window-check.sql`：检查 16 的窗口是否落在本 trace；越界报 OUT_OF_TRACE。
-- `17-alloc-vs-cpu.sql`：分配快照与 CPU 高/低桶的交叉筛查（有分辨率限制）。
-- `18-data-quality.sql`：trace bounds、stats、事件类型、表行数、dump 轴。
-- `19-cpu-frequency.sql`：cpufreq 时间线。
-- `20-jitter-cycles.sql`：先筛高 CPU 桶再编号，安静间隔不会被合并；输出 episode。
+本方案新增（未修改的 10–19、16a 仍在 `v2_modify/sql/`；本轮只改 20）：
+
+- `v2_modify/sql/10-cpu-thread-buckets.sql`：每线程 100 ms CPU；区间与桶取交集。
+- `v2_modify/sql/11-runnable-and-blocked.sql`：Running/Runnable/D；区间交集。
+- `v2_modify/sql/12-native-dump-timeline.sql`：dump end 的 alloc/free bytes/count（采样估计）。
+- `v2_modify/sql/13-native-callsite-hotspots.sql`：leaf callsite 分配/释放热点。
+- `v2_modify/sql/14-perf-hot-functions.sql`：perf self 样本按函数聚合。
+- `v2_modify/sql/15-perf-allocator-share.sql`：allocator/free 样本占比。
+- `v2_modify/sql/16-perf-spike-vs-quiet.sql`：本 trace 相对窗口对比。
+- `v2_modify/sql/16a-perf-window-check.sql`：窗口越界检查。
+- `v2_modify/sql/17-alloc-vs-cpu.sql`：分配快照与 CPU 高/低桶交叉筛查。
+- `v2_modify/sql/18-data-quality.sql`：trace bounds、stats、事件/表行数。
+- `v2_modify/sql/19-cpu-frequency.sql`：cpufreq 时间线。
+- **`v2_modify/sql/20-jitter-cycles.sql`**：本轮修正版；1 秒桶也用区间交集，
+  先筛高 CPU 桶再编号。
+
+> 下文 `sql/10`、`sql/20` 等是简写；完整路径见本列表。
 
 核心查询（完整文件见上）：
 
 ### 6.1 目标解析
 
 ```sql
--- 先运行 sql/00-inventory.sql 的 [CANDIDATES]，把 target_name 改成 worker_app。
+-- 先运行 v1_modify/candidate-v1.0.1/sql/00-inventory.sql 的 [CANDIDATES]，
+-- 把 target_name 改成 worker_app。
 -- 仅当恰好一个 data_bearing=1 时采用；ambiguous=1 或 0 个候选都要停下来报“未解析”。
 ```
 
 ### 6.2 CPU 线程桶（区间交集）
 
-完整实现见 `sql/10-cpu-thread-buckets.sql`。核心不是
+完整实现见 `v2_modify/sql/10-cpu-thread-buckets.sql`。核心不是
 `GROUP BY ts/100ms`，而是对每个 `[ts, ts+dur)` 与每个桶求正交集：
 
 ```sql
@@ -426,7 +442,7 @@ ORDER BY ts_ns, cpu_ms DESC;
 
 UI：`Counter Track`，Timestamp=`ts_ns`，Value=`cpu_ms`，Pivot=`thread_name`。
 90 ms/120 ms 跨 100 ms 边界的正例、反例见
-`validation/tests/bucket_overlap_test.sql` 与 `real_trace_overlap_test.sql`。
+`v2_modify/validation/tests/bucket_overlap_test.sql` 与 `real_trace_overlap_test.sql`。
 
 ### 6.3 分配 dump 时间线
 
@@ -483,6 +499,23 @@ allocator 占比见 `15-perf-allocator-share.sql`；spike/quiet 对比见 `16`�
 ### 6.6 分配与 CPU 的交叉筛查
 
 `17-alloc-vs-cpu.sql` 把每个 dump 归到 1 s CPU 高/低桶，输出各 callsite 的 `spike/quiet` 分配量。它是**筛查**：dump 结束时刻 vs 1 s 桶、v57.1 无窗口起点、2 s dump 间隔都会造成错位；count/bytes 仍是采样估计。只有结合 `10/11` 的周期和 `14/16` 的 CPU 归因，才能谈关联。
+
+### 6.7 `20` 的 1 秒桶与 episode
+
+`v2_modify/sql/20-jitter-cycles.sql` 使用与 10/11 相同的区间交集：
+
+```text
+overlap = min(s.ts + s.dur, bucket_end) - max(s.ts, bucket_start)
+```
+
+再按 `spike_cpu_ms` 标记桶，**先 `WHERE spike=1`，再 `ROW_NUMBER()`** 形成连续
+episode。反例：
+
+- Running slice 900–1100 ms，dur=200 ms，阈值 150 ms；
+- 正确：bucket0=100 ms、bucket1=100 ms，均不 spike；
+- 旧实现：bucket0=200 ms，产生假 spike。
+
+测试见 `v2_modify/validation/tests/jitter_bucket_intersection_test.sql`。
 
 ## 7. Perfetto UI 操作
 
@@ -571,7 +604,7 @@ allocator 占比见 `15-perf-allocator-share.sql`；spike/quiet 对比见 `16`�
 | 符号缺失 | `trace_processor bundle --symbol-paths <unstripped>`；至少按 mapping/地址归因 | 源码行号/内联 |
 | UI 无 StackSamples | SQL 表 + `Aggregate Profiles`（pprof）或升级 UI；板端不升级 | 时间轴火焰图 |
 | 已有系统 traced | 不启动第二个 autostart 抢占；复用现有服务或用独立 socket 并显式导出 producer socket | 取决于现有配置 |
-| v57.1 `dur=0` | 用 `sql/10` 降级：只统计活动 dump/总量；精确持有区间标 UNKNOWN | 精确窗口 |
+| v57.1 `dur=0` | 用 `v1_modify/candidate-v1.0.1/sql/10-native-dump-capability.sql` 降级：只统计活动 dump/总量；精确持有区间标 UNKNOWN | 精确窗口 |
 | v57.1 descriptor 不可得 | 用 v58.2 descriptor 只做静态语法检查；板端以实际解析/log 为准 | 版本级 schema 保证 |
 
 ## 10. 版本适用边界与本次验证
@@ -586,7 +619,7 @@ allocator 占比见 `15-perf-allocator-share.sql`；spike/quiet 对比见 `16`�
   仍可判。TP 还会按 `(upid, window_end, heap_name)` 去重，配置的 dump 间隔不等于可见 dump 数。
 - **分析端 v58.2**：本方案 SQL 使用 `sched_slice`、`thread_state`、`perf_sample`、
   `heap_profile`、`heap_profile_allocation`、`stats`、`ftrace_event` 等 v58.2 表/视图。
-  若换用 v57.1 TP，`heap_profile` 可能不存在，需用 `sql/10-native-dump-capability.sql`
+  若换用 v57.1 TP，`heap_profile` 可能不存在，需用 `v1_modify/candidate-v1.0.1/sql/10-native-dump-capability.sql`
   的降级语句；其他表名/列也可能不同，先跑 `00-inventory.sql`。
 - **配置 schema**：本次只对 v58.2 descriptor 做静态校验；v57.1 实际解析/运行未验证。
   配置中使用的字段在 v57.1 二进制中有对应字符串，但不等于正式 schema 验证。
@@ -604,12 +637,18 @@ allocator 占比见 `15-perf-allocator-share.sql`；spike/quiet 对比见 `16`�
 - C1/C2/C3 配置用本地 v58.2 源码生成的 descriptor 做 `validate_config.py` 静态校验，均 PASS；该 descriptor 与既有 `trace_config.desc` sha256 一致。
 - SQL 语法在本机 v58.2 Trace Processor 上对现有 trace 执行过（只验证表/语法，不从这些 trace 得出 worker_app 结论）。
 - 区间交集：合成 90/120 ms 跨 100 ms 边界样本、真实 trace 的 90–120 ms sched slice 均验证
-  `sum(overlap) == dur`、`diff=0`（`validation/tests/`）。
+  `sum(overlap) == dur`、`diff=0`（`v2_modify/validation/tests/`）。
 - jitter episode：含安静间隔的合成反例验证旧逻辑合并、新逻辑拆成 2 段。
+- 20 的 1 秒桶区间交集：900–1100 ms、dur=200 ms、阈值 150 ms 反例验证
+  旧逻辑第 0 秒 200 ms 假 spike、修正后 100+100 ms 无 spike；350 ms 正例验证
+  正确桶产生 spike（`v2_modify/validation/tests/`）。
 - 16/16a：合成窗口与真实 trace 偏移验证 `OK` / `OUT_OF_TRACE`。
 - shell 生命周期 dry-run：mock tracebox/app 验证 C2 启动→producer→观测→停止→flush，
   C1/C3 完成条件，`remote_stop.sh` 成功/缺失 PID，`host_pull.sh` 对 scp 失败/空文件
   的非零退出。
+- 仓库根执行路径 dry-run：从 clone 根目录检查 `v2_modify/configs/`、
+  `v2_modify/scripts/`、`v1_modify/candidate-v1.0.1/`、`v2_modify/sql/20...`，
+  并实际跑 C1 + host_pull。
 - 板端 tracebox v57.1 二进制包含 `linux.perf`、`traced_perf`、`sched_switch`、`power/cpu_frequency`、`cpufreq_period_ms`、`record_process_runtime` 等字符串；不包含 `android.heapprofd` 注册串。
 - 同版本 `libheapprofd_glibc_preload.so` 包含 `v57.1-c59f57dd4`、`android.heapprofd`，并导出 malloc/free/calloc/realloc hook。
 - 本机 v58.2 TP 存在并可使用 `sched_slice`、`thread_state`、`perf_sample`、`heap_profile`、`heap_profile_allocation`、`stats`、`ftrace_event`。
@@ -627,7 +666,7 @@ allocator 占比见 `15-perf-allocator-share.sql`；spike/quiet 对比见 `16`�
 
 ### 10.3 首轮错误归因（规则未落实 vs 缺少实现）
 
-详见 `validation/SKILL_GAP.md`。摘要：
+详见 `v2_modify/validation/SKILL_GAP.md`。摘要：
 
 - **Skill 规则已写、首轮未落实**：主机/目标变量与执行位置、采集验收、heapprofd 采样估计、
   业务延迟需独立证据。
@@ -636,13 +675,14 @@ allocator 占比见 `15-perf-allocator-share.sql`；spike/quiet 对比见 `16`�
 - **首轮 SQL/实现缺陷**：`10/11` 整段计入起始桶、`20` 先编号后筛、`16` 跨 trace 绝对时间戳。
   其中 `10/11/20` 也说明 Skill 没有对应的可复用 SQL。
 
-本修正版补了 `scripts/`、`16a` 和测试，但**没有修改或部署 Skill**；这些补丁不能算作
+本修正版补了 `v2_modify/scripts/`、`16a` 和测试，但**没有修改或部署 Skill**；这些补丁不能算作
 Skill 已具备的能力。
 
 ## 11. 建议的最小下一步
 
 1. 跑 4.1 预检，拿到 `survey.txt`、`available_events.txt`、`worker_app` 的 PID/命令行/构建信息。
-2. 只跑 C1（30 s），用 `00/01/10/11/18/20` 确认：抖动是否真实、周期多少、是否有 reclaim/compaction/DVFS 混淆。
+2. 只跑 C1（30 s），用 `00/01/10/11/18/20`（完整路径见第 6 节）确认：
+   抖动是否真实、周期多少、是否有 reclaim/compaction/DVFS 混淆。
 3. 若 C1 指向用户态 CPU 且无内存压力，跑 C3（30 s），用 `14/15/16` 找热点函数与 allocator 占比。
 4. 若 C3 显示 allocator 占比在抖动窗上升，再跑 C2（测试实例 + preload，
    `OBSERVE_S=30`；配置 90 s 只是安全上限），用 `10/12/13/17` 归因到 callsite。

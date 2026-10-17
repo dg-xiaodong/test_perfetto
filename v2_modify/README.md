@@ -4,6 +4,9 @@
 首轮 `v2_test/` 原样保留，不覆盖、不改写 history；本版只修本轮明确列出的确定性问题
 及其直接关联的文档、配置、SQL、脚本。
 
+当前版本已纳入 r2 的两项定点修复：PLAN 主机命令统一从仓库根执行；
+`sql/20-jitter-cycles.sql` 的 1 秒桶改为区间交集。r1 的提交历史仍保留。
+
 > 这是一次技术修正，不是新的盲测成绩。不得把本版表现冒充首轮独立 Agent 的首交付质量。
 
 ## 1. 修正范围
@@ -22,6 +25,10 @@
    新增 `16a` 检查窗口是否在本 trace。C1 的绝对 ns 不得直接用于 C3。
 7. **采样语义**：明确 heapprofd `count/size` 是采样估计，不是精确调用次数；
    业务延迟需要独立日志/打点/trace_marker 证据。
+8. **`20` 的 1 秒桶**：改为 `min(ts+dur,bucket_end)-max(ts,bucket_start)` 区间交集；
+   保留先筛 spike 桶、再按连续桶编号。900–1100 ms、200 ms、阈值 150 ms 不产生假 spike。
+9. **执行路径**：主机命令统一从仓库根执行；配置 `v2_modify/configs/`、
+   脚本 `v2_modify/scripts/`、Skill `v1_modify/candidate-v1.0.1/`。
 
 未修改：`worker_app`、既有实验数据、Skill 的安装/部署、首轮 `v2_test/` 内容。
 
@@ -55,7 +62,7 @@ v2_modify/
 │   ├── 17-alloc-vs-cpu.sql              采样估计说明
 │   ├── 18-data-quality.sql
 │   ├── 19-cpu-frequency.sql
-│   └── 20-jitter-cycles.sql             先筛后编号
+│   └── 20-jitter-cycles.sql             1 秒桶区间交集 + 先筛后编号
 ├── validation/
 │   ├── VALIDATION.md
 │   ├── SKILL_GAP.md                首轮错误 vs Skill 规则/实现缺口
@@ -67,6 +74,8 @@ v2_modify/
 │       ├── jitter_cycles_counterexample.sql
 │       ├── perf_window_guard_test.sql
 │       ├── shell_lifecycle_dryrun.sh
+│       ├── jitter_bucket_intersection_test.sql   r2: 900–1100 ms 反例
+│       ├── path_dryrun.sh                         r2: 仓库根路径 dry-run
 │       ├── TEST_RECORD.md
 │       └── outputs/                    原始测试输出
 └── SHA256SUMS
@@ -78,7 +87,8 @@ v2_modify/
 2. `PLAN.md` 第 4 节：变量作用域、预检、C1/C2/C3 生命周期、停止/拉回。
 3. `PLAN.md` 第 6–8 节：SQL、UI、因果判据。
 4. `validation/SKILL_GAP.md`：区分“Skill 规则未落实”与“Skill 缺少可复用实现”。
-5. `validation/tests/TEST_RECORD.md`：本轮实际执行的 SQL/流程测试记录。
+5. `validation/tests/TEST_RECORD.md`：r1 + r2 实际执行的 SQL/流程测试记录。
+6. 主机命令从仓库根执行；配置/脚本/Skill 的根相对路径见 `PLAN.md` 第 4 节。
 
 ## 4. 验证状态
 
@@ -92,6 +102,9 @@ v2_modify/
 | 10/11 真实 trace 90–120 ms slice | PASS（5 条，diff=0） |
 | 20 含安静间隔反例 | OLD=1 段，FIXED=2 段 |
 | 16/16a 本 trace 窗口检查 | `OK` / `OUT_OF_TRACE` 均验证 |
+| 20 的 1 秒桶 900–1100 ms / 200 ms 反例 | OLD 假 spike；FIXED 100+100 ms，无 spike |
+| 20 的 350 ms 正例 | FIXED bucket1=250 ms，spike=1 |
+| 仓库根路径 dry-run（mock） | 路径存在；C1 + host_pull 从根目录 PASS |
 | shell 生命周期 dry-run（mock） | C2 生命周期、C1/C3 完成、pull 失败传播均 PASS |
 | 板端 tracebox/heapprofd/perf 实跑 | **未执行** |
 | worker_app 真实 trace / UI 截图 | **未执行** |

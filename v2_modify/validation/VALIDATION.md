@@ -158,3 +158,32 @@ C2 的 `duration_ms` 从 45000 改为 90000（安全上限），三份配置重�
 - 未上板；未运行真实 tracebox/survey/heapprofd/perf。
 - 未验证 C2 producer 注册与 SIGINT flush 的真实时序。
 - 未验证 `worker_app` trace、符号、UI、性能因果。
+
+## 8. r2 定点修正增补（2026-10-17）
+
+本轮只修两处，不重做方案：
+
+### 8.1 仓库根执行路径
+
+- `PLAN.md` 第 4 节以 `R=$(git rev-parse --show-toplevel); cd "$R"` 开始。
+- 配置：`v2_modify/configs/`；脚本：`v2_modify/scripts/`；
+  Skill：`v1_modify/candidate-v1.0.1/`；本轮 SQL：`v2_modify/sql/20-jitter-cycles.sql`。
+- `validation/tests/path_dryrun.sh` 从 clone 根目录检查上述路径，并以 mock tracebox
+  跑 C1 + host_pull：PASS。原始输出：`tests/outputs/path_dryrun.txt`。
+
+### 8.2 20 的 1 秒桶区间交集
+
+- `sql/20-jitter-cycles.sql` 改为 `min(ts+dur,bucket_end)-max(ts,bucket_start)`，
+  再做 spike 标记；保留先筛 spike 桶、再按连续桶编号。
+- 900–1100 ms、dur=200 ms、阈值 150 ms：旧逻辑 200 ms 假 spike；修正后 100+100 ms
+  无 spike。
+- 350 ms 正例：修正后 bucket1=250 ms，正确 spike。
+- 修正后 20 在 v58.2 TP 上对本地 trace 正常输出 episode。
+- 原始输出：`tests/outputs/jitter_bucket_intersection.txt`、
+  `tests/outputs/jitter20_real_positive.txt`。
+
+### 8.3 仍未验证
+
+- 未上板；未运行真实 tracebox/heapprofd/perf。
+- 合成反例只验证区间数学与旧/新逻辑，不是 `worker_app` 数据。
+- 未验证 v57.1 descriptor、C2 真实生命周期、UI、性能因果。

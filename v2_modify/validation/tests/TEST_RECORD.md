@@ -208,3 +208,74 @@ SIGINT flush 时序。真实板端仍标记未验证。
 - 未验证 v57.1 descriptor。
 - 未验证 `worker_app` 的真实 trace、符号、UI。
 - 未证明任何性能因果关系。
+
+## 9. r2 定点修正测试（2026-10-17）
+
+本节追加到 r1 记录之后；不覆盖 r1 的测试结果。
+
+### 9.1 仓库根执行路径 dry-run
+
+```bash
+sh v2_modify/validation/tests/path_dryrun.sh
+```
+
+实际输出（节选）：
+
+```text
+PASS: repo-root paths exist
+C1 started tracebox_pid=...
+C1 DONE size_bytes=14
+PASS: C1 root-relative script/config
+PULL OK: C1.pftrace ...
+PULL OK: C1.log ...
+PULL OK: C1.status ...
+PASS: host_pull root-relative script
+```
+
+验证：从 clone 根目录能找到 `v2_modify/configs/`、`v2_modify/scripts/`、
+`v1_modify/candidate-v1.0.1/`、`v2_modify/sql/20-jitter-cycles.sql`，并实际跑 C1 + host_pull。
+原始输出：`outputs/path_dryrun.txt`。mock tracebox，不是板端采集。
+
+### 9.2 20 的 900–1100 ms / 200 ms / 150 ms 反例
+
+```bash
+TP query -f v2_modify/validation/tests/jitter_bucket_intersection_test.sql \
+  combined_traceput.pftrace
+```
+
+实际输出：
+
+```text
+"logic","name","bucket","ms","spike"
+"FIXED","A_200ms_900_1100",0,100.000000,0
+"FIXED","A_200ms_900_1100",1,100.000000,0
+"OLD","A_200ms_900_1100",0,200.000000,1
+"FIXED","B_350ms_900_1250",0,100.000000,0
+"FIXED","B_350ms_900_1250",1,250.000000,1
+"OLD","B_350ms_900_1250",0,350.000000,1
+
+"case_name","old_spike","fixed_spike"
+"A_200ms",1,0
+"B_350ms",1,1
+```
+
+- 200 ms 跨 900–1100 ms：修正后两桶各 100 ms，均不 spike；旧逻辑第 0 秒 200 ms 假 spike。
+- 350 ms 正例：修正后第 1 秒 250 ms，正确 spike。
+
+原始输出：`outputs/jitter_bucket_intersection.txt`。
+
+### 9.3 修正后 20 在真实 trace 的正例
+
+```text
+target=cam-service, spike_cpu_ms=5
+"ts","dur","first_bucket_s","last_bucket_s","buckets_in_episode","peak_cpu_ms","avg_cpu_ms"
+133248075771,12000000000,0,11,12,59.316875,53.688805
+```
+
+原始输出：`outputs/jitter20_real_positive.txt`。该 trace 不是 `worker_app`，仅验证 SQL。
+
+### 9.4 r2 未验证
+
+- 未上板；未运行真实 tracebox/heapprofd/perf。
+- 合成反例不经过真实 `sched_slice` 表，只验证与 `sql/20` 相同的区间数学和旧/新逻辑。
+- 未验证 v57.1 descriptor、C2 真实生命周期、UI。
