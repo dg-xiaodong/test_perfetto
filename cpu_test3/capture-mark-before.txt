@@ -1,0 +1,6 @@
+UPTIME_BEFORE=46289.87 369479.69
+REQ_LINES_BEFORE=4589
+state : running
+pid   : 10285
+cmd   : /userdata/cpu-lab/bin/task-service --cpu-a 6 --cpu-b 7 
+46289.929765489

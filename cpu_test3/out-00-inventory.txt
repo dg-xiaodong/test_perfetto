@@ -1,0 +1,2 @@
+Loading trace: 0.00 MBLoading trace: 7.02 MB[547.539]     common_flags.cc:474 Trace loaded: 7.02 MB in 0.15s (45.6 MB/s)
+Result rows were returned for multiples queries. Ensure that only the final statement is a SELECT statement or use `suppress_query_output` to prevent function invocations causing this error (see https://perfetto.dev/docs/contributing/testing#trace-processor-diff-tests).

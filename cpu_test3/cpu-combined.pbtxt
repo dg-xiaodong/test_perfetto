@@ -1,0 +1,60 @@
+# cpu-task-service combined CPU diagnosis config
+# Route: overview/scheduling + frequency + profiling (single 55 s capture)
+# Generated base configs: cfg-overview.pbtxt / cfg-profiling.pbtxt (make_config.py)
+#   with the board's real survey.sh --events output (available_events.txt).
+# Deviations from the stock templates, with reason:
+#   * buffers 16384 -> 65536 KB: one trace carries sched + cpu_freq + linux.perf
+#     for 55 s over 8 CPUs, so both the sched slice track and the perf samples
+#     need headroom. Memory on board: MemAvailable ~1.1 GB.
+#   * ftrace buffer 1024 -> 4096 KB (per-CPU): high-rate sched_switch/waking.
+#   * added sched/sched_migrate_task: user explicitly asks about cross-core
+#     execution; sched_switch slices alone only show the core a slice ran on,
+#     not migrations of runnable threads between slices. Event confirmed present
+#     in the board's available_events.txt.
+#   * linux.perf scoped to target_cmdline "task-service" (globs against the
+#     binary basename or full cmdline), 100 Hz SW_CPU_CLOCK per CPU.
+# No sysctl / governor / service change is made by this config.
+
+duration_ms: 55000
+
+buffers { size_kb: 65536 fill_policy: RING_BUFFER }
+
+data_sources {
+  config {
+    name: "linux.process_stats"
+    process_stats_config { scan_all_processes_on_start: true proc_stats_poll_ms: 1000 }
+  }
+}
+
+data_sources {
+  config {
+    name: "linux.ftrace"
+    ftrace_config {
+      buffer_size_kb: 4096
+      drain_period_ms: 250
+      ftrace_events: "sched/sched_switch"
+      ftrace_events: "sched/sched_waking"
+      ftrace_events: "sched/sched_wakeup_new"
+      ftrace_events: "sched/sched_migrate_task"
+      ftrace_events: "power/cpu_frequency"
+      ftrace_events: "power/cpu_idle"
+    }
+  }
+}
+
+data_sources {
+  config {
+    name: "linux.sys_stats"
+    sys_stats_config { cpufreq_period_ms: 500 }
+  }
+}
+
+data_sources {
+  config {
+    name: "linux.perf"
+    perf_event_config {
+      timebase { counter: SW_CPU_CLOCK frequency: 100 timestamp_clock: PERF_CLOCK_MONOTONIC }
+      callstack_sampling { scope { target_cmdline: "task-service" } kernel_frames: true }
+    }
+  }
+}

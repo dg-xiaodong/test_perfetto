@@ -1,0 +1,1 @@
+PULL FAIL: scp root@192.168.1.10:/userdata/cpu-lab/perfetto-session/cpu.pftrace
