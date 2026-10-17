@@ -1,0 +1,4 @@
+"name","n"
+"Cached",359
+"MemAvailable",359
+"Shmem",359

@@ -1,0 +1,2 @@
+"pages","mib","distinct_i_ino","min_index","max_index","first_s","last_s"
+6144,24.000000,1,0,6143,35.079000,35.098000

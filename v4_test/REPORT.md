@@ -275,6 +275,8 @@ trace_processor_shell query run1.pftrace "SELECT * FROM trace_bounds"
 
 ## 7. Perfetto UI 复现（`run1.pftrace`）
 
+> 本节 trace 只有系统计数器，**没有 slice 轨道**；若需要“哪个进程/哪条命令”的归因，见 [attribution/ATTRIBUTION.md](attribution/ATTRIBUTION.md)（补采的 `run6.pftrace`：dd 的 40.8 ms CPU slice、rm unlink 的 6,144 次页删除）。
+
 1. 打开 `run1.pftrace`（本目录），Timeline 搜索 `MemAvailable` / `Shmem` / `Cached`，选中这三条 Counter Track（可先 Hide 其它轨道）。
 2. 在 `+10 s` 附近 `Shmem` 应有 **24 MiB 阶跃**，`+35 s`（`rm` 后）回落；同窗口 `MemAvailable` 反向阶跃、`AnonPages`/`Slab` 平坦。
 3. 展开任意进程 → `mem.rss.anon` 轨道：驻留期与 dd 前基本重合（不要把该进程 RSS 当作 24 MiB 的来源）。
@@ -297,6 +299,7 @@ ORDER BY series, ts;
 - **无 smaps/PSS/映射级归属**：本配置没有 smaps/rollup，因此不宣称“24 MiB 具体挂在某个 inode 的哪个偏移”；结论来自 `Shmem` 分类 + 文件事实 + 对照实验。
 - **未用 heapprofd**：本项目内存不在 malloc heap 上（且 `dd` 生命周期 <250 ms、`/bin/sh` 为 busybox）。heapprofd 只能回答“谁 malloc 没 free”，在这里既无必要也无法解释 tmpfs 页；所以没有把它当作证据。
 - **无 cgroup/memcg 细分**：`meminfo` 是全局口径。
+- **tmpfs 的页分配事件不可采**：本内核 `/data`（tmpfs）写入不产生 `mm_filemap_add_to_page_cache`，创建侧只能靠 `exec dd` + CPU slice + 计数器阶跃关联；释放侧有逐页删除事件（见 attribution 补充）。
 - **未构造内存压力**：本测试 24 MiB 对 1.3 GiB 很小，没有触发 direct reclaim/swap（本板也无 swap），因此不能回答“高压下 tmpfs 与回收的交互”。
 - **未验证长时间（小时级）行为**：run1/run3/run5 覆盖 100–120 s；按 20 轮无累积的趋势，不支持小时级泄漏结论，但严格说未测。
 

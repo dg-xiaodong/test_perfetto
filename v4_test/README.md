@@ -26,11 +26,16 @@
 
 完整证据、采集配置、验收与边界见 **[REPORT.md](REPORT.md)**。
 
+**归因（哪个进程/哪条命令）**：`run0–run5` 只采了计数器，UI 里没有 slice 可点。为此补采了 `attribution/traces/run6.pftrace`（加 `sched_switch` + `sched_process_exec` + `filemap` 页删除事件），把 24 MiB 定位到 **`/usr/bin/dd`（tid 11792，CPU slice 40.8 ms @ +10.023 s）创建**、**`/usr/bin/rm`（tid 11796）unlink 时 6,144 次页删除（24.00 MiB，单 inode，index 0–6143）释放**。方法与证据见 **[attribution/ATTRIBUTION.md](attribution/ATTRIBUTION.md)**。
+
 ## 目录
 
 | 路径 | 内容 |
 |---|---|
 | `traces/run0.pftrace` … `run5.pftrace` | 6 次实际采集（run1 为主证据，共 3.6 MB） |
+| `attribution/traces/run6.pftrace` | 归因专用补采（sched_switch + exec + filemap 页删除，90 s） |
+| `attribution/ATTRIBUTION.md` | 从“没有 slice”到“定位到 dd/rm 两个进程”的方法与证据 |
+| `attribution/sql/10-attribution.sql` | exec 链 / dd、rm slice / 页删除 burst 查询与 debug track 映射 |
 | `configs/mem1.pbtxt` `mem2.pbtxt` `mem3.pbtxt` | 实际使用的 TraceConfig（120 s / 100 s / 120 s） |
 | `scripts/run_case.sh` | 板端编排：起 tracebox → 8 s 后跑工作负载 → 收尾（`tmpfs`/`ext4`/`cycles`/`cycles_hold`/`kill`） |
 | `scripts/driver.sh` | 主机侧顺序跑 6 组并拉回 |
@@ -49,6 +54,7 @@
 1. 打开 <https://ui.perfetto.dev> → Open trace file → 选 `traces/run1.pftrace`。
 2. Timeline 搜索 `MemAvailable`、`Shmem`、`Cached`（全局 counter，不需要选 PID）；缩放到 `+10 s … +40 s`（相对 `workload_start`）。
 3. 期望：`Shmem` 在 +10 s 阶跃 +24 MiB，+35 s 回落；`MemAvailable` 反向阶跃；`AnonPages`/`Slab` 平坦。
+4. 要按进程/命令归因：打开 `attribution/traces/run6.pftrace`，搜 `11792`（dd 的 slice）/ `11796`（rm 的 slice），或跑 `attribution/sql/10-attribution.sql` 生成 exec 与页删除 debug track（详见 ATTRIBUTION.md）。
 4. 命令行分析：
 
 ```bash
