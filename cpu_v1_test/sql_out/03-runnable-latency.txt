@@ -1,0 +1,12 @@
+# longest runnable waits >= 0.05 ms
+# trace: cpu.pftrace | Perfetto v57.1-c59f57dd4 (c59f57dd4d9c4ad37c44f0fee9dde060707534fa)
+
+"utid","tid","thread_name","ts","runnable_wait_ms","state"
+206,12044,"spike-worker",41019238083892,0.084000,"R"
+206,12044,"spike-worker",41013238082764,0.081000,"R"
+206,12044,"spike-worker",41004238085593,0.080000,"R"
+206,12044,"spike-worker",41001238079175,0.079000,"R"
+206,12044,"spike-worker",41007238083678,0.078000,"R"
+206,12044,"spike-worker",41016238084849,0.076000,"R"
+206,12044,"spike-worker",41010238078180,0.076000,"R"
+207,12045,"bg-light",41005044013760,0.050000,"R"

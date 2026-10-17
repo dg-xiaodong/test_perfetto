@@ -1,0 +1,26 @@
+# trace_bounds + target process (each SELECT run separately: this TP build rejects multi-result-set -f)
+# trace: cpu.pftrace | Perfetto v57.1-c59f57dd4 (c59f57dd4d9c4ad37c44f0fee9dde060707534fa)
+
+-- trace_bounds
+"start_ts","end_ts","duration_s"
+40999908716300,41019591699934,19.683000
+
+-- target process
+"upid","pid","name","cmdline"
+185,12042,"./cpu_spike_fixture","./cpu_spike_fixture 30000 3000 300"
+
+-- thread_state totals
+"state","slices"
+"Running",1248
+"R",1219
+"S",651
+"I",435
+"D",135
+"Z",20
+"R+",8
+
+-- stats severity distribution
+"severity","n"
+"info",258
+"error",172
+"data_loss",38

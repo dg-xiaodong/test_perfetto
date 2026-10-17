@@ -1,0 +1,5 @@
+# wakeup->run path via thread_state
+# trace: cpu.pftrace | Perfetto v57.1-c59f57dd4 (c59f57dd4d9c4ad37c44f0fee9dde060707534fa)
+
+"runnable_intervals","runnable_total_us","max_runnable_us","wakers"
+8,565.000000,83.600000,"0,null"

@@ -1,0 +1,17 @@
+# data-loss / stats quality gate
+# trace: cpu.pftrace | Perfetto v57.1-c59f57dd4 (c59f57dd4d9c4ad37c44f0fee9dde060707534fa)
+
+-- stats rows total / severe rows with value != 0 (expect 0)
+"rows_total","severe_nonzero"
+468,0
+
+-- data_loss severity rows with value > 0 (expect 0)
+"n"
+0
+
+-- nonzero severe stats detail (expect empty)
+"name","value","severity"
+
+-- cpu freq counters collected (scheduling route => expect 0)
+"cpu_counter_tracks"
+0

@@ -1,0 +1,5 @@
+Linux buildroot 6.1.83-DR-PL5.1_V1.0.20 #3 SMP PREEMPT Mon Aug 24 21:03:38 CST 2026 aarch64 GNU/Linux
+8
+NAME=Buildroot
+VERSION=2022.08-30-gb9e2cc9842
+ID=buildroot

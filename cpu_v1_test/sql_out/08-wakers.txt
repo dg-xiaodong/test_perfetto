@@ -1,0 +1,6 @@
+# who wakes spike-worker
+# trace: cpu.pftrace | Perfetto v57.1-c59f57dd4 (c59f57dd4d9c4ad37c44f0fee9dde060707534fa)
+
+"waker_utid","waker_tid","waker_thread","wakeups","avg_wait_us_before_run"
+0,0,"swapper",7,79.000000
+"[NULL]","[NULL]","[NULL]",1,11.800000

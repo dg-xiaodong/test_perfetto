@@ -1,0 +1,6 @@
+# per-thread CPU in cpu_spike_fixture (upid 185)
+# trace: cpu.pftrace | Perfetto v57.1-c59f57dd4 (c59f57dd4d9c4ad37c44f0fee9dde060707534fa)
+
+"utid","tid","name","slices","cpu_ms","cpus"
+206,12044,"spike-worker",8,2101.400000,"1"
+207,12045,"bg-light",191,583.300000,"7"

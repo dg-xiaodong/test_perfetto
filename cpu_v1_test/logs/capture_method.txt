@@ -1,0 +1,4 @@
+tracebox: v57.1-c59f57dd4 (aarch64 official build)
+command: ./cpu_spike_fixture 30000 3000 300
+config: config/cpu.pbtxt (scheduling route, 20 s)
+capture window relative to fixture start: +1 s
