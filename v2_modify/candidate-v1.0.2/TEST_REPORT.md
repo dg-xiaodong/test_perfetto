@@ -64,16 +64,17 @@ gcc在`-Wall -Wextra -Werror`下构建memprobe通过；heap模式使用1MiB/1ms/
 
 ### 实际执行
 
-- `python3 -m unittest discover -s tests -v`：**73 项通过，0 失败，0 跳过**。
+- `python3 -m unittest discover -s tests -v`：**75 项通过，0 失败，0 跳过**。
   新增 `tests/test_cpu_sql.py`（6 项：跨桶 200 ms=100+100、150 ms 不假 spike、
   350 ms 正确 spike、安静间隔两段、窗口裁剪、UPID 过滤）与
   `tests/test_linux_scripts.py`（2 项：`sh -n`、mock tracebox 的普通/heapprofd
-  生命周期与 pull 失败传播）。
+  生命周期、超时保留、时长不足拒绝与 pull 失败传播）与
+  `tests/test_release_preflight.py`（2 项：目标名/时长生成匹配、目标名不匹配拒绝）。
 - 新增 SQL 在主机 Perfetto v58.2 Trace Processor 上对本地 trace（非 `worker_app`）执行：
-  `sql/11` 输出目标 UPID 的 1 s CPU 桶（例：约 55–56 ms/s）；`sql/12` 在阈值 50 ms
-  时输出一个 11 s episode。记录见 `tests/tp_cpu_sql_v58.2.txt`。
-- 新增 Shell 脚本在主机用 mock tracebox/app 执行：普通 trace 会话、heapprofd 会话、
-  host pull 成功/缺失失败均通过；真实板端未执行。
+  `sql/11` 输出目标 UPID 的 1 s CPU 桶；`sql/12` 在阈值 50 ms 时输出一个 11 s episode。
+  记录见 `tests/tp_cpu_sql_v58.2.txt`，包含 TP 版本、trace/SQL 哈希、命令、退出码和原始输出。
+- 新增 Shell 脚本在主机用 mock tracebox/app 执行：普通 trace 会话、超时后保留并返回
+  非零、heapprofd 会话、时长不足拒绝、host pull 成功/缺失失败均通过；真实板端未执行。
 - 独立 Agent 行为对照：B1/B2/B3 × v1.0.1/v1.0.2 共 6 个独立子会话已执行，
   原始输出与对照见 `tests/agent_v102/results/COMPARISON.md`。单次运行、无温度控制，
   不是统计基准。
@@ -84,3 +85,18 @@ gcc在`-Wall -Wextra -Werror`下构建memprobe通过；heap模式使用1MiB/1ms/
 - 未用 v57.1 descriptor 做 schema 校验；仅 v58.2 静态/TP 执行。
 - 未打开 Perfetto UI 检查新 SQL 的 debug track。
 - 未证明性能因果；C2 的真实 producer 注册/flush 时序仍未验证。
+
+## 1.0.2 发布前修复（2026-10-17）
+
+只修三个问题：
+
+1. `references/05-platforms.md` 4.2 改为用 `make_config.py` 按实际 `APP_NAME` 生成配置
+   （不再直接复制 `configs/native.pbtxt`），用 `validate_config.py --deploy-name` 做目标名预检；
+   示例 `duration_ms=90000`，脚本要求 `duration_ms >= OBSERVE_S*1000 + 30000`。
+2. `linux_trace_session.sh` 区分 `DONE`、`TIMEOUT_STOPPED`、`TIMEOUT_STOP_FAILED`、`EMPTY`；
+   超时停止成功保留 `.pftrace` 但状态为 TIMEOUT 并返回 rc=10，不再报 DONE/0。
+3. `tests/tp_cpu_sql_v58.2.txt` 替换为真实执行记录：TP 版本、trace/SQL sha256、命令、
+   `sql/11`/`sql/12` 原始输出与退出码（均 rc=0）。
+
+实际测试：`python3 -m unittest discover -s tests` -> **75 项通过，0 失败**。
+未执行：真实板端、v57.1 descriptor、Perfetto UI、真实 heapprofd producer/flush、性能因果。

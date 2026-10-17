@@ -1,6 +1,6 @@
 diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/MANIFEST.json v2_modify/candidate-v1.0.2/MANIFEST.json
 --- v1_modify/candidate-v1.0.1/MANIFEST.json	2026-10-17 19:51:10.354125213 +0800
-+++ v2_modify/candidate-v1.0.2/MANIFEST.json	2026-10-17 21:23:57.545826560 +0800
++++ v2_modify/candidate-v1.0.2/MANIFEST.json	2026-10-17 21:32:01.167908591 +0800
 @@ -1,21 +1,22 @@
  {
    "name": "perfetto-memory-debugging",
@@ -30,7 +30,7 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 -    "TEST_REPORT.md": "5943218ec00b0f56e0a7598033e6ea407464f89f1346449fca7807d01eddacfe",
 +    "README.md": "3cd55a70993821262a86a146fd78da189f60b8938326ad4c4aa353926d9b8d29",
 +    "SKILL.md": "9f8f3a5677178fbc6099e16bfbf80668fe6c6dd1a82ffa9d377239f8c19f1521",
-+    "TEST_REPORT.md": "6b704f5e1a770d74b508c629c262e1c39f6ca1f1036a63f9f0908e6cf1849c4f",
++    "TEST_REPORT.md": "8710bc1fcc9ee52c31631e1656f5f83255777f81a3115e47c7ecd4ff28598a25",
      "configs/android-lmk.pbtxt": "f602a30b1e9a907488fb4583eef6d0dea96584a4b256cdb3533518f6ad58997f",
      "configs/java-alloc.pbtxt": "22d464dec025b932979adea285a3c452dabd0257d065a25e9cf3f926e33208e7",
      "configs/java-graph.pbtxt": "048c3ae592100e18ff88f4a9523a0b4d3fd5e50d7e1f4509f5fdf3081bc0eb74",
@@ -40,16 +40,16 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
      "references/04-ui.md": "e9061ba1726d96ef7393d13e76e1d9f5607e4065cf00fe295dec45cd61f4444e",
 -    "references/05-platforms.md": "20a4be3be898e0c4ab61ab97febc5d74e4cbe8004939dd375a97b2d24666ccd2",
 -    "references/06-quality.md": "fdf5f2bc899d96615050afcbffbcd26e5fed9552ff98215078dba0fdc16a1a10",
-+    "references/05-platforms.md": "8654568ea2ca0c488b2f9db12b51f8d36ac4d3747faf6c1155e064bfe7e3cf28",
++    "references/05-platforms.md": "8b6f05e92a7b15e8fe672164b6d90451be370e1159968057b02006b5829bcfce",
 +    "references/06-quality.md": "68689fd8eabafdbf32b73773354f333302d37389e9668d4e76d6c6096deb693c",
      "references/07-internals-and-pprof.md": "ad5936f6487777fda1ff9afa86021ca94a218450a14ef40606cbc44aa71966c3",
      "references/08-worked-examples.md": "261ccbb50775d5b81c3092d4f1b4f3ed316664dfd4f36a8769e862463ef15bfb",
      "references/09-advanced-configs.md": "731f08e171059e327d93a3934bf3849955c69e58a9f5c54e81f3e2dfc12966f4",
      "references/sources.md": "ca4156344e7d791af2e403807a15d19100a18e495368977ed56fe55d562c647b",
 +    "scripts/host_pull.sh": "220a641784a6c101db38823080893b96ef93801230c046b346a3bb16d213205b",
-+    "scripts/linux_heapprofd_session.sh": "7a7ccc184810104aa454042eada1816c774daa035f2e8301437306c0167a19cd",
++    "scripts/linux_heapprofd_session.sh": "86c8d1110192147ef34523dd859b2d227d701e9171793173dd1d2ff74d9fa09b",
 +    "scripts/linux_session_lib.sh": "09e32bb47439efbf4f0c03d329841a3bf4c1e2005429d5d6183c27650e6a778c",
-+    "scripts/linux_trace_session.sh": "b0b4978de431fae56ed2d89bad424045dc081e1a404360cde5d8f322d6de6030",
++    "scripts/linux_trace_session.sh": "e5d959ad9ebde94abc0f0029fc4da789b8fa81bfefa1c2d8e830f0a122a9b0e7",
      "scripts/make_config.py": "7fc12b10626826d08a40cf881780f2e053c282356ad7293712ad6d2ccf50b959",
      "scripts/survey.sh": "177174ef9bc97a634f819373701e56078866b97d3b62d1ebfb385a75c8645c72",
      "scripts/validate_config.py": "98c2f8f6e41be205f67095e43aabd48ffddf98983799ad0fcdbb2f9c4eb0b35f",
@@ -62,7 +62,7 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
      "tests/agent_ab/R1_old_skill_raw.md": "8e6929511ac44756a5410d5fb7660dedcdde426bf9de33739c2ffa03bdd5bdee",
      "tests/agent_ab/R2_candidate_skill_raw.md": "1cd39fea552aecab7d64ce01b8fe758ca2b17dd86ca1491dc744728cd000454c",
      "tests/agent_ab/README.md": "38db587bd6f4a42ed5cdede91c4bae457e43dd233a719d8ed8960abbfeb18dc7",
-@@ -59,12 +66,28 @@
+@@ -59,12 +66,29 @@
      "tests/agent_ab/T2_target_discovery.md": "64c0913f39035901a9a0b1f3fad77afccd24bc60b552d714ddcc5ebbb2fc0362",
      "tests/agent_ab/T3_ab_interpretation.md": "aee49db0630d54ad3744a0db254692a123e9787234ed3ad04d355834e7d1bbcf",
      "tests/agent_ab/rubric.md": "d07ad804d6b6c9d8134f12eede93d0e0b926fc3e5356e3ccb85bf73a27965f20",
@@ -79,18 +79,19 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +    "tests/agent_v102/results/v102_B2.md": "2c278fa44ce89f3d0f98254fe54b5722ace90bcd303d01b34de134ebf0dd180e",
 +    "tests/agent_v102/results/v102_B3.md": "cc56f3a3478b8fc841036018774d5c39a078faa56688b83dfa130f25839d002e",
 +    "tests/agent_v102/rubric.md": "4e6d9ea6001e00297ffa9bb75043c2cc4e83600d3b9478887255183804aee127",
-+    "tests/mock_linux_sessions.sh": "ba61eab904f02f9111c7cce31067d7d6d0b1ef75242ee3716955a7ebc3043a06",
++    "tests/mock_linux_sessions.sh": "dc7e0a1d7cb5773d60d9d358c69bf37729f5c0a95923ea9d68dab5955c9f5eb6",
 +    "tests/scenarios.md": "4f6f4717b8afc2329d53ee9dd352456d35bcaa33fe67dd12a8e898b55bc3ccdf",
      "tests/test_accounting.py": "63910b7fbe6e4f5a600c4ecf49f8de4e2ab32deebd16f6c32bfe73777bb959af",
      "tests/test_config.py": "40374d5dc0c1270fb9c6e4d5ef8c95aeed85957a5058ccf812f0d46a20288e31",
 +    "tests/test_cpu_sql.py": "3c2f92dc943f1cba70b2c73aed30d107f9b504e5b83bd9df7d53c52db371f174",
      "tests/test_dump_capability.py": "459f4ec9dc095774154bf6d6210aedc0253bc8ef0daf014b087198dd1c5ff589",
-+    "tests/test_linux_scripts.py": "4b6994b959a1d5d274682e954fc69ea0428a6722db696db31f5fc178f00a5993",
++    "tests/test_linux_scripts.py": "bd8c6b90bb80de1a5a0e4bbe2df9d88f521f8173ea74a1954862cc1e51748287",
      "tests/test_package.py": "4f5b9d0e9266f7de7ef7980d1bf1ec9e3b8351296a1191f47868c9f168401a4b",
++    "tests/test_release_preflight.py": "8609283e86c6c7f67b7b132bb703ba91fcbd3235a7d9f9fb670cb42c5c270343",
      "tests/test_targets.py": "b6f93c90b9bc65b2912ca4917dec737c8d26b7cac4a9dfddad1e4032262e8aa3",
 -    "tests/test_validator.py": "c6c32b804ca57e9d5e9522f45ad0c01fcbbf3cd97abf4195142f2f77082bbd7e"
 +    "tests/test_validator.py": "c6c32b804ca57e9d5e9522f45ad0c01fcbbf3cd97abf4195142f2f77082bbd7e",
-+    "tests/tp_cpu_sql_v58.2.txt": "b89d491e6c535d63ecca0fba2c21aa5d7ce22fb896c8f2eee262cc76e12656e8"
++    "tests/tp_cpu_sql_v58.2.txt": "3fa3daf77536bff8161f6e1d6b3e0e8b3dc1ca94eeba478bf8a54f8a26263c60"
    }
  }
 diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/README.md v2_modify/candidate-v1.0.2/README.md
@@ -176,8 +177,8 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
  实操示例见 [完整演练](references/08-worked-examples.md)，回归场景见 [tests/scenarios.md](tests/scenarios.md)。
 diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/TEST_REPORT.md v2_modify/candidate-v1.0.2/TEST_REPORT.md
 --- v1_modify/candidate-v1.0.1/TEST_REPORT.md	2026-10-17 19:51:10.354319093 +0800
-+++ v2_modify/candidate-v1.0.2/TEST_REPORT.md	2026-10-17 21:13:50.786730318 +0800
-@@ -56,3 +56,31 @@
++++ v2_modify/candidate-v1.0.2/TEST_REPORT.md	2026-10-17 21:30:54.437865292 +0800
+@@ -56,3 +56,47 @@
  
  - `scripts/validate_config.py`：`process_cmdline` 改为**结构感知解析**——跳过注释与字符串、按整词匹配标识符、只接受 `heapprofd_config` 块内字段；括号/字符串不闭合或字段在块外 → UNKNOWN(rc=2)；归一化按 `NormalizeCmdLine`（截断首个 `@` 后取 basename）。
  - `verify/tp_check.py`：Live 结果校验 `ts/value/series` 三列、ts 为整数且严格递增、ts 与 dump 轴一致；新增 5 个故障注入反例。
@@ -189,16 +190,17 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +
 +### 实际执行
 +
-+- `python3 -m unittest discover -s tests -v`：**73 项通过，0 失败，0 跳过**。
++- `python3 -m unittest discover -s tests -v`：**75 项通过，0 失败，0 跳过**。
 +  新增 `tests/test_cpu_sql.py`（6 项：跨桶 200 ms=100+100、150 ms 不假 spike、
 +  350 ms 正确 spike、安静间隔两段、窗口裁剪、UPID 过滤）与
 +  `tests/test_linux_scripts.py`（2 项：`sh -n`、mock tracebox 的普通/heapprofd
-+  生命周期与 pull 失败传播）。
++  生命周期、超时保留、时长不足拒绝与 pull 失败传播）与
++  `tests/test_release_preflight.py`（2 项：目标名/时长生成匹配、目标名不匹配拒绝）。
 +- 新增 SQL 在主机 Perfetto v58.2 Trace Processor 上对本地 trace（非 `worker_app`）执行：
-+  `sql/11` 输出目标 UPID 的 1 s CPU 桶（例：约 55–56 ms/s）；`sql/12` 在阈值 50 ms
-+  时输出一个 11 s episode。记录见 `tests/tp_cpu_sql_v58.2.txt`。
-+- 新增 Shell 脚本在主机用 mock tracebox/app 执行：普通 trace 会话、heapprofd 会话、
-+  host pull 成功/缺失失败均通过；真实板端未执行。
++  `sql/11` 输出目标 UPID 的 1 s CPU 桶；`sql/12` 在阈值 50 ms 时输出一个 11 s episode。
++  记录见 `tests/tp_cpu_sql_v58.2.txt`，包含 TP 版本、trace/SQL 哈希、命令、退出码和原始输出。
++- 新增 Shell 脚本在主机用 mock tracebox/app 执行：普通 trace 会话、超时后保留并返回
++  非零、heapprofd 会话、时长不足拒绝、host pull 成功/缺失失败均通过；真实板端未执行。
 +- 独立 Agent 行为对照：B1/B2/B3 × v1.0.1/v1.0.2 共 6 个独立子会话已执行，
 +  原始输出与对照见 `tests/agent_v102/results/COMPARISON.md`。单次运行、无温度控制，
 +  不是统计基准。
@@ -209,10 +211,25 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +- 未用 v57.1 descriptor 做 schema 校验；仅 v58.2 静态/TP 执行。
 +- 未打开 Perfetto UI 检查新 SQL 的 debug track。
 +- 未证明性能因果；C2 的真实 producer 注册/flush 时序仍未验证。
++
++## 1.0.2 发布前修复（2026-10-17）
++
++只修三个问题：
++
++1. `references/05-platforms.md` 4.2 改为用 `make_config.py` 按实际 `APP_NAME` 生成配置
++   （不再直接复制 `configs/native.pbtxt`），用 `validate_config.py --deploy-name` 做目标名预检；
++   示例 `duration_ms=90000`，脚本要求 `duration_ms >= OBSERVE_S*1000 + 30000`。
++2. `linux_trace_session.sh` 区分 `DONE`、`TIMEOUT_STOPPED`、`TIMEOUT_STOP_FAILED`、`EMPTY`；
++   超时停止成功保留 `.pftrace` 但状态为 TIMEOUT 并返回 rc=10，不再报 DONE/0。
++3. `tests/tp_cpu_sql_v58.2.txt` 替换为真实执行记录：TP 版本、trace/SQL sha256、命令、
++   `sql/11`/`sql/12` 原始输出与退出码（均 rc=0）。
++
++实际测试：`python3 -m unittest discover -s tests` -> **75 项通过，0 失败**。
++未执行：真实板端、v57.1 descriptor、Perfetto UI、真实 heapprofd producer/flush、性能因果。
 diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/references/05-platforms.md v2_modify/candidate-v1.0.2/references/05-platforms.md
 --- v1_modify/candidate-v1.0.1/references/05-platforms.md	2026-10-17 19:51:10.354739233 +0800
-+++ v2_modify/candidate-v1.0.2/references/05-platforms.md	2026-10-17 20:51:24.954685869 +0800
-@@ -113,7 +113,111 @@
++++ v2_modify/candidate-v1.0.2/references/05-platforms.md	2026-10-17 21:31:52.296643841 +0800
+@@ -113,7 +113,125 @@
  
  等待有限会话真正结束并完成flush后拉回native.pftrace和native.log；检查heap_profile_allocation有目标UPID数据、符号和采样质量。之后才考虑在可重启的测试环境运行cam-service；用户报告的“前提具备”不能升级成“业务已实测”。
  
@@ -257,8 +274,10 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +```
 +
 +目标机脚本行为：后台启动 tracebox，记录 PID；等待会话结束或超时；SIGINT 后等待
-+flush；输出文件为空或 tracebox 不退时非零退出，并写 `.status`。宿主侧拉回脚本对
-+scp 失败/空文件立即非零退出。
++flush；输出文件为空或 tracebox 不退时非零退出，并写 `.status`。
++`DONE` 才是正常完成；`TIMEOUT_STOPPED` 表示已停止但超时，`.pftrace` 保留，退出码
++为 10，验收应标 UNKNOWN/补采；`TIMEOUT_STOP_FAILED`/`EMPTY` 同样不能算成功。
++宿主侧拉回脚本对 scp 失败/空文件立即非零退出。
 +
 +采集期间在另一个终端复现业务；需要提前停止时只对本会话 PID 发 SIGINT，不要
 +`pkill traced` 或杀其他会话。
@@ -276,11 +295,18 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +PRELOAD='./libheapprofd_glibc_preload.so'   # 与采集器匹配的 ARM64/x86_64 版本
 +APP_DIR='/path/to/test-app'
 +APP_CMD='./test-app'
++APP_NAME=$(basename "$APP_CMD")            # 必须等于实际启动 argv[0] basename
 +OBSERVE_S=30
 +HOST_OUT='./captures'
 +
++# 不要直接复制 configs/native.pbtxt：目标名/时长必须匹配本次测试。
++# 总时长 90 s > OBSERVE_S 30 s + 启动/producer 等待/停止/flush 余量。
++python3 scripts/make_config.py native --platform linux --process "$APP_NAME" \
++  --duration-ms 90000 --dump-ms 2000 > native.pbtxt
++python3 scripts/validate_config.py native.pbtxt --deploy-name "$APP_NAME"
++
 +ssh "$BOARD" "mkdir -p $WORK"
-+scp configs/native.pbtxt scripts/linux_session_lib.sh \
++scp native.pbtxt scripts/linux_session_lib.sh \
 +    scripts/linux_heapprofd_session.sh "$PRELOAD" "$BOARD:$WORK/"
 +ssh "$BOARD" "WORK=$WORK TRACEBOX=$TRACEBOX OBSERVE_S=$OBSERVE_S \
 +  sh $WORK/linux_heapprofd_session.sh $WORK/native.pbtxt \
@@ -288,6 +314,11 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +sh scripts/host_pull.sh "$BOARD" "$WORK" "$HOST_OUT" \
 +  heap.pftrace heap.log heap.status heap.query.txt heap.app.log
 +```
++
++`validate_config.py --deploy-name` 失败时（目标名不匹配）停止，不要继续推送/采集。
++若 `APP_CMD` 是 wrapper，`APP_NAME` 必须取最终 exec 的 argv[0] basename，不能取 wrapper 名。
++`linux_heapprofd_session.sh` 还会读取配置的 `duration_ms`，要求
++`duration_ms >= OBSERVE_S*1000 + 30000`；不足时在启动 trace 前失败。
 +
 +目标机脚本行为：
 +
@@ -404,8 +435,8 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +done
 diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/scripts/linux_heapprofd_session.sh v2_modify/candidate-v1.0.2/scripts/linux_heapprofd_session.sh
 --- v1_modify/candidate-v1.0.1/scripts/linux_heapprofd_session.sh	1970-01-01 08:00:00.000000000 +0800
-+++ v2_modify/candidate-v1.0.2/scripts/linux_heapprofd_session.sh	2026-10-17 21:14:46.388967311 +0800
-@@ -0,0 +1,124 @@
++++ v2_modify/candidate-v1.0.2/scripts/linux_heapprofd_session.sh	2026-10-17 21:28:21.246054640 +0800
+@@ -0,0 +1,134 @@
 +#!/bin/sh
 +# Generic Linux heapprofd session with LD_PRELOAD. Runs on the target.
 +# Usage:
@@ -429,6 +460,16 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +[ -r "$CONFIG" ] || { echo "ERROR: config not readable: $CONFIG" >&2; exit 2; }
 +[ -r "$PRELOAD" ] || { echo "ERROR: preload library not readable: $PRELOAD" >&2; exit 2; }
 +[ -d "$APP_DIR" ] || { echo "ERROR: app dir not found: $APP_DIR" >&2; exit 2; }
++
++# The session duration must cover observation plus startup/producer wait and
++# stop/flush margin. Fail before starting trace if the config is too short.
++DURATION_MS=$(sed -n 's/^[[:space:]]*duration_ms:[[:space:]]*\([0-9][0-9]*\).*/\1/p' "$CONFIG" | head -n 1)
++[ -n "$DURATION_MS" ] || { echo "ERROR: config has no numeric duration_ms: $CONFIG" >&2; exit 2; }
++MIN_MS=$((OBSERVE_S * 1000 + 30000))
++if [ "$DURATION_MS" -lt "$MIN_MS" ]; then
++  echo "ERROR: duration_ms=$DURATION_MS < OBSERVE_S=${OBSERVE_S}s + 30s margin (min $MIN_MS)" >&2
++  exit 2
++fi
 +
 +case "$OUT" in /*) ;; *) OUT="$WORK/$OUT" ;; esac
 +mkdir -p "$(dirname "$OUT")"
@@ -582,8 +623,8 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +}
 diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/scripts/linux_trace_session.sh v2_modify/candidate-v1.0.2/scripts/linux_trace_session.sh
 --- v1_modify/candidate-v1.0.1/scripts/linux_trace_session.sh	1970-01-01 08:00:00.000000000 +0800
-+++ v2_modify/candidate-v1.0.2/scripts/linux_trace_session.sh	2026-10-17 20:50:21.403937732 +0800
-@@ -0,0 +1,41 @@
++++ v2_modify/candidate-v1.0.2/scripts/linux_trace_session.sh	2026-10-17 21:28:29.634733786 +0800
+@@ -0,0 +1,56 @@
 +#!/bin/sh
 +# Generic Linux tracebox capture without LD_PRELOAD.
 +# Runs on the target. Usage:
@@ -614,16 +655,31 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +TPID=$(cat "$OUT.pid")
 +echo "tracebox_pid=$TPID"
 +
++TIMED_OUT=0
 +if ! wait_pid_exit "$TPID" "$TIMEOUT_S"; then
-+  echo "timeout; sending SIGINT" >&2
-+  stop_tracebox "$TPID" || { echo "FAIL: tracebox did not exit" >&2; exit 3; }
++  TIMED_OUT=1
++  echo "timeout; sending SIGINT for flush" >&2
++  if ! stop_tracebox "$TPID"; then
++    echo "TIMEOUT_STOP_FAILED" > "$OUT.status"
++    echo "FAIL: tracebox did not exit after SIGINT/SIGTERM; partial file kept" >&2
++    exit 3
++  fi
 +fi
 +TPID=""
 +if ! wait_nonempty_file "$OUT.pftrace" 5; then
++  echo "EMPTY" > "$OUT.status"
 +  echo "FAIL: $OUT.pftrace missing or empty" >&2
 +  exit 4
 +fi
-+echo "DONE size_bytes=$(wc -c < "$OUT.pftrace")" > "$OUT.status"
++SIZE=$(wc -c < "$OUT.pftrace")
++if [ "$TIMED_OUT" -eq 1 ]; then
++  # A timeout is not a normal completion. Keep the partial trace for forensics,
++  # mark it incomplete, and return non-zero.
++  echo "TIMEOUT_STOPPED size_bytes=$SIZE" > "$OUT.status"
++  cat "$OUT.status"
++  exit 10
++fi
++echo "DONE size_bytes=$SIZE" > "$OUT.status"
 +cat "$OUT.status"
 diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/sql/11-cpu-time-buckets.sql v2_modify/candidate-v1.0.2/sql/11-cpu-time-buckets.sql
 --- v1_modify/candidate-v1.0.1/sql/11-cpu-time-buckets.sql	1970-01-01 08:00:00.000000000 +0800
@@ -921,8 +977,8 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +仅凭 profiler 成功断言因果、未标明未执行项。
 diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/mock_linux_sessions.sh v2_modify/candidate-v1.0.2/tests/mock_linux_sessions.sh
 --- v1_modify/candidate-v1.0.1/tests/mock_linux_sessions.sh	1970-01-01 08:00:00.000000000 +0800
-+++ v2_modify/candidate-v1.0.2/tests/mock_linux_sessions.sh	2026-10-17 20:52:05.570933117 +0800
-@@ -0,0 +1,82 @@
++++ v2_modify/candidate-v1.0.2/tests/mock_linux_sessions.sh	2026-10-17 21:28:34.932105097 +0800
+@@ -0,0 +1,109 @@
 +#!/bin/sh
 +# Host-side mock regression for the generic Linux session scripts.
 +# No board, no real tracebox, no target application.
@@ -934,7 +990,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +mkdir -p "$M/bin" "$M/work" "$M/app" "$M/pull"
 +
 +: > "$M/trace.pbtxt"
-+: > "$M/heap.pbtxt"
++: > "$M/trace-timeout.pbtxt"
++printf 'duration_ms: 90000\n' > "$M/heap.pbtxt"
++printf 'duration_ms: 10000\n' > "$M/heap-short.pbtxt"
 +: > "$M/preload.so"
 +
 +cat > "$M/bin/tracebox" <<'EOF'
@@ -949,8 +1007,12 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +done
 +[ -n "$out" ] || { echo "mock tracebox: no -o" >&2; exit 2; }
 +case "$cfg" in
-+  *heap.pbtxt*)
++  *heap*.pbtxt*)
 +    ( trap 'printf "mock-heap\n" > "$out"; exit 0' INT TERM
++      while :; do sleep 0.1; done ) &
++    ;;
++  *timeout*.pbtxt*)
++    ( trap 'printf "mock-timeout-trace\n" > "$out"; exit 0' INT TERM
 +      while :; do sleep 0.1; done ) &
 +    ;;
 +  *)
@@ -974,7 +1036,18 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +  sh "$ROOT/scripts/linux_trace_session.sh" "$M/trace.pbtxt" trace 10
 +[ -s "$M/work/trace.pftrace" ] || { echo "FAIL: trace empty"; exit 1; }
 +grep -q "DONE" "$M/work/trace.status" || { echo "FAIL: no trace status"; exit 1; }
-+echo "PASS: linux_trace_session"
++echo "PASS: linux_trace_session normal"
++
++echo "== generic trace session timeout =="
++set +e
++WORK="$M/work" TRACEBOX="$M/bin/tracebox" \
++  sh "$ROOT/scripts/linux_trace_session.sh" "$M/trace-timeout.pbtxt" trace-timeout 2
++RC=$?
++set -e
++[ "$RC" -eq 10 ] || { echo "FAIL: timeout rc=$RC, expected 10"; exit 1; }
++[ -s "$M/work/trace-timeout.pftrace" ] || { echo "FAIL: timeout trace not kept"; exit 1; }
++grep -q "TIMEOUT_STOPPED" "$M/work/trace-timeout.status" || { echo "FAIL: timeout status missing"; exit 1; }
++echo "PASS: linux_trace_session timeout kept + non-zero"
 +
 +echo "== generic heapprofd session =="
 +WORK="$M/work" TRACEBOX="$M/bin/tracebox" OBSERVE_S=2 \
@@ -983,6 +1056,16 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +[ -s "$M/work/heap.pftrace" ] || { echo "FAIL: heap trace empty"; exit 1; }
 +grep -q "DONE" "$M/work/heap.status" || { echo "FAIL: no heap status"; exit 1; }
 +echo "PASS: linux_heapprofd_session"
++
++echo "== heapprofd short duration rejected =="
++set +e
++WORK="$M/work" TRACEBOX="$M/bin/tracebox" OBSERVE_S=30 \
++  sh "$ROOT/scripts/linux_heapprofd_session.sh" \
++  "$M/heap-short.pbtxt" "$M/preload.so" "$M/app" ./app
++RC=$?
++set -e
++[ "$RC" -ne 0 ] || { echo "FAIL: short duration returned success"; exit 1; }
++echo "PASS: short duration rejected rc=$RC"
 +
 +cat > "$M/bin/scp" <<'EOF'
 +#!/bin/sh
@@ -1107,8 +1190,8 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +    unittest.main()
 diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/test_linux_scripts.py v2_modify/candidate-v1.0.2/tests/test_linux_scripts.py
 --- v1_modify/candidate-v1.0.1/tests/test_linux_scripts.py	1970-01-01 08:00:00.000000000 +0800
-+++ v2_modify/candidate-v1.0.2/tests/test_linux_scripts.py	2026-10-17 20:52:27.526741167 +0800
-@@ -0,0 +1,31 @@
++++ v2_modify/candidate-v1.0.2/tests/test_linux_scripts.py	2026-10-17 21:29:07.665109639 +0800
+@@ -0,0 +1,33 @@
 +"""Contract tests for generic Linux session scripts (mock tracebox)."""
 +import pathlib
 +import subprocess
@@ -1133,21 +1216,99 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +        r = subprocess.run(['sh', str(ROOT / 'tests/mock_linux_sessions.sh')],
 +                           cwd=ROOT, capture_output=True, text=True)
 +        self.assertEqual(r.returncode, 0, r.stderr + r.stdout)
-+        self.assertIn('PASS: linux_trace_session', r.stdout)
++        self.assertIn('PASS: linux_trace_session normal', r.stdout)
++        self.assertIn('PASS: linux_trace_session timeout kept + non-zero', r.stdout)
 +        self.assertIn('PASS: linux_heapprofd_session', r.stdout)
++        self.assertIn('PASS: short duration rejected', r.stdout)
 +        self.assertIn('PASS: host_pull failure propagated', r.stdout)
++
++
++if __name__ == '__main__':
++    unittest.main()
+diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/test_release_preflight.py v2_modify/candidate-v1.0.2/tests/test_release_preflight.py
+--- v1_modify/candidate-v1.0.1/tests/test_release_preflight.py	1970-01-01 08:00:00.000000000 +0800
++++ v2_modify/candidate-v1.0.2/tests/test_release_preflight.py	2026-10-17 21:29:54.263022872 +0800
+@@ -0,0 +1,46 @@
++"""Release preflight: generated heapprofd config must match the launched name."""
++import pathlib
++import subprocess
++import sys
++import tempfile
++import unittest
++
++ROOT = pathlib.Path(__file__).resolve().parents[1]
++MAKE = ROOT / 'scripts/make_config.py'
++VALIDATE = ROOT / 'scripts/validate_config.py'
++
++
++class ReleasePreflightTests(unittest.TestCase):
++    def _config(self, name):
++        td = tempfile.TemporaryDirectory()
++        self.addCleanup(td.cleanup)
++        cfg = pathlib.Path(td.name) / 'native.pbtxt'
++        r = subprocess.run([sys.executable, str(MAKE), 'native', '--platform', 'linux',
++                            '--process', name, '--duration-ms', '90000',
++                            '--dump-ms', '2000'],
++                           capture_output=True, text=True)
++        self.assertEqual(r.returncode, 0, r.stderr)
++        cfg.write_text(r.stdout)
++        return cfg
++
++    def test_generated_target_and_duration_match(self):
++        cfg = self._config('test-app')
++        text = cfg.read_text()
++        self.assertIn('process_cmdline: "test-app"', text)
++        self.assertIn('duration_ms: 90000', text)
++        r = subprocess.run([sys.executable, str(VALIDATE), str(cfg),
++                            '--deploy-name', 'test-app'], capture_output=True, text=True)
++        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
++        self.assertIn('[PASS] deploy-name', r.stdout)
++
++    def test_target_mismatch_is_rejected(self):
++        cfg = self._config('test-app')
++        r = subprocess.run([sys.executable, str(VALIDATE), str(cfg),
++                            '--deploy-name', 'other-app'], capture_output=True, text=True)
++        self.assertNotEqual(r.returncode, 0)
++        self.assertIn('[FAIL] deploy-name', r.stdout)
++        self.assertIn('test-app', r.stdout)
 +
 +
 +if __name__ == '__main__':
 +    unittest.main()
 diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v1_modify/candidate-v1.0.1/tests/tp_cpu_sql_v58.2.txt v2_modify/candidate-v1.0.2/tests/tp_cpu_sql_v58.2.txt
 --- v1_modify/candidate-v1.0.1/tests/tp_cpu_sql_v58.2.txt	1970-01-01 08:00:00.000000000 +0800
-+++ v2_modify/candidate-v1.0.2/tests/tp_cpu_sql_v58.2.txt	2026-10-17 21:13:54.898510882 +0800
-@@ -0,0 +1,28 @@
-+Placeholder: Perfetto v58.2 Trace Processor; trace = local combined_traceput.pftrace
-+Target UPID 1 (cam-service, local test trace; NOT worker_app), 1 s buckets, window=trace bounds
++++ v2_modify/candidate-v1.0.2/tests/tp_cpu_sql_v58.2.txt	2026-10-17 21:30:01.871967906 +0800
+@@ -0,0 +1,64 @@
++# Real Trace Processor execution evidence (v58.2)
++# Generated by running the commands below, not by hand-editing outputs.
 +
-+===== sql/11-cpu-time-buckets.sql (tail) =====
++$ trace_processor_shell --version
++Perfetto v58.2-add693d8b (add693d8b338ba9599dbcbc3e300b1ab8c000897)
++Trace Processor RPC API version: 14
++
++$ sha256sum /root/sdk_md_x5_1.1.1/perfetto/captures/combined_traceput.pftrace
++56b42293e757f273c182091c8cf8517eededc9d9b7de2112518930e4cbba8663  /root/sdk_md_x5_1.1.1/perfetto/captures/combined_traceput.pftrace
++
++$ stat -c "%s bytes" /root/sdk_md_x5_1.1.1/perfetto/captures/combined_traceput.pftrace
++1089859 bytes
++
++# Target: UPID 1 (cam-service, local combined_traceput.pftrace; NOT worker_app)
++# sql/11: 1 s buckets, window = trace bounds
++
++$ sha256sum /tmp/tp11-r2.sql
++be57e5604cd4b1417ad9e4ee45911d71f0c55d9c4cfd17ff1d4372146248034c  /tmp/tp11-r2.sql
++
++$ trace_processor_shell query -f /tmp/tp11-r2.sql <trace>
++Loading trace: 0.00 MBLoading trace: 1.09 MB[570.962]     common_flags.cc:525 Trace loaded: 1.09 MB in 0.05s (21.3 MB/s)
++
++
++Trace health issues:
++
++  Import errors
++    slice_max_depth_exceeded: 11120 | A slice was dropped because the slice nesting depth exceeded the max supported limit.
++
++[570.964]            query.cc:191 Query execution time: 2 ms
++"utid","tid","thread_name","target_upid","ts","bucket_index","cpu_ms","overlapping_slices"
 +2,657,"cam-service",1,133248075771,0,24.109044,52
 +2,657,"cam-service",1,134248075771,1,57.037294,122
 +2,657,"cam-service",1,135248075771,2,56.475417,120
@@ -1160,8 +1321,15 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +2,657,"cam-service",1,142248075771,9,55.385504,121
 +2,657,"cam-service",1,143248075771,10,55.819873,120
 +2,657,"cam-service",1,144248075771,11,55.701747,118
++EXIT_CODE=0
 +
-+===== sql/12-cpu-spike-episodes.sql (threshold 50 ms) =====
++# sql/12: 1 s buckets, threshold 50 ms, window = trace bounds
++
++$ sha256sum /tmp/tp12-r2.sql
++e876a15f797d20f75d7963a32f5ff77fee5be7080a9bfdce1cf5a6926ae5e7e7  /tmp/tp12-r2.sql
++
++$ trace_processor_shell query -f /tmp/tp12-r2.sql <trace>
++Loading trace: 0.00 MBLoading trace: 1.09 MB[571.038]     common_flags.cc:525 Trace loaded: 1.09 MB in 0.05s (20.9 MB/s)
 +
 +
 +Trace health issues:
@@ -1169,6 +1337,9 @@ diff -ruN '--exclude=__pycache__' '--exclude=CHANGES.diff' '--exclude=results' v
 +  Import errors
 +    slice_max_depth_exceeded: 11120 | A slice was dropped because the slice nesting depth exceeded the max supported limit.
 +
-+[604.066]            query.cc:191 Query execution time: 2 ms
++[571.040]            query.cc:191 Query execution time: 2 ms
 +"ts","dur","first_bucket","last_bucket","buckets_in_episode","peak_cpu_ms","avg_cpu_ms"
 +134248075771,11000000000,1,11,11,59.316875,56.377874
++EXIT_CODE=0
++
++SUMMARY: sql/11 rc=0, sql/12 rc=0; target=UPID 1; trace=combined_traceput.pftrace

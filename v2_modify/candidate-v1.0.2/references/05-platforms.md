@@ -153,8 +153,10 @@ sh scripts/host_pull.sh "$BOARD" "$WORK" "$HOST_OUT" \
 ```
 
 目标机脚本行为：后台启动 tracebox，记录 PID；等待会话结束或超时；SIGINT 后等待
-flush；输出文件为空或 tracebox 不退时非零退出，并写 `.status`。宿主侧拉回脚本对
-scp 失败/空文件立即非零退出。
+flush；输出文件为空或 tracebox 不退时非零退出，并写 `.status`。
+`DONE` 才是正常完成；`TIMEOUT_STOPPED` 表示已停止但超时，`.pftrace` 保留，退出码
+为 10，验收应标 UNKNOWN/补采；`TIMEOUT_STOP_FAILED`/`EMPTY` 同样不能算成功。
+宿主侧拉回脚本对 scp 失败/空文件立即非零退出。
 
 采集期间在另一个终端复现业务；需要提前停止时只对本会话 PID 发 SIGINT，不要
 `pkill traced` 或杀其他会话。
@@ -172,11 +174,18 @@ TRACEBOX='/data/tracebox'
 PRELOAD='./libheapprofd_glibc_preload.so'   # 与采集器匹配的 ARM64/x86_64 版本
 APP_DIR='/path/to/test-app'
 APP_CMD='./test-app'
+APP_NAME=$(basename "$APP_CMD")            # 必须等于实际启动 argv[0] basename
 OBSERVE_S=30
 HOST_OUT='./captures'
 
+# 不要直接复制 configs/native.pbtxt：目标名/时长必须匹配本次测试。
+# 总时长 90 s > OBSERVE_S 30 s + 启动/producer 等待/停止/flush 余量。
+python3 scripts/make_config.py native --platform linux --process "$APP_NAME" \
+  --duration-ms 90000 --dump-ms 2000 > native.pbtxt
+python3 scripts/validate_config.py native.pbtxt --deploy-name "$APP_NAME"
+
 ssh "$BOARD" "mkdir -p $WORK"
-scp configs/native.pbtxt scripts/linux_session_lib.sh \
+scp native.pbtxt scripts/linux_session_lib.sh \
     scripts/linux_heapprofd_session.sh "$PRELOAD" "$BOARD:$WORK/"
 ssh "$BOARD" "WORK=$WORK TRACEBOX=$TRACEBOX OBSERVE_S=$OBSERVE_S \
   sh $WORK/linux_heapprofd_session.sh $WORK/native.pbtxt \
@@ -184,6 +193,11 @@ ssh "$BOARD" "WORK=$WORK TRACEBOX=$TRACEBOX OBSERVE_S=$OBSERVE_S \
 sh scripts/host_pull.sh "$BOARD" "$WORK" "$HOST_OUT" \
   heap.pftrace heap.log heap.status heap.query.txt heap.app.log
 ```
+
+`validate_config.py --deploy-name` 失败时（目标名不匹配）停止，不要继续推送/采集。
+若 `APP_CMD` 是 wrapper，`APP_NAME` 必须取最终 exec 的 argv[0] basename，不能取 wrapper 名。
+`linux_heapprofd_session.sh` 还会读取配置的 `duration_ms`，要求
+`duration_ms >= OBSERVE_S*1000 + 30000`；不足时在启动 trace 前失败。
 
 目标机脚本行为：
 

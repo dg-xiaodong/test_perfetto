@@ -9,7 +9,9 @@ trap 'rm -rf "$M"' EXIT
 mkdir -p "$M/bin" "$M/work" "$M/app" "$M/pull"
 
 : > "$M/trace.pbtxt"
-: > "$M/heap.pbtxt"
+: > "$M/trace-timeout.pbtxt"
+printf 'duration_ms: 90000\n' > "$M/heap.pbtxt"
+printf 'duration_ms: 10000\n' > "$M/heap-short.pbtxt"
 : > "$M/preload.so"
 
 cat > "$M/bin/tracebox" <<'EOF'
@@ -24,8 +26,12 @@ for a in "$@"; do
 done
 [ -n "$out" ] || { echo "mock tracebox: no -o" >&2; exit 2; }
 case "$cfg" in
-  *heap.pbtxt*)
+  *heap*.pbtxt*)
     ( trap 'printf "mock-heap\n" > "$out"; exit 0' INT TERM
+      while :; do sleep 0.1; done ) &
+    ;;
+  *timeout*.pbtxt*)
+    ( trap 'printf "mock-timeout-trace\n" > "$out"; exit 0' INT TERM
       while :; do sleep 0.1; done ) &
     ;;
   *)
@@ -49,7 +55,18 @@ WORK="$M/work" TRACEBOX="$M/bin/tracebox" \
   sh "$ROOT/scripts/linux_trace_session.sh" "$M/trace.pbtxt" trace 10
 [ -s "$M/work/trace.pftrace" ] || { echo "FAIL: trace empty"; exit 1; }
 grep -q "DONE" "$M/work/trace.status" || { echo "FAIL: no trace status"; exit 1; }
-echo "PASS: linux_trace_session"
+echo "PASS: linux_trace_session normal"
+
+echo "== generic trace session timeout =="
+set +e
+WORK="$M/work" TRACEBOX="$M/bin/tracebox" \
+  sh "$ROOT/scripts/linux_trace_session.sh" "$M/trace-timeout.pbtxt" trace-timeout 2
+RC=$?
+set -e
+[ "$RC" -eq 10 ] || { echo "FAIL: timeout rc=$RC, expected 10"; exit 1; }
+[ -s "$M/work/trace-timeout.pftrace" ] || { echo "FAIL: timeout trace not kept"; exit 1; }
+grep -q "TIMEOUT_STOPPED" "$M/work/trace-timeout.status" || { echo "FAIL: timeout status missing"; exit 1; }
+echo "PASS: linux_trace_session timeout kept + non-zero"
 
 echo "== generic heapprofd session =="
 WORK="$M/work" TRACEBOX="$M/bin/tracebox" OBSERVE_S=2 \
@@ -58,6 +75,16 @@ WORK="$M/work" TRACEBOX="$M/bin/tracebox" OBSERVE_S=2 \
 [ -s "$M/work/heap.pftrace" ] || { echo "FAIL: heap trace empty"; exit 1; }
 grep -q "DONE" "$M/work/heap.status" || { echo "FAIL: no heap status"; exit 1; }
 echo "PASS: linux_heapprofd_session"
+
+echo "== heapprofd short duration rejected =="
+set +e
+WORK="$M/work" TRACEBOX="$M/bin/tracebox" OBSERVE_S=30 \
+  sh "$ROOT/scripts/linux_heapprofd_session.sh" \
+  "$M/heap-short.pbtxt" "$M/preload.so" "$M/app" ./app
+RC=$?
+set -e
+[ "$RC" -ne 0 ] || { echo "FAIL: short duration returned success"; exit 1; }
+echo "PASS: short duration rejected rc=$RC"
 
 cat > "$M/bin/scp" <<'EOF'
 #!/bin/sh

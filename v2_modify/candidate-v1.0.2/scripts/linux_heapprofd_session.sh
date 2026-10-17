@@ -22,6 +22,16 @@ OUT=${OUT:-$WORK/heap}
 [ -r "$PRELOAD" ] || { echo "ERROR: preload library not readable: $PRELOAD" >&2; exit 2; }
 [ -d "$APP_DIR" ] || { echo "ERROR: app dir not found: $APP_DIR" >&2; exit 2; }
 
+# The session duration must cover observation plus startup/producer wait and
+# stop/flush margin. Fail before starting trace if the config is too short.
+DURATION_MS=$(sed -n 's/^[[:space:]]*duration_ms:[[:space:]]*\([0-9][0-9]*\).*/\1/p' "$CONFIG" | head -n 1)
+[ -n "$DURATION_MS" ] || { echo "ERROR: config has no numeric duration_ms: $CONFIG" >&2; exit 2; }
+MIN_MS=$((OBSERVE_S * 1000 + 30000))
+if [ "$DURATION_MS" -lt "$MIN_MS" ]; then
+  echo "ERROR: duration_ms=$DURATION_MS < OBSERVE_S=${OBSERVE_S}s + 30s margin (min $MIN_MS)" >&2
+  exit 2
+fi
+
 case "$OUT" in /*) ;; *) OUT="$WORK/$OUT" ;; esac
 mkdir -p "$(dirname "$OUT")"
 rm -f "$OUT.pftrace" "$OUT.pid" "$OUT.log" "$OUT.status" "$OUT.app.log" "$OUT.app.pid" "$OUT.query.txt"

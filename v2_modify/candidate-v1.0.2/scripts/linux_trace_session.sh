@@ -28,14 +28,29 @@ trap cleanup EXIT INT TERM
 TPID=$(cat "$OUT.pid")
 echo "tracebox_pid=$TPID"
 
+TIMED_OUT=0
 if ! wait_pid_exit "$TPID" "$TIMEOUT_S"; then
-  echo "timeout; sending SIGINT" >&2
-  stop_tracebox "$TPID" || { echo "FAIL: tracebox did not exit" >&2; exit 3; }
+  TIMED_OUT=1
+  echo "timeout; sending SIGINT for flush" >&2
+  if ! stop_tracebox "$TPID"; then
+    echo "TIMEOUT_STOP_FAILED" > "$OUT.status"
+    echo "FAIL: tracebox did not exit after SIGINT/SIGTERM; partial file kept" >&2
+    exit 3
+  fi
 fi
 TPID=""
 if ! wait_nonempty_file "$OUT.pftrace" 5; then
+  echo "EMPTY" > "$OUT.status"
   echo "FAIL: $OUT.pftrace missing or empty" >&2
   exit 4
 fi
-echo "DONE size_bytes=$(wc -c < "$OUT.pftrace")" > "$OUT.status"
+SIZE=$(wc -c < "$OUT.pftrace")
+if [ "$TIMED_OUT" -eq 1 ]; then
+  # A timeout is not a normal completion. Keep the partial trace for forensics,
+  # mark it incomplete, and return non-zero.
+  echo "TIMEOUT_STOPPED size_bytes=$SIZE" > "$OUT.status"
+  cat "$OUT.status"
+  exit 10
+fi
+echo "DONE size_bytes=$SIZE" > "$OUT.status"
 cat "$OUT.status"

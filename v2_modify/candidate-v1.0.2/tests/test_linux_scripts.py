@@ -22,8 +22,10 @@ class LinuxScriptTests(unittest.TestCase):
         r = subprocess.run(['sh', str(ROOT / 'tests/mock_linux_sessions.sh')],
                            cwd=ROOT, capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stderr + r.stdout)
-        self.assertIn('PASS: linux_trace_session', r.stdout)
+        self.assertIn('PASS: linux_trace_session normal', r.stdout)
+        self.assertIn('PASS: linux_trace_session timeout kept + non-zero', r.stdout)
         self.assertIn('PASS: linux_heapprofd_session', r.stdout)
+        self.assertIn('PASS: short duration rejected', r.stdout)
         self.assertIn('PASS: host_pull failure propagated', r.stdout)
 
 
