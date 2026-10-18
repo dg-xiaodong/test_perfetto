@@ -110,3 +110,19 @@ X5 常驻 C++ 服务 `sched-case-daemon`（PID 977，12 worker + main，helper 9
 CPU 1 基本空闲。切出栈 `dispatch_entry()→syscall(futex)`，唤醒栈 `enqueue_request()→run_one_cycle()→main`，
 6 次唤醒全部落在主线程 `sys_futex` slice 内；helper→ipc-client 跨进程唤醒亦在 helper 的 futex syscall 内。
 锁 owner、futex 地址、10 ms Running 内部工作 = UNKNOWN（未采集，不编造）。
+
+## 应用时延 / ISP-SIF 测量（[`v6_test/`](v6_test/)，perfetto-latency-debugging v0.1.0 Candidate）
+
+X5 imx678 linear **offline**（SIF→DDR→ISP）的四项时延测量设计。**本轮未采集**：板上无 imx678
+（在挂 sc230ai ×4；rootfs 无 `imx678.ko`；kernel 树无驱动），按用户确认只交付方法学 + 埋点补丁 + 静态自验。
+**0 条真实 trace、0 个实测数值**；sc230ai 数值不得外推到 imx678。
+
+- [`v6_test/REPORT.md`](v6_test/REPORT.md)：四项边界（SIF 入队→ISP 出队 / 用户态 MCM_SCH→FRAME_DONE / 内核 ISP FS→FE / 内核 SIF FS→FE）、
+  埋点地图、构建/部署/采集/分析步骤、证据边界与采集后自检清单
+- [`v6_test/patches/`](v6_test/patches/)：内核 `camsys.sif2isp.queue` atrace 补丁（T1）+ cam-service HAL TrackEvent 补丁（T2，可选开关）
+- [`v6_test/config/`](v6_test/config/)：`ftrace/print` + `track_event(camsys)` 主配置；仅 T2 的 TrackEvent 配置
+- [`v6_test/sql/`](v6_test/sql/)：inventory、质量门、T1 双口径、T2、T3、T4 的 PerfettoSQL（8 个，TP v57.1 语法通过）
+- [`v6_test/docs/build-verification.md`](v6_test/docs/build-verification.md)：编译/策略/SQL/补丁的静态自验记录
+
+关键事实：运行中的 `vs_sif_nat.ko`/`vs_isp_nat.ko` 已含 `camsys.sif.frame`/`camsys.isp.frame`，**T3/T4 用现有模块即可采**；
+T1 需替换新模块（vermagic 与板上 `6.1.83-DR-PL5.1_V1.0.20` 一致）；T2 需真实 Perfetto SDK 重编 libisc。

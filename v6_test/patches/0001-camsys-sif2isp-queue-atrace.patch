@@ -1,0 +1,131 @@
+diff --git a/drivers/media/platform/horizon/camsys/vsi_cam/include/cam_ctx.h b/drivers/media/platform/horizon/camsys/vsi_cam/include/cam_ctx.h
+--- a/drivers/media/platform/horizon/camsys/vsi_cam/include/cam_ctx.h
++++ b/drivers/media/platform/horizon/camsys/vsi_cam/include/cam_ctx.h
+@@ -63,5 +63,13 @@
+ bool vse_get_drop_status(struct cam_ctx *ctx);
+ 
+ int cam_check_datapath(struct cam_ctx *ctx, bool *online);
+ 
++/*
++ * Tracing helper: frame id currently associated with this context's vnode.
++ * The native (VIO) build returns the propagated hardware frame id, which is
++ * what the SIF->ISP atrace pair uses as its cookie. The legacy v4l2 build has
++ * no such propagation and returns 0; its instrumentation stays disabled.
++ */
++u32 cam_ctx_frame_id(struct cam_ctx *ctx);
++
+ #endif /* _CAM_COM_H_ */
+diff --git a/drivers/media/platform/horizon/camsys/vsi_cam/native/cam_ctx.c b/drivers/media/platform/horizon/camsys/vsi_cam/native/cam_ctx.c
+--- a/drivers/media/platform/horizon/camsys/vsi_cam/native/cam_ctx.c
++++ b/drivers/media/platform/horizon/camsys/vsi_cam/native/cam_ctx.c
+@@ -54,8 +54,18 @@
+ 	// 	   frameid.timestamps, frameid.tv_sec, frameid.tv_usec, frameid.trig_tv_sec, frameid.trig_tv_usec);
+ 
+ 	if (subdev)
+ 		memcpy(&subdev->vnode->frameid, &frameid, sizeof(struct frame_id_desc));
++}
++
++u32 cam_ctx_frame_id(struct cam_ctx *ctx)
++{
++	struct vio_subdev *subdev = (struct vio_subdev *)ctx;
++
++	if (!subdev || !subdev->vnode)
++		return 0;
++
++	return subdev->vnode->frameid.frame_id;
+ }
+ 
+ void sif_get_frame_des(struct cam_ctx *ctx)
+ {
+diff --git a/drivers/media/platform/horizon/camsys/vsi_cam/v4l2/cam_ctx.c b/drivers/media/platform/horizon/camsys/vsi_cam/v4l2/cam_ctx.c
+--- a/drivers/media/platform/horizon/camsys/vsi_cam/v4l2/cam_ctx.c
++++ b/drivers/media/platform/horizon/camsys/vsi_cam/v4l2/cam_ctx.c
+@@ -53,8 +53,15 @@
+ }
+ 
+ void sif_get_frame_des(struct cam_ctx *ctx)
+ {
++}
++
++u32 cam_ctx_frame_id(struct cam_ctx *ctx)
++{
++	(void)ctx;
++
++	return 0;
+ }
+ 
+ void sif_set_frame_event(struct cam_ctx *ctx, u32 type)
+ {
+diff --git a/drivers/media/platform/horizon/camsys/vsi_cam/sif/sif_handler.c b/drivers/media/platform/horizon/camsys/vsi_cam/sif/sif_handler.c
+--- a/drivers/media/platform/horizon/camsys/vsi_cam/sif/sif_handler.c
++++ b/drivers/media/platform/horizon/camsys/vsi_cam/sif/sif_handler.c
+@@ -306,9 +306,21 @@
+ 			if (frame_status) {
+ 				cam_drop_irq(buf_ctx, *buf);
+ 				cam_dec_frame_status(buf_ctx);
+ 			} else {
++				/*
++				 * Test-1 anchor A: SIF finished writing the frame and
++				 * enqueues it downstream (SIF "write queue"). The async
++				 * slice is keyed by the hardware frame id that
++				 * sif_set_frame_des() stored at FS; vio_frame_done()
++				 * copies it into the frame, so the ISP dequeue side
++				 * can close the same cookie.
++				 */
++				u32 trace_fid = cam_ctx_frame_id(ins->ctx.sink_ctx);
++
++				camsys_atrace_begin("camsys.sif2isp.queue", trace_fid);
+ 				cam_qbuf_irq(buf_ctx, *buf, true);
++				camsys_atrace_counter("camsys.sif2isp.enq", trace_fid);
+ 			}
+ 		}
+ 
+ 		*buf = *next_buf;
+diff --git a/drivers/media/platform/horizon/camsys/vsi_cam/isp/isp_handler.c b/drivers/media/platform/horizon/camsys/vsi_cam/isp/isp_handler.c
+--- a/drivers/media/platform/horizon/camsys/vsi_cam/isp/isp_handler.c
++++ b/drivers/media/platform/horizon/camsys/vsi_cam/isp/isp_handler.c
+@@ -804,8 +804,23 @@
+ 
+ 		buf = cam_dqbuf_irq(ctx->src_ctx[i], true);
+ 		if (!buf)
+ 			return -ENOMEM;
++
++		/*
++		 * Test-1 anchor B: ISP actually dequeues the SIF frame from the
++		 * shared frame manager (ISP "read queue"). cam_dqbuf_irq() copied
++		 * the frame's frameinfo.frameid into the vnode, so this returns
++		 * the same id SIF used at enqueue. A matching counter row lets the
++		 * analysis join enqueue/dequeue even if a slice pair is lost.
++		 */
++		{
++			u32 trace_fid = cam_ctx_frame_id(ctx->src_ctx[i]);
++
++			camsys_atrace_end("camsys.sif2isp.queue", trace_fid);
++			camsys_atrace_counter("camsys.sif2isp.deq", trace_fid);
++		}
++
+ 		node = list_first_entry_or_null(ctx->src_buf_list1,
+ 						struct cam_list_node, entry);
+ 		if (WARN_ON(!node))
+ 			return -ENOMEM;
+@@ -1421,8 +1436,20 @@
+ 			cam_set_stat_info(ins->ctx.stat_ctx, CAM_STAT_FS);
+ 			camsys_atrace_begin("camsys.isp.frame",
+ 					    camsys_atrace_cookie(isp->id,
+ 							isp->next_mi_irq_ctx, false));
++			/*
++			 * Test-1 secondary anchor: ISP hardware actually starts
++			 * reading the frame from DDR. Joined against the SIF
++			 * enqueue counter this yields enqueue -> read start,
++			 * distinct from enqueue -> software dequeue.
++			 */
++			if (has_offline(ins->ctx.src_online_stat)) {
++				u32 off = get_offline(ins->ctx.src_online_stat);
++
++				camsys_atrace_counter("camsys.isp.fs",
++						      cam_ctx_frame_id(ins->ctx.src_ctx[off]));
++			}
+ 			isp_mis &= ~BIT(6);
+ 			if (isp->mode == ISP_STRM_MODE && ins->afm3_ctrl.flag) {
+ 				pr_debug("afm immediately update shadow\n");
+ 				isp_ctrl = isp_read(isp, ISP_CTRL);

@@ -1,0 +1,11 @@
+# TrackEvent-only recipe: collects Test-2 (userspace ISP HAL) in isolation.
+# This is the only recipe that passes the skill's POLICY_PASS subset.
+duration_ms: 15000
+buffers { size_kb: 8192 fill_policy: DISCARD }
+data_sources { config {
+  name: "track_event"
+  track_event_config {
+    disabled_categories: "*"
+    enabled_categories: "camsys"
+  }
+} }

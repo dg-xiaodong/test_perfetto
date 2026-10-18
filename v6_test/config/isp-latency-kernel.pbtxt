@@ -1,0 +1,38 @@
+# Primary recipe for the four ISP/SIF measurements.
+#
+# Data sources:
+#   linux.ftrace + ftrace/print   -> kernel trace_puts() atrace slices/counters
+#                                    camsys.sif.frame, camsys.isp.frame,
+#                                    camsys.sif2isp.queue, camsys.sif2isp.enq,
+#                                    camsys.sif2isp.deq, camsys.isp.fs
+#   track_event (category camsys) -> userspace TrackEvent slices camsys.isp.user
+#   linux.process_stats           -> process/thread identity for the userspace
+#                                    producer (required by the skill's joint
+#                                    capture policy)
+#
+# The skill's validate_config.py policy subset only admits the sched pair
+# (sched/sched_switch + sched/sched_waking) when linux.ftrace is present, so this
+# recipe is EXPECTED to fail POLICY_PASS. That is a scope boundary, not a defect:
+# kernel atrace via ftrace/print is outside the app-level latency.v1 recipe.
+# Capture-time collector validation is still mandatory.
+duration_ms: 15000
+buffers { size_kb: 16384 fill_policy: DISCARD }
+data_sources { config {
+  name: "linux.ftrace"
+  ftrace_config {
+    buffer_size_kb: 4096
+    drain_period_ms: 200
+    ftrace_events: "ftrace/print"
+  }
+} }
+data_sources { config {
+  name: "track_event"
+  track_event_config {
+    disabled_categories: "*"
+    enabled_categories: "camsys"
+  }
+} }
+data_sources { config {
+  name: "linux.process_stats"
+  process_stats_config { scan_all_processes_on_start: true proc_stats_poll_ms: 1000 }
+} }

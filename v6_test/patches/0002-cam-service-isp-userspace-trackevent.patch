@@ -1,0 +1,261 @@
+diff --git a/cam_service/service/hal/isp/hal.c b/cam_service/service/hal/isp/hal.c
+index ffe965dd3..9d5817bb1 100644
+--- a/cam_service/service/hal/isp/hal.c
++++ b/cam_service/service/hal/isp/hal.c
+@@ -13,6 +13,10 @@
+ #include "hal_api.h"
+ #include "hal_func.h"
+ 
++#ifdef CAM_TRACE_TRACK_EVENT
++#include "rr_perfetto.h"
++#endif
++
+ /**
+  * if this macro definition is enabled, HAL will use mmap() method for ISP register read/write!
+  * otherwise, HAL will use isc message
+@@ -38,6 +42,24 @@ typedef struct hal_inst_context_s {
+     int state;
+ } hal_inst_context_t;
+ 
++#ifdef CAM_TRACE_TRACK_EVENT
++/*
++ * Test-2 anchors: the only per-frame ISP boundaries visible in user space are
++ * the kernel-posted ISP_MSG_MCM_SCH (frame schedule started) and
++ * ISP_MSG_FRAME_DONE (frame complete) messages handled below. The interval is
++ * therefore "userspace-observed" and includes the kernel->userspace message
++ * round trip; it is not the hardware FS->FE interval.
++ *
++ * Track ids are namespaced away from kernel tracks and the TrackEvent default
++ * track so several ISP instances stay distinguishable (one async track each).
++ */
++#define HAL_TRACE_TRACK_BASE 0xCA5E000000000000ULL
++static inline uint64_t hal_trace_track(uint8_t dev_id, uint32_t inst)
++{
++    return HAL_TRACE_TRACK_BASE | ((uint64_t)(dev_id & 0xffu) << 8) | (inst & 0xffu);
++}
++#endif
++
+ typedef struct hal_context_s {
+     uint32_t ref_count;
+     uint8_t dev_id;
+@@ -247,11 +269,17 @@ static int32_t hal_msg_handler(void *msg, uint32_t len, void *arg)
+         }
+         break;
+     case ISP_MSG_MCM_SCH:
++#ifdef CAM_TRACE_TRACK_EVENT
++        rr_trace_begin_async("camsys.isp.user", hal_trace_track(ctx->dev_id, m->inst));
++#endif
+         LOGD("ISP%d(%d): receive mcm sch message!\n", ctx->dev_id, m->inst);
+         ret = _map_internal_id(ctx, m->inst, &int_id);
+         if (ret || int_id == INVALID_MAPPING_INST) {
+             LOGE("ISP%d(%d): failed to map internal id!\n", ctx->dev_id, m->inst);
+             HalIspResetRunningInst((HalHandle_t)ctx);
++#ifdef CAM_TRACE_TRACK_EVENT
++            rr_trace_end_async(hal_trace_track(ctx->dev_id, m->inst));
++#endif
+             break;
+         }
+         ctx->ext_running_inst = m->inst;
+@@ -261,6 +289,9 @@ static int32_t hal_msg_handler(void *msg, uint32_t len, void *arg)
+         HalFuncRun((HalHandle_t)ctx, int_id, ISP_MSG_MCM_SCH, &m->sch);
+         break;
+     case ISP_MSG_FRAME_DONE:
++#ifdef CAM_TRACE_TRACK_EVENT
++        rr_trace_end_async(hal_trace_track(ctx->dev_id, m->inst));
++#endif
+         LOGD("ISP%d(%d): receive frame done message!\n", ctx->dev_id, m->inst);
+         ret = _map_internal_id(ctx, m->inst, &int_id);
+         if (ret || int_id == INVALID_MAPPING_INST)
+diff --git a/cam_service/service/include/rr_perfetto.h b/cam_service/service/include/rr_perfetto.h
+new file mode 100644
+index 000000000..c876db960
+--- /dev/null
++++ b/cam_service/service/include/rr_perfetto.h
+@@ -0,0 +1,42 @@
++/* SPDX-License-Identifier: Apache-2.0 */
++/*
++ * C-interface shim for the perfetto track_event SDK in cam_service (x5_camsys).
++ * The HAL message handlers are C; they call these wrappers instead of the
++ * C++ perfetto macros directly. Compiled into libisc.so (perfetto module).
++ */
++#ifndef RR_PERFETTO_H
++#define RR_PERFETTO_H
++
++#include <stdint.h>
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++/* Initialize perfetto with the system backend (connects to the traced daemon).
++ * Also done automatically via a library constructor; explicit call is fine. */
++void rr_perfetto_init(void);
++
++/* Optional shutdown; traced handles cleanup. */
++void rr_perfetto_shutdown(void);
++
++/* Begin a tracing slice on the "camsys" category. `name` is copied inside the
++ * SDK, so a stack buffer is safe. MUST pair with rr_trace_end() on every path
++ * that reached the begin. */
++void rr_trace_begin(const char *name);
++
++/* End the most recent slice on the current thread (LIFO). */
++void rr_trace_end(void);
++
++/* Begin an ASYNC slice on the given track. track_id keys the S/F pair across
++ * messages/threads; each unique track_id gets its own track in the UI. */
++void rr_trace_begin_async(const char *name, uint64_t track_id);
++
++/* End the async slice opened on track_id (closes that track's open slice). */
++void rr_trace_end_async(uint64_t track_id);
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif /* RR_PERFETTO_H */
+\ No newline at end of file
+diff --git a/cam_service/service/isc/CMakeLists.txt b/cam_service/service/isc/CMakeLists.txt
+index 6c4899804..98e451589 100644
+--- a/cam_service/service/isc/CMakeLists.txt
++++ b/cam_service/service/isc/CMakeLists.txt
+@@ -3,10 +3,35 @@ cmake_minimum_required(VERSION 3.1.0)
+ 
+ set(module isc)
+ 
+-add_library(${module} SHARED
++# Opt-in Perfetto TrackEvent instrumentation (Test-2 oracle for the ISP HAL).
++# Requires a real, prebuilt Perfetto SDK directory holding perfetto.h and
++# libperfetto.a. Never enabled implicitly: without the SDK the library builds
++# exactly as before and the HAL trace calls compile out.
++option(CAM_TRACE_TRACK_EVENT "Enable perfetto TrackEvent in libisc" OFF)
++
++set(isc_sources
+     isc.c
+ )
+ 
++if(CAM_TRACE_TRACK_EVENT)
++    if(NOT PERFETTO_SDK_DIR)
++        message(FATAL_ERROR
++            "CAM_TRACE_TRACK_EVENT=ON requires -DPERFETTO_SDK_DIR=<dir> containing perfetto.h and libperfetto.a")
++    endif()
++    if(NOT EXISTS "${PERFETTO_SDK_DIR}/perfetto.h" OR NOT EXISTS "${PERFETTO_SDK_DIR}/libperfetto.a")
++        message(FATAL_ERROR
++            "PERFETTO_SDK_DIR=${PERFETTO_SDK_DIR} must contain perfetto.h and libperfetto.a")
++    endif()
++    list(APPEND isc_sources
++        rr_perfetto.cc
++        trace_categories.cc
++    )
++endif()
++
++add_library(${module} SHARED
++    ${isc_sources}
++)
++
+ add_dependencies(${module}
+     create_output_dir
+ )
+@@ -14,3 +39,14 @@ add_dependencies(${module}
+ target_link_libraries(${module}
+     pthread
+ )
++
++if(CAM_TRACE_TRACK_EVENT)
++    target_include_directories(${module} PRIVATE ${PERFETTO_SDK_DIR})
++    target_link_libraries(${module} PRIVATE ${PERFETTO_SDK_DIR}/libperfetto.a)
++    target_compile_definitions(${module} PRIVATE CAM_TRACE_TRACK_EVENT)
++    set_property(TARGET ${module} PROPERTY CXX_STANDARD 17)
++    set_property(TARGET ${module} PROPERTY CXX_STANDARD_REQUIRED ON)
++    # The static Perfetto SDK is C++; link the shared library through the C++
++    # driver so libstdc++ is pulled in exactly once.
++    set_property(TARGET ${module} PROPERTY LINKER_LANGUAGE CXX)
++endif()
+diff --git a/cam_service/service/isc/rr_perfetto.cc b/cam_service/service/isc/rr_perfetto.cc
+new file mode 100644
+index 000000000..07024236e
+--- /dev/null
++++ b/cam_service/service/isc/rr_perfetto.cc
+@@ -0,0 +1,48 @@
++/* SPDX-License-Identifier: Apache-2.0 */
++#include "rr_perfetto.h"
++
++#include "trace_categories.h"
++
++#include <perfetto.h>
++
++/* Auto-init when libisc.so is loaded (cam_service startup). */
++static __attribute__((constructor)) void rr_perfetto_auto_init(void)
++{
++    rr_perfetto_init();
++}
++
++void rr_perfetto_init(void)
++{
++    perfetto::TracingInitArgs args;
++    /* kSystemBackend connects to the traced daemon. If traced is not running
++     * the SDK degrades gracefully: no crash, events simply dropped. */
++    args.backends = perfetto::kSystemBackend;
++    perfetto::Tracing::Initialize(args);
++    perfetto::TrackEvent::Register();
++}
++
++void rr_perfetto_shutdown(void)
++{
++}
++
++void rr_trace_begin(const char *name)
++{
++    /* DynamicString copies `name` at event time, so a stack buffer is safe. */
++    TRACE_EVENT_BEGIN("camsys", perfetto::DynamicString(name));
++}
++
++void rr_trace_end(void)
++{
++    TRACE_EVENT_END("camsys");
++}
++
++void rr_trace_begin_async(const char *name, uint64_t track_id)
++{
++    TRACE_EVENT_BEGIN("camsys", perfetto::DynamicString(name),
++                      perfetto::Track(track_id));
++}
++
++void rr_trace_end_async(uint64_t track_id)
++{
++    TRACE_EVENT_END("camsys", perfetto::Track(track_id));
++}
+\ No newline at end of file
+diff --git a/cam_service/service/isc/trace_categories.cc b/cam_service/service/isc/trace_categories.cc
+new file mode 100644
+index 000000000..1de196142
+--- /dev/null
++++ b/cam_service/service/isc/trace_categories.cc
+@@ -0,0 +1,5 @@
++/* SPDX-License-Identifier: Apache-2.0 */
++#include "trace_categories.h"
++
++/* Required by perfetto: materialize the category storage. */
++PERFETTO_TRACK_EVENT_STATIC_STORAGE();
+\ No newline at end of file
+diff --git a/cam_service/service/isc/trace_categories.h b/cam_service/service/isc/trace_categories.h
+new file mode 100644
+index 000000000..d46cae693
+--- /dev/null
++++ b/cam_service/service/isc/trace_categories.h
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: Apache-2.0 */
++#ifndef TRACE_CATEGORIES_H
++#define TRACE_CATEGORIES_H
++
++#include <perfetto.h>
++
++/* One category for the whole camera stack; the slice name
++ * (camsys.isp.hal_msg / camsys.vse.hal_msg / camsys.sif.hal_msg) identifies
++ * the subsystem. The trace config enables it via enabled_categories: "camsys". */
++PERFETTO_DEFINE_CATEGORIES(
++    perfetto::Category("camsys").SetDescription("Camera subsystems (userspace)"),
++);
++
++#endif /* TRACE_CATEGORIES_H */
+\ No newline at end of file
