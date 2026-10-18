@@ -277,7 +277,7 @@ cap2 中另有一处明显等待，**与 W1 不同源**：
 |---|---|---|
 | ftrace 数据丢失 | `compact_sched_switch_skipped=8`、`compact_sched_waking_skipped=7`（cap1/cap2 相同） | 规模很小；未观察到影响目标线程的边界一致性（`02` 中目标 wait 全部 COMPLETE） |
 | traced 环形缓冲 | `traced_buf_bytes_written = bytes_read`（cap1 1,867,776；cap2 2,719,744），16 MiB buffer | **无环形溢出** |
-| perf 丢样本 | `perf_cpu_lost_records = 724 + 73`、`perf_samples_skipped = 5` | switch 流对目标线程：988 事件 1196 / 样本 1200（边界计数差 4，视为完整）；**977 事件 1438 / 样本 659（约 54% 丢失）**；994/995/996/987 ≈ 完整（各差 1–2 条） |
+| perf 丢样本 | `perf_cpu_lost_records = 724 + 73`、`perf_samples_skipped = 5` | switch 流逐个目标线程（`sched_switch prev_pid` 事件数 → perf 样本数）：977 **1438→659（约 54% 丢失）**、988 **1196→1200（计数近似 1:1）**、994 125→123、995 125→122、996 121→120、987 120→120。**“计数接近 1:1”不等于“每个切出点都有样本”**：`wait 61093` 的切出点（436085231374）就没有样本，因此 §6.2 逐条判定仍保留 `SAMPLE_MISSING`，不用全局计数去补单点缺失 |
 | waking 流样本归属 | 3109 样本中 3033 归属 `swapper` 且无栈（定时器在 idle CPU 上唤醒，执行上下文是空闲任务） | 唤醒**事件**（谁、哪个 CPU、是否 IRQ）完整；唤醒**栈**只有 71 条真实线程样本 → 60642/61257/61896 的 wake_status = SAMPLE_MISSING |
 | 时间戳偏差 | perf 样本相对同 tracepoint 的 ftrace 事件：switch 16.8–111.4 µs（中位 85.2 µs）、waking −29.1…+102.8 µs（中位 34.0 µs），时间上稳定 | 0 容差不可用；使用 150 µs 并验证唯一性（开关侧 0 歧义）。**偏差成因 UNKNOWN**，未用“最近时间戳”强行配对 |
 | 时钟 | trace = BOOTTIME（`trace_clock=boot`）；`boot−mono = −0.625 µs`（ClockSnapshot） | 同域，可交叉核对 |

@@ -1,0 +1,23 @@
+[416.564]          service.cc:308 Started traced, listening on @traced-p-1847 @traced-c-1847
+[416.790]            probes.cc:95 Starting traced_probes service
+[416.792]  probes_producer.cc:435 Connected to the service
+[416.802]   perf_producer.cc:1394 Connected to the service
+[416.803]    perfetto_cmd.cc:1136 Connected to the Perfetto traced service, TTL: 60s
+[416.803] ng_service_impl.cc:1307 Configured tracing session 1, #sources:4, duration:60000 ms, #buffers:1, total buffer size:16384 KB, total sessions:1, uid:0 session name: ""
+[416.804]    perf_producer.cc:473 StartDataSource(ds 3, session 1, name linux.perf)
+[416.903]    perf_producer.cc:473 StartDataSource(ds 4, session 1, name linux.perf)
+[416.974]          tracefs.cc:399 Failed to setup event triggers for synthetic:rss_stat_throttled (errno: 22, Invalid argument)
+[416.976]  probes_producer.cc:155 Ftrace setup (target_buf=1)
+[416.977]          tracefs.cc:636 disabled ftrace in /sys/kernel/debug/tracing/
+[417.190]          tracefs.cc:633 enabled ftrace in /sys/kernel/debug/tracing/
+[464.207]    unwind_support.cc:52 Failed remote pread of 8 bytes at address ffffe9db7a08 (errno: 5, Input/output error)
+[476.810] ng_service_impl.cc:2385 FlushAndDisableTracing(1) done, success=1
+[476.811]  probes_producer.cc:582 Producer stop (id=1)
+[476.811]    perf_producer.cc:658 StopDataSource(3)
+[476.812]  probes_producer.cc:582 Producer stop (id=2)
+[476.812]    perf_producer.cc:658 StopDataSource(4)
+[476.845]   perf_producer.cc:1247 FinishDataSourceStop(3)
+[477.051]          tracefs.cc:636 disabled ftrace in /sys/kernel/debug/tracing/
+[477.144]   perf_producer.cc:1247 FinishDataSourceStop(4)
+[477.270]          tracefs.cc:636 disabled ftrace in /sys/kernel/debug/tracing/
+[477.362]    perfetto_cmd.cc:1293 Wrote 2750785 bytes into /userdata/sched-diag/cap2/trace.pftrace

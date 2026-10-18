@@ -179,12 +179,31 @@ mkdir -p x5_sched_debugging/{traces,configs,logs,results,data,sql}
 cp capture1/host/trace.pftrace x5_sched_debugging/traces/cap1-overview.pftrace
 cp capture2/host/trace.pftrace x5_sched_debugging/traces/cap2-blockwake.pftrace
 # …（REPORT.md / README.md / logs / results / sql / data / configs）
-sha256sum $(find x5_sched_debugging -type f) > x5_sched_debugging/SHA256SUMS
+# 清单覆盖除自身外的全部文件（SHA256SUMS 不能包含自己）
+find x5_sched_debugging -type f ! -name SHA256SUMS -print0 \
+  | sort -z | xargs -0 sha256sum > x5_sched_debugging/SHA256SUMS
+
+# 仓库根 .gitignore 第 60 行有 `*.log`：证据日志会被 `git add -A` 静默跳过，
+# 因此必须在根 .gitignore 追加定向放行（否则 SHA256SUMS 有、远端没有）：
+cat >> .gitignore <<'IGN'
+# v5_test: diagnosis evidence logs are part of the deliverable (see v5_test/SHA256SUMS)
+!v5_test/data/service.log
+!v5_test/logs/cap1-collector.log
+!v5_test/logs/cap2-collector.log
+IGN
+git check-ignore -v v5_test/data/service.log   # 应命中 `!` 规则；随后必须看到 git add 真的暂存了它
 
 cd /root/github_test/x5_heapprofd_traces        # origin = git@github.com:dg-xiaodong/test_perfetto.git
 git pull --rebase
 cp -a <work>/deliverable/x5_sched_debugging .
-git add x5_sched_debugging
+git add -A
+git status --short          # 必须看到三个 .log 变成 A（新增），不能只看 sha256sum -c
 git commit -m "Add X5 sched-case-daemon scheduling/sync diagnosis (Perfetto E1/E2/E3)"
 git push origin main
+
+# 归档复验：用「提交后的 Git 树」而不是本地工作区校验
+git archive origin/main v5_test | tar -x -C /tmp/verify_v5
+cd /tmp/verify_v5/v5_test && sha256sum -c SHA256SUMS | grep -c ': OK$'   # 期望 268
+diff <(git -C <repo> ls-tree -r --name-only origin/main v5_test | sed 's#^v5_test/##' | sort) \
+     <(awk '{print $2}' SHA256SUMS | sed 's#^\./##' | grep -v '^SHA256SUMS$' | sort)   # 期望无输出
 ```

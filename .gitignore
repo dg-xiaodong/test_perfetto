@@ -218,3 +218,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# v5_test: diagnosis evidence logs are part of the deliverable (see v5_test/SHA256SUMS)
+!v5_test/data/service.log
+!v5_test/logs/cap1-collector.log
+!v5_test/logs/cap2-collector.log

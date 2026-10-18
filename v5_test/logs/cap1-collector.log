@@ -1,0 +1,16 @@
+[175.102]          service.cc:308 Started traced, listening on @traced-p-1420 @traced-c-1420
+[175.400]            probes.cc:95 Starting traced_probes service
+[175.409]  probes_producer.cc:435 Connected to the service
+[175.420]   perf_producer.cc:1394 Connected to the service
+[175.421]    perfetto_cmd.cc:1136 Connected to the Perfetto traced service, TTL: 60s
+[175.422] ng_service_impl.cc:1307 Configured tracing session 1, #sources:2, duration:60000 ms, #buffers:1, total buffer size:16384 KB, total sessions:1, uid:0 session name: ""
+[175.582]          tracefs.cc:399 Failed to setup event triggers for synthetic:rss_stat_throttled (errno: 22, Invalid argument)
+[175.585]  probes_producer.cc:155 Ftrace setup (target_buf=1)
+[175.585]          tracefs.cc:636 disabled ftrace in /sys/kernel/debug/tracing/
+[175.899]          tracefs.cc:633 enabled ftrace in /sys/kernel/debug/tracing/
+[235.428] ng_service_impl.cc:2385 FlushAndDisableTracing(1) done, success=1
+[235.428]  probes_producer.cc:582 Producer stop (id=1)
+[235.429]  probes_producer.cc:582 Producer stop (id=2)
+[235.429]          tracefs.cc:636 disabled ftrace in /sys/kernel/debug/tracing/
+[235.600]          tracefs.cc:636 disabled ftrace in /sys/kernel/debug/tracing/
+[235.656]    perfetto_cmd.cc:1293 Wrote 1856154 bytes into /userdata/sched-diag/cap1/trace.pftrace

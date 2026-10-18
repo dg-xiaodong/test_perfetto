@@ -30,7 +30,7 @@
 | `results/cap1/`、`results/cap2/` | 按 trace 分组的每条 SQL 输出：`stdout.csv` + `run.json`（含命令、退出码、三个 SHA256）+ 渲染后 `query.sql` |
 | `sql/` | Skill 自带 SQL + 本次自定义查询 |
 | `data/` | 业务日志、可用事件清单、两个事件 format |
-| `SHA256SUMS` | 全部文件哈希 |
+| `SHA256SUMS` | 除自身外全部 268 个文件的哈希；仓库根 `.gitignore` 的 `*.log` 已用 `!v5_test/...` 定向放行（否则证据日志会被 `git add -A` 静默跳过） |
 
 ## 快速打开
 
