@@ -1,0 +1,2 @@
+"freq_tracks","freq_cpus","freq_units","freq_samples","first_ts","last_ts","cpuidle_tracks","verdict"
+0,0,"[NULL]",0,"[NULL]","[NULL]",0,"UNKNOWN: no cpufreq counter track -> frequency not collected (do NOT read as 0 MHz)"

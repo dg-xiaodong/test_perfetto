@@ -1,0 +1,7 @@
+PASS 00-inventory rows=30
+PASS 00a-trace-bounds rows=1
+PASS 00b-thread-states rows=7
+PASS 00c-counter-tracks rows=0
+PASS 00d-stats rows=0
+PASS 04a-frequency-inventory rows=1
+PASS 04-cpu-frequency rows=0
