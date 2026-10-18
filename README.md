@@ -76,3 +76,21 @@ tests/real_trace_regression (TP v57.1, cpu_v1_test)   -> 7/7 PASS，与归档输
 - [`perfetto-cpu-debugging-v0.1.0-r1.diff`](perfetto-cpu-debugging-v0.1.0-r1.diff)：对 v0.1.0 的 unified diff（`patch -p1` 可应用，已验证）。
 - [`perfetto-cpu-debugging-v0.1.0-r1.TEST_REPORT.md`](perfetto-cpu-debugging-v0.1.0-r1.TEST_REPORT.md)：
   修改清单、四项状态、33 项单测与 TP v57.1/v58.2 真实 trace 回归结果、未验证范围。
+
+## 调度 / 同步诊断（[`v5_test/`](v5_test/)，perfetto-scheduling-debugging v0.1.0 Candidate）
+
+X5 常驻 C++ 服务 `sched-case-daemon`（PID 977，12 worker + main，helper 987，亲和性 CPU 1-2）的
+**独立盲诊断**：先只读侦察、复用性检查、相位对齐主采集（仅调度数据 60 s）→ 有过滤事件栈 + futex 定向补采（60 s），
+全程真实 trace + SQL，E1/E2/E3 分层结论。
+
+- [`v5_test/REPORT.md`](v5_test/REPORT.md)：完整报告（E1 状态事实 / E2 事件与唤醒关联 / E3 机制归因、数据质量、开销、UNKNOWN、UI 步骤）
+- [`v5_test/traces/`](v5_test/traces/)：`cap1-overview.pftrace`（调度 60 s）、`cap2-blockwake.pftrace`（事件栈 + `sys_futex` 60 s）
+- [`v5_test/configs/`](v5_test/configs/)：两套实际 TraceConfig + v57.1 官方 schema descriptor 及元数据
+- [`v5_test/results/`](v5_test/results/)：每条 SQL 的 stdout / run.json / 渲染 SQL；[`v5_test/COMMANDS.md`](v5_test/COMMANDS.md) 为实际命令
+
+主要结论（可复核）：慢请求分成两类——`dur≈10 ms` 的请求时间 **≥99.9% 在 Running**；
+`wait≈34.5/18/16 ms` 的请求时间 **99.6–99.9% 在 Runnable**（睡眠 14–28 µs、排队 14–90 µs）。
+原因：CPU 2 上只有同进程 `compute-1`(30.9%)+`compute-2`(35.3%)+`req-dispatch`(23.8%) 三者，突发窗口内 ≈90% 占核、~10 ms 片轮转；
+CPU 1 基本空闲。切出栈 `dispatch_entry()→syscall(futex)`，唤醒栈 `enqueue_request()→run_one_cycle()→main`，
+6 次唤醒全部落在主线程 `sys_futex` slice 内；helper→ipc-client 跨进程唤醒亦在 helper 的 futex syscall 内。
+锁 owner、futex 地址、10 ms Running 内部工作 = UNKNOWN（未采集，不编造）。

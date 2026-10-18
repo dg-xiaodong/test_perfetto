@@ -1,0 +1,6 @@
+"depth","callsite_id","function_name","rel_pc","mapping_name","build_id","status"
+0,18,"",487036,"/usr/lib/libc.so.6","","FRAME"
+1,17,"pthread_cond_timedwait",498896,"/usr/lib/libc.so.6","","FRAME"
+2,16,"_ZN12_GLOBAL__N_112worker_entryEPv",4212304,"/userdata/sched-case/bin/sched-case-daemon","b3cf456171aeb584824e7786576fc576d05ea870","FRAME"
+3,1,"",501232,"/usr/lib/libc.so.6","","FRAME"
+4,0,"",914712,"/usr/lib/libc.so.6","","FRAME"

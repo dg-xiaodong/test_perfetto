@@ -1,0 +1,7 @@
+{
+  "collector_version": "v57.1-c59f57dd4",
+  "descriptor_source": "github tag v57.1 (protos fetched recursively from raw.githubusercontent.com/google/perfetto/v57.1)",
+  "protoc": "libprotoc 3.12.4",
+  "sha256": "a0c13f5e69347ceb6e008dc009c21364539215f4e4f47ded6e6c1e3a6d463e34",
+  "note": "collector reports v57.1-c59f57dd4; descriptor built from public v57.1 tag protos; tag/commit identity not otherwise proven"
+}

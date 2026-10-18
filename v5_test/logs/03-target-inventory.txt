@@ -1,0 +1,38 @@
+977 sched-case-daem  aff=1-2  state=S
+988 req-dispatch     aff=2    state=S
+989 worker-one       aff=1    state=S
+990 worker-two       aff=1    state=S
+991 stage-one        aff=1    state=S
+992 stage-two        aff=1    state=S
+993 stage-three      aff=1    state=S
+994 compute-1        aff=2    state=S
+995 compute-2        aff=2    state=S
+996 ipc-client       aff=1    state=S
+997 echo-one         aff=1    state=S
+998 timer-one        aff=1    state=S
+999 decoy-one        aff=1    state=S
+987 sched-case-help  aff=1-2  state=S
+=== uptime/mono ===
+139.65 1080.76
+=== wchan per tid ===
+977 hrtimer_nanosleep
+988 futex_wait_queue
+989 futex_wait_queue
+990 futex_wait_queue
+991 futex_wait_queue
+992 futex_wait_queue
+993 futex_wait_queue
+994 futex_wait_queue
+995 futex_wait_queue
+996 futex_wait_queue
+997 futex_wait_queue
+998 futex_wait_queue
+999 futex_wait_queue
+987 futex_wait_queue
+=== nproc/mem ===
+8
+               total        used        free      shared  buff/cache   available
+Mem:            1304         199         964           0         140        1082
+=== tracing state ===
+1
+0

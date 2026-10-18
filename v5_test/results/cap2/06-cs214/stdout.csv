@@ -1,0 +1,7 @@
+"depth","callsite_id","function_name","rel_pc","mapping_name","build_id","status"
+0,214,"pthread_cond_signal",495940,"/usr/lib/libc.so.6","","FRAME"
+1,213,"_ZN12_GLOBAL__N_113run_one_cycleEv",4215052,"/userdata/sched-case/bin/sched-case-daemon","b3cf456171aeb584824e7786576fc576d05ea870","FRAME"
+2,7,"main",4203524,"/userdata/sched-case/bin/sched-case-daemon","b3cf456171aeb584824e7786576fc576d05ea870","FRAME"
+3,6,"",160612,"/usr/lib/libc.so.6","","FRAME"
+4,5,"__libc_start_main",160824,"/usr/lib/libc.so.6","","FRAME"
+5,4,"_start",4204076,"/userdata/sched-case/bin/sched-case-daemon","b3cf456171aeb584824e7786576fc576d05ea870","FRAME"

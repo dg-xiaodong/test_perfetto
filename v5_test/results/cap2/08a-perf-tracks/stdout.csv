@@ -1,0 +1,5 @@
+"id","name","type","parent_id","source_arg_set_id","machine_id","unit","description","perf_session_id","cpu","is_timebase"
+0,"scheduling.waking","perf_cpu_counter","[NULL]",3,0,"[NULL]","[NULL]",0,2,1
+1,"scheduling.switch","perf_cpu_counter","[NULL]",3,0,"[NULL]","[NULL]",1,2,1
+2,"scheduling.waking","perf_cpu_counter","[NULL]",3,0,"[NULL]","[NULL]",0,1,1
+3,"scheduling.switch","perf_cpu_counter","[NULL]",3,0,"[NULL]","[NULL]",1,1,1

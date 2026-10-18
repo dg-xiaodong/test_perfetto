@@ -1,0 +1,4 @@
+POLICY_PASS (recipe checks, NOT official schema)
+SCHEMA_PASS collector=v57.1-c59f57dd4; metadata provenance must be trusted
+POLICY_PASS (recipe checks, NOT official schema)
+SCHEMA_PASS collector=v57.1-c59f57dd4; metadata provenance must be trusted

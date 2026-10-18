@@ -1,0 +1,2 @@
+"wait_id","utid","sleep_start_ts","sleep_ns","waking_boundary_ts","runnable_ns","run_ts","waker_utid","irq_context","switch_cpu","waking_cpu","waking_event_id","switch_candidates","wake_candidates","switch_sample_id","wake_sample_id","switch_offset_ns","wake_offset_ns","switch_status","wake_status","switch_callsite_id","wake_callsite_id","evidence"
+61093,2,436085231374,6329208,436091560582,25542,436091586124,1,0,2,1,65132,0,1,"[NULL]",1617,"[NULL]",-16083,"SAMPLE_MISSING","MATCH_UNIQUE","[NULL]",164,"PARTIAL_OR_UNKNOWN_NO_ROOT_CAUSE"

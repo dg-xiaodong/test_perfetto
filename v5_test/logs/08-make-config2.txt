@@ -1,0 +1,2 @@
+BUDGET_ESTIMATE {"cpu_count": 8, "ftrace_kib": 4096, "perf_rings_with_metadata_kib": 4160, "perf_streams": 2, "planned_kib": 49216, "reserve_kib": 16384, "shared_unwinder_queue_kib": 8192, "traced_kib": 16384}
+SCHEMA/RUNTIME: not verified here; missing event stacks must remain UNKNOWN.

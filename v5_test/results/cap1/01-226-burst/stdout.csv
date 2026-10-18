@@ -1,0 +1,4 @@
+"state","duration_ns","duration_ms","intervals","coverage_status"
+"R",69262708,69.262708,13,"KNOWN_INTERVALS"
+"Running",30680667,30.680667,13,"KNOWN_INTERVALS"
+"S",32056625,32.056625,7,"KNOWN_INTERVALS"

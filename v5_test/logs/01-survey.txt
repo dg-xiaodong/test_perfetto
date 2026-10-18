@@ -1,0 +1,45 @@
+Linux buildroot 6.1.83-DR-PL5.1_V1.0.20 #3 SMP PREEMPT Mon Aug 24 21:03:38 CST 2026 aarch64 GNU/Linux
+TRACEFS=/sys/kernel/debug/tracing
+0-7
+perf_event_paranoid=2
+kptr_restrict=0
+perf_event_mlock_kb=516
+trace_clock=[local] global counter uptime perf mono mono_raw boot tai
+tracing_on=1
+current_tracer=nop
+buffer_size_kb=1410
+events/enable=0
+raw_syscalls:sys_exit
+raw_syscalls:sys_enter
+sched:sched_wake_idle_without_ipi
+sched:sched_swap_numa
+sched:sched_stick_numa
+sched:sched_move_numa
+sched:sched_process_hang
+sched:sched_pi_setprio
+sched:sched_stat_runtime
+sched:sched_process_exec
+sched:sched_process_fork
+sched:sched_process_wait
+sched:sched_wait_task
+sched:sched_process_exit
+sched:sched_process_free
+sched:sched_migrate_task
+sched:sched_switch
+sched:sched_wakeup_new
+sched:sched_wakeup
+sched:sched_waking
+sched:sched_kthread_work_execute_end
+sched:sched_kthread_work_execute_start
+sched:sched_kthread_work_queue_work
+sched:sched_kthread_stop_ret
+sched:sched_kthread_stop
+MemFree:         1072920 kB
+MemAvailable:    1109368 kB
+SwapFree:              0 kB
+/dev/root / ext4 ro,relatime 0 0
+tmpfs /tmp tmpfs rw,relatime 0 0
+tmpfs /data tmpfs rw,relatime 0 0
+/dev/block/platform/by-name/userdata /userdata ext4 rw,relatime 0 0
+/usr/bin/perf
+No settings changed. Tool presence is NOT data-source registration or perf permission.

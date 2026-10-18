@@ -1,0 +1,3 @@
+RESOURCES_PASS count=44
+POLICY_PASS (recipe checks, NOT official schema)
+SCHEMA_UNKNOWN (no matching descriptor executed)

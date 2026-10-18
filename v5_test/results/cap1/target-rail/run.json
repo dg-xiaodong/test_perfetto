@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/root/.cache/perfetto-skill/trace_processor_shell",
+    "query",
+    "-f",
+    "/root/code_1.0.20/tmp/sched-diag/analysis/target-rail/query.sql",
+    "/root/code_1.0.20/tmp/sched-diag/capture1/host/trace.pftrace"
+  ],
+  "returncode": 0,
+  "trace_sha256": "42d885fefb35c2e74297c637f3f81f99ab5732562fd1b85a623c69f94c9d6693",
+  "sql_sha256": "1778e36fc6f05e5f7f9cff365a94dd18f04d57012ca1fc75d2e300e03e9e96a6",
+  "tp_sha256": "79ae477e2f7c1a80a74a48cb0eb660caab29b36cc4f9bdb511b61155d55eaf4d",
+  "note": "rc=0 means query ran, not diagnostic PASS; verify target, coverage, clocks, and evidence"
+}

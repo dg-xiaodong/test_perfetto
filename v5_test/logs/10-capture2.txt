@@ -1,0 +1,5 @@
+START_uptime=416.48 3243.43
+READY pid=1847 output=/userdata/sched-diag/cap2
+RECORDED_DATA_UNCHECKED size_bytes=2750785
+RECORD_RC=0
+END_uptime=478.39 3721.97

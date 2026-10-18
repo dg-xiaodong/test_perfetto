@@ -1,0 +1,24 @@
+977 sched-case-daem
+988 req-dispatch
+989 worker-one
+990 worker-two
+991 stage-one
+992 stage-two
+993 stage-three
+994 compute-1
+995 compute-2
+996 ipc-client
+997 echo-one
+998 timer-one
+999 decoy-one
+=== helper ===
+sched-case-help
+1
+=== affinity ===
+Cpus_allowed_list:	1-2
+Cpus_allowed_list:	1-2
+=== cmdline ===
+/userdata/sched-case/bin/sched-case-daemon --cpu-a 1 --cpu-b 2 --base /userdata/sched-case 
+/userdata/sched-case/bin/sched-case-helper --ipc /dev/shm/sched-case-ipc --parent 977 
+=== nproc ===
+8
