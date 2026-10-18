@@ -77,6 +77,22 @@ tests/real_trace_regression (TP v57.1, cpu_v1_test)   -> 7/7 PASS，与归档输
 - [`perfetto-cpu-debugging-v0.1.0-r1.TEST_REPORT.md`](perfetto-cpu-debugging-v0.1.0-r1.TEST_REPORT.md)：
   修改清单、四项状态、33 项单测与 TP v57.1/v58.2 真实 trace 回归结果、未验证范围。
 
+## Scheduling Skill 可用基线（[`perfetto-scheduling-debugging/`](perfetto-scheduling-debugging/)，v0.1.0 Candidate / Usable Baseline）
+
+- [`perfetto-scheduling-debugging/`](perfetto-scheduling-debugging/)：**本次归档的 v0.1.0 Candidate 可用基线**，完整可安装
+  （`SKILL.md`、`references/`、`scripts/`、`sql/`、`configs/`、`tests/`、`examples/`、`workflows/` + `MANIFEST.json` +
+  `SHA256SUMS.txt` + `PROVENANCE.md`，共 57 个文件）。版本标记为 **v0.1.0 Candidate / Usable Baseline**，**不是 Stable**。
+- 来源：本机实际安装并用于 `v5_test` 的同一份包（安装版 `MANIFEST.json` sha256 `d224b204…`，与原始解压包 `diff -rq` 无差异）；
+  本归档只更新 README/TEST_REPORT/MANIFEST/SHA256SUMS 并新增 `PROVENANCE.md`，**其余 52 个文件逐字节一致**（可 `diff -r` 复核）。
+- 归档校验：`verify_package.py` → `PACKAGE_PASS hashes=55 resources=44`；`--check-resources` → `RESOURCES_PASS count=44`；
+  `unittest discover -s tests` → 59 tests（58 pass / 1 skip：需真实 TP）；`sha256sum -c SHA256SUMS.txt` → 56/56 OK。
+- 已完成真实 X5 验证（见 [`v5_test/`](v5_test/)）：基础调度采集与线程状态分析、Runnable 延迟与同核竞争归因、
+  定向 `sched_switch`/`sched_waking` 调用栈采集、部分切出/唤醒事件关联、跨进程唤醒与 futex 活动。
+- 尚未完成全部专项验收：多级等待链完整归因、干扰事件的板端错误关联专项、超时等待原因识别、Perfetto UI 实际操作。
+  **不声明 C1–C6 全部通过。**
+- 已知限制：事件采样缺失、部分唤醒调用栈不可用、perf 样本与 ftrace 事件存在 16.8–111.4 µs 时间偏差（需显式容差并逐条验唯一性）、
+  不能从唤醒关系推断锁所有权。
+
 ## 调度 / 同步诊断（[`v5_test/`](v5_test/)，perfetto-scheduling-debugging v0.1.0 Candidate）
 
 X5 常驻 C++ 服务 `sched-case-daemon`（PID 977，12 worker + main，helper 987，亲和性 CPU 1-2）的

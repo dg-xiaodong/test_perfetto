@@ -1,0 +1,6 @@
+sched:sched_switch
+sched:sched_waking
+sched:sched_wakeup_new
+sched:sched_process_exit
+raw_syscalls:sys_enter
+raw_syscalls:sys_exit

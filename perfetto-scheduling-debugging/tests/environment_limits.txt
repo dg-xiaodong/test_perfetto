@@ -1,0 +1,7 @@
+Build environment: Linux x86_64, Python and g++ available.
+No trace_processor_shell or protoc was installed.
+Attempted official TP v57.1/v58.2 and historical CPU trace downloads once.
+Container DNS resolution failed for commondatastorage.googleapis.com and raw.githubusercontent.com.
+No retry loop or environment mutation was performed.
+Official documentation was readable through web retrieval; that is not TP execution.
+Real TP, collector-matching descriptor, X5 capture and UI verification remain NOT_RUN.
