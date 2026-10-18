@@ -110,7 +110,7 @@
 | **Running** | **31.46 ms** | 6 |
 | Sleeping (S) | 32.50 ms | 7 |
 
-同一窗口内全部目标线程与 helper 的状态（下表为 **cap1**（无 perf，未受采集扰动）的突发窗口数值；cap2 同窗口同构，差异 ≤1 ms）：
+同一窗口内全部目标线程与 helper 的状态（下表为 **cap1**（无 perf，未受采集扰动）的突发窗口数值；cap2 同窗口下 `req-dispatch`/`compute-1`/`compute-2` 差异 ≤1 ms，主线程 Running 11.60→15.20 ms 属采集扰动与相位差异，见 `results/cap2/thread-state-burst`）：
 
 | 线程 | Running | Runnable | Sleeping | 说明 |
 |---|---|---|---|---|

@@ -1,6 +1,6 @@
 502d1a3805bb3421dbb9641b980d2d5e7ca78fb753d3f551026530c0f86be620  ./COMMANDS.md
 a546a081d0281f37de42bd9f193e00aaf650c0f05e4461380c55b15c7d6abad8  ./README.md
-78267bb659dc41d0ca1b62dd9850f13f233d9a3b771bd384aacd6dcb4f2dc0bf  ./REPORT.md
+0ed467598e0f42def4830c86b709ade6b3c8c2b7e81daf2f7f9f825defc538b5  ./REPORT.md
 438ceed03b747a89b23150c808fc394fb82e5ac4608292cd3328442229dce6a8  ./configs/block-wake.pbtxt
 6339ddcd9e68f7d7b1f1f2206a61a48b4b1f7e226197dce583c69707023827c0  ./configs/overview.pbtxt
 4ca7453d5f111e3cad96a064b0a177237c791d41abbb7985d19eef3e2d2c3207  ./configs/trace_config.desc.meta.json
@@ -196,6 +196,9 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./results/cap2
 40cc514b36b19bd214e0aa23e5b458a5faeca3271eea5ee8f20541e60c44741b  ./results/cap2/request-accounting/query.sql
 04db7381c83981342ac3fcf68432d9e3383275705fd29abbecdb0fc3fe3b2620  ./results/cap2/request-accounting/run.json
 887e4e093bd29dcfa0b1361ba5a36530bfa746dad25bb0f45778524205e3622e  ./results/cap2/request-accounting/stdout.csv
+00ef757d56ee2fce37e4cf2b6ab86b2e764001c80d1ed5c596d8b98e1a0ec0ca  ./results/cap2/thread-state-burst/query.sql
+c2da5a1fa58c93a77f93dc50b8ca5da4b305a28dc0ab74c28cd3021bd2137c3d  ./results/cap2/thread-state-burst/run.json
+fa37242c92d2e8e095c7e9ab9e4be7936236b672c6ed94530a2e74857170478b  ./results/cap2/thread-state-burst/stdout.csv
 79c5fa94429df13fce752feea729dcb745fc95971afbf76d0d356d35068f5e20  ./results/cap2/wake-edges-burst/query.sql
 1bc2a93962360416b072e12e47099c4c0e6cbe233aa9c993f1c786158c6b2f8f  ./results/cap2/wake-edges-burst/run.json
 a35aa9b5926ebb10b9d3b3829324d711799c9593a5dc1aa832c5312897a2e208  ./results/cap2/wake-edges-burst/stdout.csv
@@ -256,6 +259,7 @@ b2b37d08586a41aa925bf14b8015c69602dc4415670151f0c6b57ec9333b9835  ./sql/perf-vs-
 40cc514b36b19bd214e0aa23e5b458a5faeca3271eea5ee8f20541e60c44741b  ./sql/request-accounting.sql
 1778e36fc6f05e5f7f9cff365a94dd18f04d57012ca1fc75d2e300e03e9e96a6  ./sql/target-rail.sql
 4737e4e8290a1acb3673bcd5360c48ff5e3c5868f388f0a0e5412e36820f321c  ./sql/thread-state-all.sql
+00ef757d56ee2fce37e4cf2b6ab86b2e764001c80d1ed5c596d8b98e1a0ec0ca  ./sql/thread-state-burst-cap2.sql
 64e1edc99643361e5ab9666a46abdb4442c0d250e27d336428a3dfa1fe97e216  ./sql/thread-state-burst.sql
 2a9c46ad2da69c90f3be2686f6ca75611342f7b6adef3a7edc3270600068ddb1  ./sql/top-runnable.sql
 2beec724eb8e972aff7e9b3567d2a8781513101ac573e631221f7fff47d416d0  ./sql/wake-edges.sql
