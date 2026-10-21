@@ -1,0 +1,18 @@
+Loading trace: 0.00 MBLoading trace: 6.85 MB[651.622]     common_flags.cc:474 Trace loaded: 6.85 MB in 0.12s (56.4 MB/s)
+
+
+Trace health issues:
+
+  Data losses
+    perf_cpu_lost_records[0]: 1 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[2]: 12 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[3]: 2 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[4]: 153 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[5]: 1 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[6]: 2321 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[7]: 271 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+
+column 0 = cpu
+column 1 = busy_ms
+column 2 = busy_pct_of_one_core
+[651.622]            query.cc:159 Query execution time: 0 ms

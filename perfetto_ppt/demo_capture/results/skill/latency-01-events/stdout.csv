@@ -1,0 +1,1 @@
+"slice_id","kind","ts","dur","track_id","thread_utid","thread_dur","contract_version","run_id","stream_id","request_id","process_instance_id","stage_id","stage_instance_id","attempt_id","queue_id","queue_visit_id","link_id","from_instance","to_instance","flow_scope","status","boundary","object_type","frame_seq","expected_stage_count","expected_queue_count","expected_link_count"

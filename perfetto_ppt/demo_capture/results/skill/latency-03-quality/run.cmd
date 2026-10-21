@@ -1,0 +1,2 @@
+skill=perfetto-latency-debugging sql=/root/.dsh/skills/perfetto-latency-debugging/sql/03-quality.sql placeholders: utid=213 cpu=0 start=-1 end=-1 category=rdk.latency
+/root/.cache/perfetto-skill/trace_processor_shell query /root/sdk_ly_x5_1.1.1/tmp/pfdemo/repo/perfetto_ppt/demo_capture/traces/overview_system_app.pftrace $'-- Keep source/index to avoid merging unrelated counter instances.\nSELECT name,idx,source,severity,value FROM stats\nWHERE value!=0 ORDER BY severity,name,idx;'

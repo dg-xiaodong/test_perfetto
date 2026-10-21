@@ -1,0 +1,7 @@
+"thread_name","name","n","total_ms","avg_ms","max_ms"
+"pf-output","QueueWait.output",1866,119811.820000,64.208000,184.250000
+"pf-syncwait","CvWait",3016,112648.600000,37.350000,71.770000
+"pf-postproc","QueueWait.postprocess",1866,94451.560000,50.617000,179.740000
+"pf-infer","QueueWait.inference",1874,57455.940000,30.660000,82.860000
+"pf-syncwait","CvWakeupWork",1866,7257.830000,3.890000,23.950000
+"pf-syncwait","CvTimeout",1150,0.000000,0.000000,0.000000

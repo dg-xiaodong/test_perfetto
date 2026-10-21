@@ -1,0 +1,14 @@
+"thread_name","tid","samples","pct_of_target_samples"
+"pf-infer",1102,2613,44.600000
+"pf-preproc",1101,1400,23.890000
+"pf-postproc",1103,588,10.040000
+"pf-syncwait",1107,536,9.150000
+"pf-contend1",1105,216,3.690000
+"pf-contend2",1106,210,3.580000
+"pf-capture",1100,168,2.870000
+"pf-output",1104,46,0.790000
+"pf-memheap",1108,35,0.600000
+"pf-monitor",1110,28,0.480000
+"pf-ioworker",1109,8,0.140000
+"[NULL]",1099,8,0.140000
+"pf-demo-x5",1090,3,0.050000

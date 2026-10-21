@@ -1,0 +1,9 @@
+"id","name","type","parent_id","source_arg_set_id","machine_id","unit","description","perf_session_id","cpu","is_timebase"
+6,"cpu-clock","perf_cpu_counter","[NULL]",40,0,"[NULL]","[NULL]",0,0,1
+7,"cpu-clock","perf_cpu_counter","[NULL]",40,0,"[NULL]","[NULL]",0,1,1
+8,"cpu-clock","perf_cpu_counter","[NULL]",40,0,"[NULL]","[NULL]",0,2,1
+9,"cpu-clock","perf_cpu_counter","[NULL]",40,0,"[NULL]","[NULL]",0,3,1
+10,"cpu-clock","perf_cpu_counter","[NULL]",40,0,"[NULL]","[NULL]",0,4,1
+11,"cpu-clock","perf_cpu_counter","[NULL]",40,0,"[NULL]","[NULL]",0,5,1
+12,"cpu-clock","perf_cpu_counter","[NULL]",40,0,"[NULL]","[NULL]",0,6,1
+13,"cpu-clock","perf_cpu_counter","[NULL]",40,0,"[NULL]","[NULL]",0,7,1

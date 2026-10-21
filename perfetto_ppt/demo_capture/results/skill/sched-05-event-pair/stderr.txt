@@ -1,0 +1,38 @@
+Loading trace: 0.00 MBLoading trace: 6.85 MB[654.542]     common_flags.cc:474 Trace loaded: 6.85 MB in 0.12s (58.4 MB/s)
+
+
+Trace health issues:
+
+  Data losses
+    perf_cpu_lost_records[0]: 1 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[2]: 12 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[3]: 2 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[4]: 153 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[5]: 1 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[6]: 2321 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[7]: 271 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+
+column 0 = wait_id
+column 1 = utid
+column 2 = sleep_start_ts
+column 3 = sleep_ns
+column 4 = waking_boundary_ts
+column 5 = runnable_ns
+column 6 = run_ts
+column 7 = waker_utid
+column 8 = irq_context
+column 9 = switch_cpu
+column 10 = waking_cpu
+column 11 = waking_event_id
+column 12 = switch_candidates
+column 13 = wake_candidates
+column 14 = switch_sample_id
+column 15 = wake_sample_id
+column 16 = switch_offset_ns
+column 17 = wake_offset_ns
+column 18 = switch_status
+column 19 = wake_status
+column 20 = switch_callsite_id
+column 21 = wake_callsite_id
+column 22 = evidence
+[654.543]            query.cc:159 Query execution time: 0 ms

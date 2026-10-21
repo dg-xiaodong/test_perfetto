@@ -1,0 +1,30 @@
+Loading trace: 0.00 MBLoading trace: 6.85 MB[656.418]     common_flags.cc:474 Trace loaded: 6.85 MB in 0.12s (58.3 MB/s)
+
+
+Trace health issues:
+
+  Data losses
+    perf_cpu_lost_records[0]: 1 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[2]: 12 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[3]: 2 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[4]: 153 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[5]: 1 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[6]: 2321 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[7]: 271 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+
+column 0 = flow_id
+column 1 = from_slice
+column 2 = to_slice
+column 3 = from_ts
+column 4 = to_ts
+column 5 = from_event
+column 6 = to_event
+column 7 = from_run
+column 8 = to_run
+column 9 = from_stream
+column 10 = to_stream
+column 11 = from_request
+column 12 = to_request
+column 13 = from_link
+column 14 = to_link
+[656.419]            query.cc:159 Query execution time: 0 ms

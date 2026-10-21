@@ -1,0 +1,23 @@
+Loading trace: 0.00 MBLoading trace: 6.85 MB[935.466]     common_flags.cc:474 Trace loaded: 6.85 MB in 0.14s (49.5 MB/s)
+
+
+Trace health issues:
+
+  Data losses
+    perf_cpu_lost_records[0]: 1 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[2]: 12 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[3]: 2 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[4]: 153 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[5]: 1 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[6]: 2321 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[7]: 271 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+
+column 0 = flow_id
+column 1 = from_slice
+column 2 = from_thread
+column 3 = to_slice
+column 4 = to_thread
+column 5 = slice_out
+column 6 = slice_in
+column 7 = delta_ms
+[935.466]            query.cc:159 Query execution time: 0 ms

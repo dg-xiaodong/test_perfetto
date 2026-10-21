@@ -1,0 +1,2 @@
+skill=perfetto-latency-debugging sql=/root/.dsh/skills/perfetto-latency-debugging/sql/04-counters.sql placeholders: utid=213 cpu=0 start=-1 end=-1 category=rdk.latency
+/root/.cache/perfetto-skill/trace_processor_shell query /root/sdk_ly_x5_1.1.1/tmp/pfdemo/repo/perfetto_ppt/demo_capture/traces/overview_system_app.pftrace $'-- Queue depth is instantaneous. Summing samples is not a queue-size metric.\nSELECT c.ts,c.value,ct.id AS track_id,ct.name,ct.unit\nFROM counter c JOIN counter_track ct ON ct.id=c.track_id\nWHERE ct.name GLOB \'lat.queue_depth*\' ORDER BY c.ts,ct.id;'

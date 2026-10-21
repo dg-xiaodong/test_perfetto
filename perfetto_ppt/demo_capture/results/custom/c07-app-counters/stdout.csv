@@ -1,0 +1,11 @@
+"track_id","process_name","name","unit","n","min_v","max_v","avg_v"
+5,"/userdata/perfetto-training-demo/bin/pf-demo-x5","CompletedFrames","frames",1866,10773.000000,12638.000000,11705.500000
+3,"/userdata/perfetto-training-demo/bin/pf-demo-x5","EndToEndLatencyMs","ms",1866,6.765916,1641.636793,341.900000
+543,"/userdata/perfetto-training-demo/bin/pf-demo-x5","InflightFrames","frames",240,0.000000,25.000000,5.292000
+684,"/userdata/perfetto-training-demo/bin/pf-demo-x5","IoFileBytes","bytes",10,320000.000000,366080.000000,343040.000000
+530,"/userdata/perfetto-training-demo/bin/pf-demo-x5","LiveAllocatedBytes","bytes",444,0.000000,12582912.000000,297568.865000
+542,"/userdata/perfetto-training-demo/bin/pf-demo-x5","QueueDepth","frames",240,0.000000,22.000000,4.246000
+547,"/userdata/perfetto-training-demo/bin/pf-demo-x5","RssKb","kB",120,5360.000000,17836.000000,8064.700000
+526,"/userdata/perfetto-training-demo/bin/pf-demo-x5","SchedWakeupOvershootMs","ms",2400,0.039997,21.395625,0.560000
+549,"/userdata/perfetto-training-demo/bin/pf-demo-x5","ThreadsBlocked","threads",120,0.000000,0.000000,0.000000
+548,"/userdata/perfetto-training-demo/bin/pf-demo-x5","ThreadsRunning","threads",120,1.000000,4.000000,2.067000

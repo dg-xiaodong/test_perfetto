@@ -1,0 +1,17 @@
+"name","idx","severity","value"
+"perf_cpu_lost_records",0,"data_loss",1
+"perf_cpu_lost_records",2,"data_loss",12
+"perf_cpu_lost_records",3,"data_loss",2
+"perf_cpu_lost_records",4,"data_loss",153
+"perf_cpu_lost_records",5,"data_loss",1
+"perf_cpu_lost_records",6,"data_loss",2321
+"perf_cpu_lost_records",7,"data_loss",271
+"traced_buf_buffer_size",0,"info",67108864
+"traced_buf_bytes_read",0,"info",6545408
+"traced_buf_bytes_written",0,"info",6598656
+"traced_buf_chunks_read",0,"info",1241
+"traced_buf_chunks_rewritten",0,"info",291
+"traced_buf_chunks_written",0,"info",1254
+"traced_buf_patches_succeeded",0,"info",859
+"traced_buf_readaheads_succeeded",0,"info",939
+"traced_chunks_discarded","[NULL]","info",63

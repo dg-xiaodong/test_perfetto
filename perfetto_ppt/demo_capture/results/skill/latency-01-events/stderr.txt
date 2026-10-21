@@ -1,0 +1,43 @@
+Loading trace: 0.00 MBLoading trace: 6.85 MB[655.557]     common_flags.cc:474 Trace loaded: 6.85 MB in 0.12s (56.8 MB/s)
+
+
+Trace health issues:
+
+  Data losses
+    perf_cpu_lost_records[0]: 1 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[2]: 12 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[3]: 2 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[4]: 153 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[5]: 1 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[6]: 2321 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+    perf_cpu_lost_records[7]: 271 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+
+column 0 = slice_id
+column 1 = kind
+column 2 = ts
+column 3 = dur
+column 4 = track_id
+column 5 = thread_utid
+column 6 = thread_dur
+column 7 = contract_version
+column 8 = run_id
+column 9 = stream_id
+column 10 = request_id
+column 11 = process_instance_id
+column 12 = stage_id
+column 13 = stage_instance_id
+column 14 = attempt_id
+column 15 = queue_id
+column 16 = queue_visit_id
+column 17 = link_id
+column 18 = from_instance
+column 19 = to_instance
+column 20 = flow_scope
+column 21 = status
+column 22 = boundary
+column 23 = object_type
+column 24 = frame_seq
+column 25 = expected_stage_count
+column 26 = expected_queue_count
+column 27 = expected_link_count
+[655.557]            query.cc:159 Query execution time: 0 ms

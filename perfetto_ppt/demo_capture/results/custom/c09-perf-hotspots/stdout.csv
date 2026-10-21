@@ -1,0 +1,26 @@
+"leaf_frame","leaf_demangled","samples"
+"_ZN6pfdemo12_GLOBAL__N_116InferenceConv3x3Emm","pfdemo::(anonymous namespace)::InferenceConv3x3(unsigned long, unsigned long)",586
+"_ZN6pfdemo12_GLOBAL__N_116InferenceConv3x3Emm","pfdemo::(anonymous namespace)::InferenceConv3x3(unsigned long, unsigned long)",553
+"_ZN6pfdemo12_GLOBAL__N_113InferenceGemmEmm","pfdemo::(anonymous namespace)::InferenceGemm(unsigned long, unsigned long)",493
+"_ZN6pfdemo12_GLOBAL__N_113InferenceGemmEmm","pfdemo::(anonymous namespace)::InferenceGemm(unsigned long, unsigned long)",486
+"_ZN6pfdemo12_GLOBAL__N_17CpuWorkEmm","pfdemo::(anonymous namespace)::CpuWork(unsigned long, unsigned long)",377
+"_ZN6pfdemo12_GLOBAL__N_17CpuWorkEmm","pfdemo::(anonymous namespace)::CpuWork(unsigned long, unsigned long)",368
+"_ZN6pfdemo12_GLOBAL__N_17CpuWorkEmm","pfdemo::(anonymous namespace)::CpuWork(unsigned long, unsigned long)",209
+"_ZN6pfdemo12_GLOBAL__N_17CpuWorkEmm","pfdemo::(anonymous namespace)::CpuWork(unsigned long, unsigned long)",205
+"_ZN6pfdemo12_GLOBAL__N_17CpuWorkEmm","pfdemo::(anonymous namespace)::CpuWork(unsigned long, unsigned long)",202
+"_ZN6pfdemo12_GLOBAL__N_116InferenceConv3x3Emm","pfdemo::(anonymous namespace)::InferenceConv3x3(unsigned long, unsigned long)",183
+"_ZN6pfdemo12_GLOBAL__N_111ContendSpinEl","pfdemo::(anonymous namespace)::ContendSpin(long)",168
+"_ZN6pfdemo12_GLOBAL__N_17CpuWorkEmm","pfdemo::(anonymous namespace)::CpuWork(unsigned long, unsigned long)",167
+"_ZN6pfdemo12_GLOBAL__N_17CpuWorkEmm","pfdemo::(anonymous namespace)::CpuWork(unsigned long, unsigned long)",163
+"_ZN6pfdemo12_GLOBAL__N_17CpuWorkEmm","pfdemo::(anonymous namespace)::CpuWork(unsigned long, unsigned long)",154
+"_ZN6pfdemo12_GLOBAL__N_116InferenceConv3x3Emm","pfdemo::(anonymous namespace)::InferenceConv3x3(unsigned long, unsigned long)",151
+"_ZN6pfdemo12_GLOBAL__N_113InferenceGemmEmm","pfdemo::(anonymous namespace)::InferenceGemm(unsigned long, unsigned long)",150
+"_ZN6pfdemo12_GLOBAL__N_111ContendSpinEl","pfdemo::(anonymous namespace)::ContendSpin(long)",134
+"_ZN6pfdemo12_GLOBAL__N_17CpuWorkEmm","pfdemo::(anonymous namespace)::CpuWork(unsigned long, unsigned long)",133
+"_ZN6pfdemo12_GLOBAL__N_111ContendSpinEl","pfdemo::(anonymous namespace)::ContendSpin(long)",116
+"_ZN6pfdemo12_GLOBAL__N_17CpuWorkEmm","pfdemo::(anonymous namespace)::CpuWork(unsigned long, unsigned long)",85
+"_ZN6pfdemo12_GLOBAL__N_17CpuWorkEmm","pfdemo::(anonymous namespace)::CpuWork(unsigned long, unsigned long)",85
+"_ZN6pfdemo12_GLOBAL__N_17CpuWorkEmm","pfdemo::(anonymous namespace)::CpuWork(unsigned long, unsigned long)",84
+"_ZN6pfdemo12_GLOBAL__N_17CpuWorkEmm","pfdemo::(anonymous namespace)::CpuWork(unsigned long, unsigned long)",81
+"_ZN6pfdemo12_GLOBAL__N_17CpuWorkEmm","pfdemo::(anonymous namespace)::CpuWork(unsigned long, unsigned long)",80
+"_ZN6pfdemo12_GLOBAL__N_17CpuWorkEmm","pfdemo::(anonymous namespace)::CpuWork(unsigned long, unsigned long)",65

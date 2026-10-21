@@ -1,0 +1,2 @@
+skill=perfetto-scheduling-debugging sql=/root/.dsh/skills/perfetto-scheduling-debugging/sql/00b-quality.sql placeholders: utid=213 cpu=0 start=-1 end=-1 category=rdk.latency
+/root/.cache/perfetto-skill/trace_processor_shell query /root/sdk_ly_x5_1.1.1/tmp/pfdemo/repo/perfetto_ppt/demo_capture/traces/overview_system_app.pftrace $'-- Nonzero diagnostic rows, NOT counts of registered stats names.\n-- Informational stats can be nonzero normally. Inspect error/data_loss and scope.\nSELECT name,severity,value FROM stats WHERE value!=0 ORDER BY severity,name;'

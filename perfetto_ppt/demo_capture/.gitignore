@@ -1,0 +1,3 @@
+# Large real traces: keep locally, do not push unconditionally (see traces/README.md).
+traces/*.pftrace
+traces/*.perfdata

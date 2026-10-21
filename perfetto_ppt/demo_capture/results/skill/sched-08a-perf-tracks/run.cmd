@@ -1,0 +1,2 @@
+skill=perfetto-scheduling-debugging sql=/root/.dsh/skills/perfetto-scheduling-debugging/sql/08a-perf-tracks.sql placeholders: utid=213 cpu=0 start=-1 end=-1 category=rdk.latency
+/root/.cache/perfetto-skill/trace_processor_shell query /root/sdk_ly_x5_1.1.1/tmp/pfdemo/repo/perfetto_ppt/demo_capture/traces/overview_system_app.pftrace $'-- Optional version-dependent inventory. First check sqlite_master.\n-- Corroborate session IDs and the generated timebase names; never assume IDs=0,1.\nSELECT * FROM perf_counter_track;'
