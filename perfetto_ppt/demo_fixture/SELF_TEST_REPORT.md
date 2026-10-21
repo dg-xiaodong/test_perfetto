@@ -74,6 +74,9 @@ CPU_SELECT mode=auto cpu_a=5 cpu_b=4 busy="cpu0=3.3% cpu1=3.2%(reserved) cpu2=3.
 
 so the earlier fixtures' cores (1/2 from sched-case, 6/7 from task-service)
 were correctly recognised as occupied and excluded without hard-coding them.
+The final hand-off instance was started by the boot-hook test and picked
+`cpu_a=5 cpu_b=0` (all candidate cores were idle at that moment); the selection
+is dynamic, which is exactly the intent.
 
 ## 4. Deployment
 
@@ -82,10 +85,29 @@ were correctly recognised as occupied and excluded without hard-coding them.
 - binaries: `bin/pf-demo-x5` (61.9 MB, debug info), `bin/perfetto/{traced,tracebox,traced_probes,perfetto}`
   (Perfetto v58.2 `add693d8b`, copied from the board's existing set),
   `lib/libheapprofd_glibc_preload.so`.
-- autostart: marked block appended to the existing `/userdata/startup.sh`
-  (executed by `/etc/init.d/S99auto_startup`); no rootfs file was touched; the
-  existing entries for `sched-case` and `task-service` are preserved byte for
-  byte. Marker `autostart.disabled` absent → enabled.
+- autostart: a marked block is inserted into the existing
+  `/userdata/startup.sh` (executed by `/etc/init.d/S99auto_startup`) **right
+  after the shebang**; no rootfs file was touched; the existing entries for
+  `sched-case` and `task-service` are preserved byte for byte. Marker
+  `autostart.disabled` absent → enabled.
+- the boot-hook path was exercised by actually executing
+  `/userdata/startup.sh` (see `logs/status-final.txt`):
+
+  ```
+  1970-01-01T04:01:37Z AUTOSTART_BEGIN
+  traced already running (pid=1113)
+  traced_probes already running (pid=1761)
+  started: supervisor pid=25188 app pid=25197
+  pf-demo-x5 v1.0.0 (Perfetto SDK v58.2, build 895e724-dirty) pid=25197 cpus=5,0
+  1970-01-01T04:01:39Z AUTOSTART_END rc=0
+  ```
+
+  This test caught two real bugs, both fixed in `scripts/autostart-enable.sh`:
+  1. the block was originally appended at the *end* of `startup.sh`, after an
+     existing unconditional `exit 0`, so it never ran;
+  2. the block referenced `$D/autostart.sh` while the script is deployed at
+     `$D/scripts/autostart.sh`.
+  After the fixes, the service is started by the hook itself.
 - supervisor with restart back-off is running; `run/app.pid` and
   `run/supervisor.pid` are populated.
 
@@ -227,10 +249,11 @@ logs/heap-profile-analysis.txt      heap profile queries/results
    is untested on this board (it is for ftrace-capable kernels).
 2. **Boot-time autostart was not verified by an actual reboot.** The board was
    deliberately not rebooted (it hosts other fixtures). Verified instead: the
-   marked block is present in `/userdata/startup.sh`, the hook
-   `/etc/init.d/S99auto_startup` executes that file, and `autostart.sh` +
-   `perfetto-service.sh` + `start.sh` were executed manually and are idempotent.
-   A real power-cycle test is still pending.
+   marked block is inserted in `/userdata/startup.sh` after the shebang, that
+   file is executed by `/etc/init.d/S99auto_startup`, and executing
+   `/userdata/startup.sh` now really starts the service (see the log excerpt in
+   §4; this is how the two ordering/path bugs were found and fixed). A real
+   power-cycle test is still pending.
 3. **Tracing service continuity across reboot** is not verified. The running
    `traced` (v58.2) was already up when the fixture was deployed;
    `perfetto-service.sh ensure` starts it when absent, but that path was not

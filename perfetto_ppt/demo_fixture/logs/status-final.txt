@@ -1,0 +1,86 @@
+Warning: Permanently added '192.168.1.10' (ED25519) to the list of known hosts.
+=== status at hand-off ===
+Thu Jan  1 04:01:56 UTC 1970
+== deployment ==
+dir          : /userdata/perfetto-training-demo
+  program=pf-demo-x5
+  installed_at_utc=2026-10-21T12:30:10Z
+  deployed_from=/root/sdk_ly_x5_1.1.1/tmp/pfdemo/repo/perfetto_ppt/demo_fixture/build/out/pf-demo-x5
+  deployed_sha256=f89d9ed5f509868f968eac7072abe4aa2c499417f2fb48e3cfb379195c24c9b5
+  build_program=pf-demo-x5
+  build_program_version=1.0.0
+  build_git_build_id=895e724-dirty
+  build_build_time_utc=2026-10-21T12:20:49Z
+  build_build_host=Linux LUOBO-ESPBR58 6.18.40.1-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Fri Jul 31 22:12:15 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+  build_compiler=aarch64-none-linux-gnu-g++ (Arm GNU Toolchain 11.3.Rel1) 11.3.1 20220712
+  build_perfetto_sdk=v58.2
+  build_perfetto_sdk_sha256=e56126ff81f0f914d35fe03c72419d147acf2890f36fbda7d4558fd5b84c4b09
+  build_binary=pf-demo-x5
+  build_binary_sha256=f89d9ed5f509868f968eac7072abe4aa2c499417f2fb48e3cfb379195c24c9b5
+  build_binary_file=ELF 64-bit LSB executable, ARM aarch64, version 1 (GNU/Linux), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=48afa3c3dcc7ac719a0063997012aaf29a1db983, for GNU/Linux 3.7.0, with debug_info, not stripped
+autostart    : enabled
+== process ==
+supervisor   : pid=25188 RUNNING
+app          : pid=25197 RUNNING
+  PID  PPID     ELAPSED     TIME %CPU %MEM   RSS STAT COMMAND
+25197 25188       00:20 00:00:13 66.8  0.2  3052 Sl   /userdata/perfetto-training-demo/bin/pf-demo-x5 --data-dir /userdata/perfetto-training-demo
+== threads (comm) ==
+  tid=25197  comm=pf-demo-x5       state=S
+  tid=25206  comm=TracingMuxer     state=S
+  tid=25207  comm=pf-capture       state=S
+  tid=25208  comm=pf-preproc       state=S
+  tid=25209  comm=pf-infer         state=R
+  tid=25210  comm=pf-postproc      state=S
+  tid=25211  comm=pf-output        state=S
+  tid=25212  comm=pf-contend1      state=R
+  tid=25213  comm=pf-contend2      state=R
+  tid=25214  comm=pf-syncwait      state=S
+  tid=25215  comm=pf-memheap       state=S
+  tid=25216  comm=pf-ioworker      state=S
+  tid=25217  comm=pf-monitor       state=S
+  tid=25218  comm=pf-schedprobe    state=S
+== last log lines ==
+  pf-demo-x5 v1.0.0 (Perfetto SDK v58.2, build 895e724-dirty) pid=25197 cpus=5,0 logs=/userdata/perfetto-training-demo/logs
+== frame accounting ==
+  frames.log lines=278 first_id=1 last_id=?
+== tracing service ==
+  sockets      : /tmp/perfetto-consumer + /tmp/perfetto-producer present
+  traced procs : 1113:traced 1761:traced_probes 
+== heap profiling prerequisites ==
+  preload lib  : present (dfa42d105c05cacc...)
+  service mode : started without preload (use scripts/heap-profile.sh)
+
+=== startup.sh block ===
+#!/bin/sh
+# --- pf-demo-x5 fixture begin (perfetto_ppt/demo_fixture) ---
+if [ -x "/userdata/perfetto-training-demo/scripts/autostart.sh" ]; then
+    mkdir -p "/userdata/perfetto-training-demo/logs" 2>/dev/null
+    "/userdata/perfetto-training-demo/scripts/autostart.sh" >>"/userdata/perfetto-training-demo/logs/autostart.log" 2>&1
+fi
+# --- pf-demo-x5 fixture end ---
+# Custom startup hook, executed by the existing /etc/init.d/S99auto_startup
+
+=== autostart log ===
+1970-01-01T04:01:37Z AUTOSTART_BEGIN
+traced already running (pid=1113)
+traced_probes already running (pid=1761)
+started: supervisor pid=25188 app pid=25197
+pf-demo-x5 v1.0.0 (Perfetto SDK v58.2, build 895e724-dirty) pid=25197 cpus=5,0 logs=/userdata/perfetto-training-demo/logs
+1970-01-01T04:01:39Z AUTOSTART_END rc=0
+
+=== load/uptime ===
+6.1.83-DR-PL5.1_V1.1.1
+ 04:01:57 up  4:01,  1 user,  load average: 0.55, 1.04, 1.13
+
+=== perfetto service ===
+traced        : pid=1113
+traced_probes : pid=1761
+sockets       : /tmp/perfetto-consumer /tmp/perfetto-producer OK
+binary tracebox : /userdata/perfetto-training-demo/bin/perfetto/tracebox (Perfetto v58.2-add693d8b (add693d8b338ba9599dbcbc3e300b1ab8c000897))
+binary perfetto : /userdata/perfetto-training-demo/bin/perfetto/perfetto (Perfetto v58.2-add693d8b (add693d8b338ba9599dbcbc3e300b1ab8c000897))
+binary traced : /userdata/perfetto-training-demo/bin/perfetto/traced (Perfetto v58.2-add693d8b (add693d8b338ba9599dbcbc3e300b1ab8c000897))
+binary traced_probes : /userdata/perfetto-training-demo/bin/perfetto/traced_probes (Perfetto v58.2-add693d8b (add693d8b338ba9599dbcbc3e300b1ab8c000897))
+
+=== heapprofd preload ===
+dfa42d105c05cacc17f46f29b39c4b5b5294c04f696281ef838c3c6ab7110198  /userdata/perfetto-training-demo/lib/libheapprofd_glibc_preload.so
+bash: line 1: readelf: command not found

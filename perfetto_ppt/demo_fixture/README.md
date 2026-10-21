@@ -142,8 +142,10 @@ The root filesystem is **100 % full and read-only** on this image
 added. The image already supports the standard hook:
 
 * `/etc/init.d/S99auto_startup` runs `/userdata/startup.sh` in the background.
-* `scripts/autostart-enable.sh` appends **one clearly marked block** to that
-  existing file; other entries are preserved byte-for-byte. This mirrors how
+* `scripts/autostart-enable.sh` inserts **one clearly marked block right after
+  the shebang** of that existing file (the previous fixtures' content ends with
+  an unconditional `exit 0`, so appending at the end would never run); other
+  entries are preserved byte-for-byte. This mirrors how
   `/etc/init.d/S90cam-service` starts `cam-service`.
 
 Disable / re-enable / remove:

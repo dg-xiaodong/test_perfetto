@@ -171,8 +171,11 @@ signature of each phase is stable.
   `task-service` on cpu6/7, `cam-service` on ISP, `traced`/`traced_probes` in
   `/userdata/bin`
 - CPU selection at boot: reads the allowed mask, samples per-CPU utilisation,
-  and treats cores pinned by other `/userdata` services as reserved; last
-  measured choice `cpu_a=5 cpu_b=4` (log: `CPU_SELECT ... reserved`).
+  and treats cores pinned by other `/userdata` services as reserved. It is
+  dynamic: the evidence run used `cpu_a=5 cpu_b=4`, the final hand-off instance
+  `cpu_a=5 cpu_b=0` (log line `CPU_SELECT ... reserved`). The analysis must not
+  assume fixed cores; read the `BOOT`/`CPU_SELECT` lines of the log or the
+  trace's `cpu.pf-infer` thread track.
 
 ## 8. Heap profiling (heapprofd) facts
 
