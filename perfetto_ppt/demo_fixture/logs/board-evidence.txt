@@ -1,0 +1,192 @@
+Warning: Permanently added '192.168.1.10' (ED25519) to the list of known hosts.
+=== SUMMARY ===
+pf-demo-x5 verification 19700101-035504
+pid=3639 requested_duration_s=110 actual_duration_s=151 interval_s=1
+
+== memory ==
+rss_kb min=4248 max=16576 delta=12328 samples=110
+threads max=14
+
+== per-CPU utilisation (worst interval per core) ==
+cpu0 peak_busy_pct=13
+cpu1 peak_busy_pct=15
+cpu2 peak_busy_pct=15
+cpu3 peak_busy_pct=11
+cpu4 peak_busy_pct=32
+cpu5 peak_busy_pct=100
+cpu6 peak_busy_pct=54
+cpu7 peak_busy_pct=29
+
+== thread states (share of samples in R = running-or-runnable) ==
+TracingMuxer S   samples= 110 R_pct=0
+pf-capture S     samples= 110 R_pct=0
+pf-contend1 R    samples=  21 R_pct=100
+pf-contend1 S    samples=  89 R_pct=0
+pf-contend2 R    samples=  19 R_pct=100
+pf-contend2 S    samples=  91 R_pct=0
+pf-demo-x5 S     samples= 110 R_pct=0
+pf-infer R       samples=  46 R_pct=100
+pf-infer S       samples=  64 R_pct=0
+pf-ioworker R    samples=   1 R_pct=100
+pf-ioworker S    samples= 109 R_pct=0
+pf-memheap S     samples= 110 R_pct=0
+pf-monitor S     samples= 110 R_pct=0
+pf-output S      samples= 110 R_pct=0
+pf-postproc R    samples=   3 R_pct=100
+pf-postproc S    samples= 107 R_pct=0
+pf-preproc R     samples=   7 R_pct=100
+pf-preproc S     samples= 103 R_pct=0
+pf-schedprobe S  samples= 110 R_pct=0
+pf-syncwait R    samples=   5 R_pct=100
+pf-syncwait S    samples= 105 R_pct=0
+
+== frames ==
+frames_logged_in_window=2393 total=3350 actual_fps=15
+unique_frame_ids=3351 duplicates=0
+e2e_latency_max_ms=1343.60
+infer phase=MIXED_PIPELINE frames=641 avg_ms=24.38 max_ms=33.54
+infer phase=BASELINE frames=601 avg_ms=12.74 max_ms=18.64
+infer phase=SCHED_CONTENTION frames=549 avg_ms=65.20 max_ms=82.52
+infer phase=SYNC_IO frames=480 avg_ms=9.82 max_ms=13.36
+infer phase=MEMORY_PULSE frames=481 avg_ms=11.87 max_ms=15.95
+infer phase=CPU_BURST frames=599 avg_ms=41.74 max_ms=136.12
+frames phase=MIXED_PIPELINE = 641
+frames phase=BASELINE = 601
+frames phase=SCHED_CONTENTION = 549
+frames phase=SYNC_IO = 480
+frames phase=MEMORY_PULSE = 481
+frames phase=CPU_BURST = 599
+
+== wakeup latency proxy (pf-schedprobe, from MON lines) ==
+wakeup_overshoot_max_ms=0.835
+cv_wakeups_first=15 last=3176 delta=3161
+
+== phase transitions observed ==
+PHASE cycle=0 idx=0 name=BASELINE mono_ns=14042439522737 boot_ns=14042439522779 realtime_ns=14042439522862
+PHASE cycle=0 idx=1 name=CPU_BURST mono_ns=14050447705449 boot_ns=14050447705699 realtime_ns=14050447706199
+PHASE cycle=0 idx=2 name=SCHED_CONTENTION mono_ns=14058453679411 boot_ns=14058453679495 realtime_ns=14058453679703
+PHASE cycle=0 idx=3 name=MEMORY_PULSE mono_ns=14066459243457 boot_ns=14066459243540 realtime_ns=14066459243707
+PHASE cycle=0 idx=4 name=SYNC_IO mono_ns=14074468613919 boot_ns=14074468614211 realtime_ns=14074468614544
+PHASE cycle=0 idx=5 name=MIXED_PIPELINE mono_ns=14082478691714 boot_ns=14082478692006 realtime_ns=14082478692381
+PHASE cycle=1 idx=0 name=BASELINE mono_ns=14090484891427 boot_ns=14090484891468 realtime_ns=14090484891677
+PHASE cycle=0 idx=0 name=BASELINE mono_ns=14042439522737 boot_ns=14042439522779 realtime_ns=14042439522862
+PHASE cycle=0 idx=1 name=CPU_BURST mono_ns=14050447705449 boot_ns=14050447705699 realtime_ns=14050447706199
+PHASE cycle=0 idx=2 name=SCHED_CONTENTION mono_ns=14058453679411 boot_ns=14058453679495 realtime_ns=14058453679703
+PHASE cycle=0 idx=3 name=MEMORY_PULSE mono_ns=14066459243457 boot_ns=14066459243540 realtime_ns=14066459243707
+PHASE cycle=0 idx=4 name=SYNC_IO mono_ns=14074468613919 boot_ns=14074468614211 realtime_ns=14074468614544
+PHASE cycle=0 idx=5 name=MIXED_PIPELINE mono_ns=14082478691714 boot_ns=14082478692006 realtime_ns=14082478692381
+PHASE cycle=1 idx=0 name=BASELINE mono_ns=14090484891427 boot_ns=14090484891468 realtime_ns=14090484891677
+PHASE cycle=1 idx=1 name=CPU_BURST mono_ns=14098494042430 boot_ns=14098494042764 realtime_ns=14098494043264
+PHASE cycle=1 idx=2 name=SCHED_CONTENTION mono_ns=14106499782226 boot_ns=14106499782268 realtime_ns=14106499782476
+PHASE cycle=1 idx=3 name=MEMORY_PULSE mono_ns=14114505237271 boot_ns=14114505237355 realtime_ns=14114505237438
+PHASE cycle=1 idx=4 name=SYNC_IO mono_ns=14122513216067 boot_ns=14122513216150 realtime_ns=14122513216484
+PHASE cycle=1 idx=5 name=MIXED_PIPELINE mono_ns=14130521347987 boot_ns=14130521348112 realtime_ns=14130521348487
+PHASE cycle=2 idx=0 name=BASELINE mono_ns=14138527093283 boot_ns=14138527093324 realtime_ns=14138527093533
+PHASE cycle=2 idx=1 name=CPU_BURST mono_ns=14146534953703 boot_ns=14146534953995 realtime_ns=14146534954453
+PHASE cycle=2 idx=2 name=SCHED_CONTENTION mono_ns=14154440608290 boot_ns=14154440608374 realtime_ns=14154440608624
+PHASE cycle=2 idx=3 name=MEMORY_PULSE mono_ns=14162446122336 boot_ns=14162446122419 realtime_ns=14162446122878
+PHASE cycle=2 idx=4 name=SYNC_IO mono_ns=14170454292340 boot_ns=14170454292506 realtime_ns=14170454292881
+PHASE cycle=2 idx=5 name=MIXED_PIPELINE mono_ns=14178462364802 boot_ns=14178462365094 realtime_ns=14178462365677
+PHASE cycle=3 idx=0 name=BASELINE mono_ns=14186468283097 boot_ns=14186468283181 realtime_ns=14186468283514
+PHASE cycle=3 idx=1 name=CPU_BURST mono_ns=14194476202101 boot_ns=14194476202434 realtime_ns=14194476202934
+PHASE cycle=3 idx=2 name=SCHED_CONTENTION mono_ns=14202481867688 boot_ns=14202481867730 realtime_ns=14202481867855
+PHASE cycle=3 idx=3 name=MEMORY_PULSE mono_ns=14210487391234 boot_ns=14210487391275 realtime_ns=14210487391525
+PHASE cycle=3 idx=4 name=SYNC_IO mono_ns=14218495525821 boot_ns=14218495525904 realtime_ns=14218495526238
+PHASE cycle=3 idx=5 name=MIXED_PIPELINE mono_ns=14226503627283 boot_ns=14226503627616 realtime_ns=14226503628033
+PHASE cycle=4 idx=0 name=BASELINE mono_ns=14234509457037 boot_ns=14234509457079 realtime_ns=14234509457204
+PHASE cycle=4 idx=1 name=CPU_BURST mono_ns=14242517188707 boot_ns=14242517188874 realtime_ns=14242517189041
+
+== checks ==
+PASS rss_pulse_delta_kb=12328
+PASS frames_in_window=2393
+PASS phases_seen=6
+PASS cv_wakeups_in_window=3161
+wakeup_overshoot_max_ms=0.835 (contention evidence; no threshold)
+
+RESULT=PASS
+=== PHASES ===
+PHASE cycle=0 idx=0 name=BASELINE mono_ns=14042439522737 boot_ns=14042439522779 realtime_ns=14042439522862
+PHASE cycle=0 idx=1 name=CPU_BURST mono_ns=14050447705449 boot_ns=14050447705699 realtime_ns=14050447706199
+PHASE cycle=0 idx=2 name=SCHED_CONTENTION mono_ns=14058453679411 boot_ns=14058453679495 realtime_ns=14058453679703
+PHASE cycle=0 idx=3 name=MEMORY_PULSE mono_ns=14066459243457 boot_ns=14066459243540 realtime_ns=14066459243707
+PHASE cycle=0 idx=4 name=SYNC_IO mono_ns=14074468613919 boot_ns=14074468614211 realtime_ns=14074468614544
+PHASE cycle=0 idx=5 name=MIXED_PIPELINE mono_ns=14082478691714 boot_ns=14082478692006 realtime_ns=14082478692381
+PHASE cycle=1 idx=0 name=BASELINE mono_ns=14090484891427 boot_ns=14090484891468 realtime_ns=14090484891677
+PHASE cycle=0 idx=0 name=BASELINE mono_ns=14042439522737 boot_ns=14042439522779 realtime_ns=14042439522862
+PHASE cycle=0 idx=1 name=CPU_BURST mono_ns=14050447705449 boot_ns=14050447705699 realtime_ns=14050447706199
+PHASE cycle=0 idx=2 name=SCHED_CONTENTION mono_ns=14058453679411 boot_ns=14058453679495 realtime_ns=14058453679703
+PHASE cycle=0 idx=3 name=MEMORY_PULSE mono_ns=14066459243457 boot_ns=14066459243540 realtime_ns=14066459243707
+PHASE cycle=0 idx=4 name=SYNC_IO mono_ns=14074468613919 boot_ns=14074468614211 realtime_ns=14074468614544
+PHASE cycle=0 idx=5 name=MIXED_PIPELINE mono_ns=14082478691714 boot_ns=14082478692006 realtime_ns=14082478692381
+PHASE cycle=1 idx=0 name=BASELINE mono_ns=14090484891427 boot_ns=14090484891468 realtime_ns=14090484891677
+PHASE cycle=1 idx=1 name=CPU_BURST mono_ns=14098494042430 boot_ns=14098494042764 realtime_ns=14098494043264
+PHASE cycle=1 idx=2 name=SCHED_CONTENTION mono_ns=14106499782226 boot_ns=14106499782268 realtime_ns=14106499782476
+PHASE cycle=1 idx=3 name=MEMORY_PULSE mono_ns=14114505237271 boot_ns=14114505237355 realtime_ns=14114505237438
+PHASE cycle=1 idx=4 name=SYNC_IO mono_ns=14122513216067 boot_ns=14122513216150 realtime_ns=14122513216484
+PHASE cycle=1 idx=5 name=MIXED_PIPELINE mono_ns=14130521347987 boot_ns=14130521348112 realtime_ns=14130521348487
+PHASE cycle=2 idx=0 name=BASELINE mono_ns=14138527093283 boot_ns=14138527093324 realtime_ns=14138527093533
+PHASE cycle=2 idx=1 name=CPU_BURST mono_ns=14146534953703 boot_ns=14146534953995 realtime_ns=14146534954453
+PHASE cycle=2 idx=2 name=SCHED_CONTENTION mono_ns=14154440608290 boot_ns=14154440608374 realtime_ns=14154440608624
+PHASE cycle=2 idx=3 name=MEMORY_PULSE mono_ns=14162446122336 boot_ns=14162446122419 realtime_ns=14162446122878
+PHASE cycle=2 idx=4 name=SYNC_IO mono_ns=14170454292340 boot_ns=14170454292506 realtime_ns=14170454292881
+PHASE cycle=2 idx=5 name=MIXED_PIPELINE mono_ns=14178462364802 boot_ns=14178462365094 realtime_ns=14178462365677
+PHASE cycle=3 idx=0 name=BASELINE mono_ns=14186468283097 boot_ns=14186468283181 realtime_ns=14186468283514
+PHASE cycle=3 idx=1 name=CPU_BURST mono_ns=14194476202101 boot_ns=14194476202434 realtime_ns=14194476202934
+PHASE cycle=3 idx=2 name=SCHED_CONTENTION mono_ns=14202481867688 boot_ns=14202481867730 realtime_ns=14202481867855
+PHASE cycle=3 idx=3 name=MEMORY_PULSE mono_ns=14210487391234 boot_ns=14210487391275 realtime_ns=14210487391525
+PHASE cycle=3 idx=4 name=SYNC_IO mono_ns=14218495525821 boot_ns=14218495525904 realtime_ns=14218495526238
+PHASE cycle=3 idx=5 name=MIXED_PIPELINE mono_ns=14226503627283 boot_ns=14226503627616 realtime_ns=14226503628033
+PHASE cycle=4 idx=0 name=BASELINE mono_ns=14234509457037 boot_ns=14234509457079 realtime_ns=14234509457204
+PHASE cycle=4 idx=1 name=CPU_BURST mono_ns=14242517188707 boot_ns=14242517188874 realtime_ns=14242517189041
+=== SUPERVISOR ===
+1970-01-01T03:10:51Z SUPERVISOR_START pid=1969 app=/userdata/perfetto-training-demo/bin/pf-demo-x5
+1970-01-01T03:10:51Z APP_START epoch=11451
+1970-01-01T03:10:51Z APP_PID pid=1978
+1970-01-01T03:14:10Z SUPERVISOR_START pid=2632 app=/userdata/perfetto-training-demo/bin/pf-demo-x5
+1970-01-01T03:14:10Z APP_START epoch=11650
+1970-01-01T03:14:10Z APP_PID pid=2641
+1970-01-01T03:17:27Z SUPERVISOR_START pid=2993 app=/userdata/perfetto-training-demo/bin/pf-demo-x5
+1970-01-01T03:17:27Z APP_START epoch=11847
+1970-01-01T03:17:27Z APP_PID pid=3002
+1970-01-01T03:26:50Z SUPERVISOR_START pid=4438 app=/userdata/perfetto-training-demo/bin/pf-demo-x5
+1970-01-01T03:26:50Z APP_START epoch=12410
+1970-01-01T03:26:50Z APP_PID pid=4447
+1970-01-01T03:31:52Z SUPERVISOR_START pid=25522 app=/userdata/perfetto-training-demo/bin/pf-demo-x5
+1970-01-01T03:31:52Z APP_START epoch=12712
+1970-01-01T03:31:52Z APP_PID pid=25531
+1970-01-01T03:39:28Z SUPERVISOR_START pid=14286 app=/userdata/perfetto-training-demo/bin/pf-demo-x5
+1970-01-01T03:39:28Z APP_START epoch=13168
+1970-01-01T03:39:28Z APP_PID pid=14295
+1970-01-01T03:43:24Z SUPERVISOR_START pid=14572 app=/userdata/perfetto-training-demo/bin/pf-demo-x5
+1970-01-01T03:43:24Z APP_START epoch=13404
+1970-01-01T03:43:24Z APP_PID pid=14581
+1970-01-01T03:47:46Z SUPERVISOR_START pid=14839 app=/userdata/perfetto-training-demo/bin/pf-demo-x5
+1970-01-01T03:47:46Z APP_START epoch=13666
+1970-01-01T03:47:46Z APP_PID pid=14848
+1970-01-01T03:54:02Z SUPERVISOR_START pid=3630 app=/userdata/perfetto-training-demo/bin/pf-demo-x5
+1970-01-01T03:54:02Z APP_START epoch=14042
+1970-01-01T03:54:02Z APP_PID pid=3639
+1970-01-01T03:58:10Z SUPERVISOR_START pid=24742 app=/userdata/perfetto-training-demo/bin/pf-demo-x5
+1970-01-01T03:58:10Z APP_START epoch=14290
+1970-01-01T03:58:10Z APP_PID pid=24751
+=== SERVICE_BOOT ===
+CPU_SELECT mode=auto cpu_a=5 cpu_b=4 busy="cpu0=3.3% cpu1=0.0%(reserved) cpu2=0.0%(reserved) cpu3=0.0% cpu4=0.0% cpu5=0.0% cpu6=100.0%(reserved) cpu7=3.2%(reserved)"
+BOOT program=pf-demo-x5 version=1.0.0 build=895e724-dirty sdk="v58.2" pid=3639 mono_ns=14042436874987 boot_ns=14042438069445 realtime_ns=14042438069570 fps=15 phase_seconds=8 run_seconds=0 io=1 frame_log=1 cpus=5,4
+THREAD tid=3649 name=pf-capture mono_ns=14042438513862
+THREAD tid=3651 name=pf-infer mono_ns=14042438704987
+THREAD tid=3650 name=pf-preproc mono_ns=14042438717445
+THREAD tid=3652 name=pf-postproc mono_ns=14042438875029
+THREAD tid=3653 name=pf-output mono_ns=14042438976404
+THREAD tid=3654 name=pf-contend1 mono_ns=14042439080695
+THREAD tid=3655 name=pf-contend2 mono_ns=14042439211737
+THREAD tid=3656 name=pf-syncwait mono_ns=14042439225195
+THREAD tid=3657 name=pf-memheap mono_ns=14042439284154
+THREAD tid=3658 name=pf-ioworker mono_ns=14042439374529
+IO_OPEN path=/userdata/perfetto-training-demo/run/io-buffer.dat fd=7
+THREAD tid=3659 name=pf-monitor mono_ns=14042439505570
+PHASE cycle=0 idx=0 name=BASELINE mono_ns=14042439522737 boot_ns=14042439522779 realtime_ns=14042439522862
+THREAD tid=3660 name=pf-schedprobe mono_ns=14042439588154
+MON mono_ns=14043440421154 boot_ns=14043441638987 cycle=0 phase=BASELINE rss_kb=3048 vsz_kb=640208 threads=14 tasks=14 qdepth=0 inflight=1 captured=15 completed=14 e2e_last_ms=8.385 wakeup_over_ms=0.065 cv_wakeups=15 live_bytes=0 io_bytes=256 running=2 blocked=1
+MON mono_ns=14044442443196 boot_ns=14044443262946 cycle=0 phase=BASELINE rss_kb=3048 vsz_kb=640208 threads=14 tasks=14 qdepth=0 inflight=1 captured=30 completed=29 e2e_last_ms=6.675 wakeup_over_ms=0.062 cv_wakeups=30 live_bytes=0 io_bytes=256 running=3 blocked=0
+MON mono_ns=14045444199197 boot_ns=14045445107363 cycle=0 phase=BASELINE rss_kb=3048 vsz_kb=640208 threads=14 tasks=14 qdepth=0 inflight=1 captured=45 completed=44 e2e_last_ms=33.512 wakeup_over_ms=0.584 cv_wakeups=45 live_bytes=0 io_bytes=512 running=2 blocked=0
+MON mono_ns=14046446166697 boot_ns=14046449247906 cycle=0 phase=BASELINE rss_kb=3048 vsz_kb=640208 threads=14 tasks=14 qdepth=0 inflight=1 captured=60 completed=59 e2e_last_ms=33.553 wakeup_over_ms=0.602 cv_wakeups=60 live_bytes=0 io_bytes=768 running=2 blocked=0

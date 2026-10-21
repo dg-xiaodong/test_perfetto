@@ -1,0 +1,24 @@
+# Native heap profile (heapprofd via LD_PRELOAD, Perfetto v58.2 preload)
+# trace: heap-profile-20s.pftrace (25 s run), build id 48afa3c3...
+
+## heaps and totals
+"heap_name","n","total_bytes","max_size"
+"libc.malloc",1078,97136,12582912
+
+## mapping with build ids
+"id","name","build_id"
+0,"/userdata/perfetto-training-demo/bin/pf-demo-x5","48afa3c3dcc7ac719a0063997012aaf29a1db983"
+1,"/usr/lib/libc.so.6",""
+2,"/userdata/perfetto-training-demo/lib/libheapprofd_glibc_preload.so","ddf8c2ace4a335df"
+3,"/usr/lib/libstdc++.so.6.0.29",""
+
+## 12 MiB allocation attributed callstack (walked from the allocation callsite)
+"depth","name"
+7,"[NULL]"
+6,"[NULL]"
+5,"[NULL]"
+4,"[NULL]"
+3,"pfdemo::(anonymous namespace)::MemoryThread(pfdemo::(anonymous namespace)::Shared&)"
+2,"[NULL]"
+1,"[NULL]"
+0,"[NULL]"

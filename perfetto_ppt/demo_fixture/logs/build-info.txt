@@ -1,0 +1,11 @@
+program=pf-demo-x5
+program_version=1.0.0
+git_build_id=895e724-dirty
+build_time_utc=2026-10-21T12:20:49Z
+build_host=Linux LUOBO-ESPBR58 6.18.40.1-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Fri Jul 31 22:12:15 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+compiler=aarch64-none-linux-gnu-g++ (Arm GNU Toolchain 11.3.Rel1) 11.3.1 20220712
+perfetto_sdk=v58.2
+perfetto_sdk_sha256=e56126ff81f0f914d35fe03c72419d147acf2890f36fbda7d4558fd5b84c4b09
+binary=pf-demo-x5
+binary_sha256=f89d9ed5f509868f968eac7072abe4aa2c499417f2fb48e3cfb379195c24c9b5
+binary_file=ELF 64-bit LSB executable, ARM aarch64, version 1 (GNU/Linux), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=48afa3c3dcc7ac719a0063997012aaf29a1db983, for GNU/Linux 3.7.0, with debug_info, not stripped

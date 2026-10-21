@@ -1,0 +1,104 @@
+pf-demo-x5 verification 19700101-035504
+pid=3639 requested_duration_s=110 actual_duration_s=151 interval_s=1
+
+== memory ==
+rss_kb min=4248 max=16576 delta=12328 samples=110
+threads max=14
+
+== per-CPU utilisation (worst interval per core) ==
+cpu0 peak_busy_pct=13
+cpu1 peak_busy_pct=15
+cpu2 peak_busy_pct=15
+cpu3 peak_busy_pct=11
+cpu4 peak_busy_pct=32
+cpu5 peak_busy_pct=100
+cpu6 peak_busy_pct=54
+cpu7 peak_busy_pct=29
+
+== thread states (share of samples in R = running-or-runnable) ==
+TracingMuxer S   samples= 110 R_pct=0
+pf-capture S     samples= 110 R_pct=0
+pf-contend1 R    samples=  21 R_pct=100
+pf-contend1 S    samples=  89 R_pct=0
+pf-contend2 R    samples=  19 R_pct=100
+pf-contend2 S    samples=  91 R_pct=0
+pf-demo-x5 S     samples= 110 R_pct=0
+pf-infer R       samples=  46 R_pct=100
+pf-infer S       samples=  64 R_pct=0
+pf-ioworker R    samples=   1 R_pct=100
+pf-ioworker S    samples= 109 R_pct=0
+pf-memheap S     samples= 110 R_pct=0
+pf-monitor S     samples= 110 R_pct=0
+pf-output S      samples= 110 R_pct=0
+pf-postproc R    samples=   3 R_pct=100
+pf-postproc S    samples= 107 R_pct=0
+pf-preproc R     samples=   7 R_pct=100
+pf-preproc S     samples= 103 R_pct=0
+pf-schedprobe S  samples= 110 R_pct=0
+pf-syncwait R    samples=   5 R_pct=100
+pf-syncwait S    samples= 105 R_pct=0
+
+== frames ==
+frames_logged_in_window=2393 total=3350 actual_fps=15
+unique_frame_ids=3351 duplicates=0
+e2e_latency_max_ms=1343.60
+infer phase=MIXED_PIPELINE frames=641 avg_ms=24.38 max_ms=33.54
+infer phase=BASELINE frames=601 avg_ms=12.74 max_ms=18.64
+infer phase=SCHED_CONTENTION frames=549 avg_ms=65.20 max_ms=82.52
+infer phase=SYNC_IO frames=480 avg_ms=9.82 max_ms=13.36
+infer phase=MEMORY_PULSE frames=481 avg_ms=11.87 max_ms=15.95
+infer phase=CPU_BURST frames=599 avg_ms=41.74 max_ms=136.12
+frames phase=MIXED_PIPELINE = 641
+frames phase=BASELINE = 601
+frames phase=SCHED_CONTENTION = 549
+frames phase=SYNC_IO = 480
+frames phase=MEMORY_PULSE = 481
+frames phase=CPU_BURST = 599
+
+== wakeup latency proxy (pf-schedprobe, from MON lines) ==
+wakeup_overshoot_max_ms=0.835
+cv_wakeups_first=15 last=3176 delta=3161
+
+== phase transitions observed ==
+PHASE cycle=0 idx=0 name=BASELINE mono_ns=14042439522737 boot_ns=14042439522779 realtime_ns=14042439522862
+PHASE cycle=0 idx=1 name=CPU_BURST mono_ns=14050447705449 boot_ns=14050447705699 realtime_ns=14050447706199
+PHASE cycle=0 idx=2 name=SCHED_CONTENTION mono_ns=14058453679411 boot_ns=14058453679495 realtime_ns=14058453679703
+PHASE cycle=0 idx=3 name=MEMORY_PULSE mono_ns=14066459243457 boot_ns=14066459243540 realtime_ns=14066459243707
+PHASE cycle=0 idx=4 name=SYNC_IO mono_ns=14074468613919 boot_ns=14074468614211 realtime_ns=14074468614544
+PHASE cycle=0 idx=5 name=MIXED_PIPELINE mono_ns=14082478691714 boot_ns=14082478692006 realtime_ns=14082478692381
+PHASE cycle=1 idx=0 name=BASELINE mono_ns=14090484891427 boot_ns=14090484891468 realtime_ns=14090484891677
+PHASE cycle=0 idx=0 name=BASELINE mono_ns=14042439522737 boot_ns=14042439522779 realtime_ns=14042439522862
+PHASE cycle=0 idx=1 name=CPU_BURST mono_ns=14050447705449 boot_ns=14050447705699 realtime_ns=14050447706199
+PHASE cycle=0 idx=2 name=SCHED_CONTENTION mono_ns=14058453679411 boot_ns=14058453679495 realtime_ns=14058453679703
+PHASE cycle=0 idx=3 name=MEMORY_PULSE mono_ns=14066459243457 boot_ns=14066459243540 realtime_ns=14066459243707
+PHASE cycle=0 idx=4 name=SYNC_IO mono_ns=14074468613919 boot_ns=14074468614211 realtime_ns=14074468614544
+PHASE cycle=0 idx=5 name=MIXED_PIPELINE mono_ns=14082478691714 boot_ns=14082478692006 realtime_ns=14082478692381
+PHASE cycle=1 idx=0 name=BASELINE mono_ns=14090484891427 boot_ns=14090484891468 realtime_ns=14090484891677
+PHASE cycle=1 idx=1 name=CPU_BURST mono_ns=14098494042430 boot_ns=14098494042764 realtime_ns=14098494043264
+PHASE cycle=1 idx=2 name=SCHED_CONTENTION mono_ns=14106499782226 boot_ns=14106499782268 realtime_ns=14106499782476
+PHASE cycle=1 idx=3 name=MEMORY_PULSE mono_ns=14114505237271 boot_ns=14114505237355 realtime_ns=14114505237438
+PHASE cycle=1 idx=4 name=SYNC_IO mono_ns=14122513216067 boot_ns=14122513216150 realtime_ns=14122513216484
+PHASE cycle=1 idx=5 name=MIXED_PIPELINE mono_ns=14130521347987 boot_ns=14130521348112 realtime_ns=14130521348487
+PHASE cycle=2 idx=0 name=BASELINE mono_ns=14138527093283 boot_ns=14138527093324 realtime_ns=14138527093533
+PHASE cycle=2 idx=1 name=CPU_BURST mono_ns=14146534953703 boot_ns=14146534953995 realtime_ns=14146534954453
+PHASE cycle=2 idx=2 name=SCHED_CONTENTION mono_ns=14154440608290 boot_ns=14154440608374 realtime_ns=14154440608624
+PHASE cycle=2 idx=3 name=MEMORY_PULSE mono_ns=14162446122336 boot_ns=14162446122419 realtime_ns=14162446122878
+PHASE cycle=2 idx=4 name=SYNC_IO mono_ns=14170454292340 boot_ns=14170454292506 realtime_ns=14170454292881
+PHASE cycle=2 idx=5 name=MIXED_PIPELINE mono_ns=14178462364802 boot_ns=14178462365094 realtime_ns=14178462365677
+PHASE cycle=3 idx=0 name=BASELINE mono_ns=14186468283097 boot_ns=14186468283181 realtime_ns=14186468283514
+PHASE cycle=3 idx=1 name=CPU_BURST mono_ns=14194476202101 boot_ns=14194476202434 realtime_ns=14194476202934
+PHASE cycle=3 idx=2 name=SCHED_CONTENTION mono_ns=14202481867688 boot_ns=14202481867730 realtime_ns=14202481867855
+PHASE cycle=3 idx=3 name=MEMORY_PULSE mono_ns=14210487391234 boot_ns=14210487391275 realtime_ns=14210487391525
+PHASE cycle=3 idx=4 name=SYNC_IO mono_ns=14218495525821 boot_ns=14218495525904 realtime_ns=14218495526238
+PHASE cycle=3 idx=5 name=MIXED_PIPELINE mono_ns=14226503627283 boot_ns=14226503627616 realtime_ns=14226503628033
+PHASE cycle=4 idx=0 name=BASELINE mono_ns=14234509457037 boot_ns=14234509457079 realtime_ns=14234509457204
+PHASE cycle=4 idx=1 name=CPU_BURST mono_ns=14242517188707 boot_ns=14242517188874 realtime_ns=14242517189041
+
+== checks ==
+PASS rss_pulse_delta_kb=12328
+PASS frames_in_window=2393
+PASS phases_seen=6
+PASS cv_wakeups_in_window=3161
+wakeup_overshoot_max_ms=0.835 (contention evidence; no threshold)
+
+RESULT=PASS

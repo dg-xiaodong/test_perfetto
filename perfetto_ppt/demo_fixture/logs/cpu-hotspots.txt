@@ -1,0 +1,20 @@
+# CPU-profile hotspots (symbolized with the deployed aarch64 binary)
+# trace: fullcycle-52s.pftrace; binary build id 48afa3c3dcc7ac719a0063997012aaf29a1db983
+
+## top leaf functions by sample count
+"function","samples"
+"[NULL]",3436
+"pfdemo::(anonymous namespace)::CpuWork(unsigned long, unsigned long)",3248
+"pfdemo::(anonymous namespace)::InferenceConv3x3(unsigned long, unsigned long)",1864
+"pfdemo::(anonymous namespace)::InferenceGemm(unsigned long, unsigned long)",1614
+"pfdemo::(anonymous namespace)::ContendSpin(long)",850
+"pfdemo::(anonymous namespace)::PreprocessResize(std::vector<unsigned char, std::allocator<unsigned char> > const&, unsigned long) (.isra.0)",19
+"void perfetto::DataSource<perfetto::internal::TrackEventDataSource, perfetto::internal::TrackEventDataSourceTraits>::TraceWithInstances<perfetto::internal::TrackEvent<&(perfetto::perfetto_track_event::internal::kCategoryRegistry)>::CategoryTracePointTraits, void perfetto::internal::TrackEvent<&(perfetto::perfetto_track_event::internal::kCategoryRegistry)>::TraceForCategoryImplNoTimestamp<unsigned long, perfetto::StaticString, perfetto::Track, void, char const*, double>(unsigned int, unsigned long const&, perfetto::StaticString const&, perfetto::protos::pbzero::perfetto_pbzero_enum_TrackEvent::Type, perfetto::Track const&, char const*&&, double&&)::'lambda'(perfetto::DataSource<perfetto::internal::TrackEventDataSource, perfetto::internal::TrackEventDataSourceTraits>::TraceContext)>(unsigned int, perfetto::StaticString, unsigned long::TracePointData)",7
+"_init",7
+"perfetto::TraceWriterImpl::FinishTracePacket()",6
+"operator()",6
+"void perfetto::internal::TrackEvent<&(perfetto::perfetto_track_event::internal::kCategoryRegistry)>::TraceForCategoryImplNoTimestamp<unsigned long, perfetto::StaticString, perfetto::Track, void, char const*, double>(unsigned int, unsigned long const&, perfetto::StaticString const&, perfetto::protos::pbzero::perfetto_pbzero_enum_TrackEvent::Type, perfetto::Track const&, char const*&&, double&&)::'lambda'(perfetto::DataSource<perfetto::internal::TrackEventDataSource, perfetto::internal::TrackEventDataSourceTraits>::TraceContext)::operator()(perfetto::DataSource<perfetto::internal::TrackEventDataSource, perfetto::internal::TrackEventDataSourceTraits>::TraceContext) const",5
+"std::pair<std::_Rb_tree_iterator<std::pair<char const* const, unsigned long> >, bool> std::_Rb_tree<char const*, std::pair<char const* const, unsigned long>, std::_Select1st<std::pair<char const* const, unsigned long> >, std::less<char const*>, std::allocator<std::pair<char const* const, unsigned long> > >::_M_emplace_unique<std::pair<char const*, unsigned long> >(std::pair<char const*, unsigned long>&&)",5
+"perfetto::internal::TrackEventInternal::NewTracePacket(perfetto::TraceWriterBase*, perfetto::internal::TrackEventIncrementalState*, perfetto::internal::TrackEventTlsState const&, perfetto::TraceTimestamp, unsigned int)",5
+"perfetto::TraceWriterImpl::NewTracePacket()",5
+"void perfetto::internal::DataSourceType::FirstActiveInstance<perfetto::internal::TrackEvent<&(perfetto::perfetto_track_event::internal::kCategoryRegistry)>::CategoryTracePointTraits>(perfetto::internal::DataSourceType::InstancesIterator*, perfetto::internal::DataSourceThreadLocalState*, perfetto::internal::TrackEvent<&(perfetto::perfetto_track_event::internal::kCategoryRegistry)>::CategoryTracePointTraits::TracePointData)",4
