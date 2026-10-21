@@ -110,6 +110,23 @@ scp root@<board>:/userdata/perfetto-training-demo/bin/pf-demo-x5 .
    profiles a dedicated instance with the preload library, and restarts the
    service. It is not part of the day-to-day capture flow.
 
+### Optional: traces that contain kernel scheduling data
+
+On this image the stock boot has no ftrace (see §3), so ordinary captures have
+empty Scheduling tracks. A separate, verified way to obtain real kernel sched
+data exists (`kernel_ftrace/README.md`): a tracing kernel is booted once via
+kexec with a small initramfs, the fixture runs and the trace is written to
+`/userdata/pf-kernel-test/logs/`, then the board reboots itself to the stock
+kernel. Nothing is flashed.
+
+This mode is **supervised single-shot only**: the board is offline for about
+two minutes, needs physical recovery access in the worst case, and there is an
+unresolved incident where the board stopped answering after repeated kexec
+boots. Do not run it unattended; coordinate with window A; verify `uname -r`
+shows the stock kernel (`6.1.83-DR-PL5.1_V1.1.1`) before any further capture.
+Reference traces: `logs/kernel-ftrace-full-52s.pftrace` (sched + block + cpufreq
++ syscalls, one 52 s capture) and `logs/kernel-ftrace-45s.pftrace`.
+
 ## 4. Instrumentation you can rely on (names in the trace)
 
 Categories: `pipeline`, `memory`, `sync`, `io`, `demo`.

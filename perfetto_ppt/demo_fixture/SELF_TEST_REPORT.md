@@ -2,7 +2,7 @@
 
 Scope: everything below was executed on the actual RDK X5 board
 (`root@192.168.1.10`, kernel `6.1.83-DR-PL5.1_V1.1.1`) and on the build host.
-Where something was **not** verified, it is listed explicitly in §9.
+Where something was **not** verified, it is listed explicitly in §10.
 Evidence files referenced here live in `logs/`; raw traces are included.
 
 ## 1. Build facts
@@ -126,7 +126,7 @@ Evidence: `logs/verify-summary.txt`, `logs/board-evidence.txt`.
 | thread states | `pf-contend1/2` sampled in `R` for 21/19 of 110 samples (100 % of their in-phase samples); `pf-infer` `R` in 46/110 |
 | frames in window | 2 393 logged; all frame ids unique, no duplicates |
 | condition-variable wake-ups | `cv_wakeups` delta 3 161 in the window (real futex wake-ups) |
-| wake-up overshoot | max 0.835 ms (`SchedWakeupOvershootMs`) — small because of aggressive wake-up preemption, see §9 |
+| wake-up overshoot | max 0.835 ms (`SchedWakeupOvershootMs`) — small because of aggressive wake-up preemption, see §10 |
 | per-phase latency signature | contention => inference wall time inflated; MIXED => queue backlog (numbers in §6) |
 
 Program remained alive across all runs; supervisor restarts were not triggered
@@ -237,16 +237,80 @@ logs/trace-analysis.txt             trace_processor queries/results
 logs/cpu-hotspots.txt               symbolized CPU-profile hot functions
 logs/heap-profile-20s.pftrace       heapprofd trace
 logs/heap-profile-analysis.txt      heap profile queries/results
+logs/kernel-ftrace-full-52s.pftrace kernel sched+block+cpufreq+syscall trace (kexec kernel)
+logs/kernel-ftrace-45s.pftrace      kernel sched-only trace
+logs/kernel-ftrace-full-analysis.txt kernel scheduling analysis
+logs/kernel-sched-analysis.txt      per-thread/per-phase Runnable waits
 ```
 
-## 9. NOT verified / known limitations (honest list)
+## 9. Kernel scheduling data (optional kexec tracing kernel)
 
-1. **No kernel scheduling data on this image.** `CONFIG_FTRACE=n`, no tracefs,
-   no tracepoints. The Scheduling/`sched_switch` tracks and block-I/O
-   tracepoints are empty by construction. The fixture provides app-level
-   substitutes (blocking slices, wake-up overshoot, per-thread CPU, thread-state
-   sampling); they are **not** kernel scheduler states. `configs/trace_ftrace.cfg`
-   is untested on this board (it is for ftrace-capable kernels).
+Method (no disk writes; details in `kernel_ftrace/README.md`):
+
+1. `build/build-ftrace-kernel.sh` rebuilds the same kernel source with a
+   tracing-only config delta from `kernel_ftrace/board.config` (the board's
+   `/proc/config.gz`, diff 0 lines before enabling ftrace). Result:
+   `Image-ftrace`, kernel `6.1.83+ #4 SMP PREEMPT`, sha256
+   `036d11392ed2df30205efd1824047b31c92e590e06177a6dc828351a5d40cc61`.
+2. `build/build-kexec-initramfs.sh` assembles an initramfs (stock recovery
+   environment + `pf-demo-x5` + `tracebox` + trace configs).
+3. `kernel_ftrace/kexec_pf.c` calls `kexec_file_load(Image, initrd, cmdline)`
+   (syscall 294, verified available on the stock kernel: `EBADF`, not
+   `ENOSYS`), arms `/dev/watchdog`, then `RB_KEXEC`.
+4. The initramfs mounts tracefs (required: Perfetto only detects an existing
+   mount), runs the app and tracebox, writes to `/userdata`, and reboots back.
+
+Recorded traces and numbers:
+
+| item | value |
+|---|---|
+| `logs/kernel-ftrace-full-52s.pftrace` | 9.9 MB, 52 s, near-full cycle |
+| sched rows / ftrace events | 33 652 `sched_switch`, 470 block, 2 672 `cpu_frequency`, 100 k syscalls |
+| SDK data in the same trace | 119 072 slices, 3 280 flows, 10 144 perf samples |
+| `pf-infer` Runnable wait | 3 448 ms total; **3 392 ms in SCHED_CONTENTION**, max 40 ms |
+| `pf-contend1/2` Runnable wait | 5 033 / 4 927 ms, max 40/42 ms |
+| wakeup chains | `pf-capture→pf-syncwait` 810, `pf-capture→pf-preproc` 750, `pf-preproc→pf-infer` 661, `pf-infer→pf-postproc` 640 |
+| CPU frequency | 300 MHz … 1.5 GHz (ftrace + sys_stats agree) |
+| `logs/kernel-ftrace-45s.pftrace` | 2.6 MB sched-only run: `pf-infer` contention wait 5 342 ms |
+
+**Incident during this work:** the first four kexec boots (one `pf.mode=dry`,
+two captures including the 52 s trace, one 20 s parameterisation test) completed
+and self-recovered to the stock kernel. On the fifth consecutive kexec boot the
+board stopped answering on the network (host NIC also flapped; no ARP reply)
+and requires a physical power cycle. Root cause is unconfirmed; the leading
+hypotheses are bootloader A/B boot-attempt bookkeeping reacting to repeated
+non-standard boots, or a watchdog left in an odd state across a warm reboot.
+Because of this, the kexec mode is documented as supervised single-shot only,
+and the running fixture does not depend on it.
+
+**Why the tracing kernel is not persistent (yet):** `CONFIG_TRACING` adds
+`trace_recursion` to `struct task_struct`, changing the module ABI. A persistent
+tracing kernel must ship with matching modules (boot image / initramfs /
+`/lib/modules`), i.e. a boot-partition update with rollback — a system-level
+change that was deliberately not attempted without approval and a physical
+recovery plan.
+
+## 10. NOT verified / known limitations (honest list)
+
+1. **Kernel scheduling data: achieved via an optional flash-free kexec tracing
+   kernel, not on the stock boot.** The stock boot still has `CONFIG_FTRACE=n`
+   and no tracefs/tracepoints, so `configs/trace_smoke.cfg` yields no sched
+   tracks. A tracing kernel was rebuilt from the board's byte-identical config
+   (tracing-only delta), booted once via `kexec_file_load` with a custom
+   initramfs, and produced real kernel data (see §9 and
+   `logs/kernel-ftrace-full-52s.pftrace`):
+   * 33 652 `sched_switch` rows, 470 block-I/O events, 2 672 `cpu_frequency`
+     events, 100 k syscalls, alongside 3 280 SDK flows and 10 144 perf samples;
+   * `pf-infer` kernel Runnable wait: **3 392 ms in SCHED_CONTENTION**, 5–15 ms
+     in every other phase (max 40 ms);
+   * wakeup chains: `pf-capture → pf-syncwait` 810×, `pf-capture → pf-preproc`
+     750×, `pf-preproc → pf-infer` 661×, `pf-infer → pf-postproc` 640×;
+   * `pf-contend1/2` Runnable wait ≈ 5.0 s each, `pf-preproc` 1.38 s,
+     `pf-syncwait` 1.14 s.
+   This mode is **single-shot and supervised**: it takes the board offline for
+   ~2 minutes, requires physical recovery access in the worst case, and is not
+   suitable for routine window-B captures. It is not persistent (see
+   `kernel_ftrace/README.md` for the module-ABI reason and the incident below).
 2. **Boot-time autostart was not verified by an actual reboot.** The board was
    deliberately not rebooted (it hosts other fixtures). Verified instead: the
    marked block is inserted in `/userdata/startup.sh` after the shebang, that
@@ -278,7 +342,7 @@ logs/heap-profile-analysis.txt      heap profile queries/results
 9. The heap-profile script briefly stops the resident service by design; a
    capture window that must never see a gap needs coordination.
 
-## 10. Reproduce
+## 11. Reproduce
 
 ```bash
 # host
@@ -292,4 +356,12 @@ $D/scripts/heap-profile.sh 25
 # host analysis
 TRACE_PROCESSOR=/path/to/trace_processor_shell \
   ./scripts/summarize-trace.sh trace.pftrace build/out/pf-demo-x5
+
+# optional kernel-scheduling capture (flash-free kexec; supervised single-shot)
+./build/build-ftrace-kernel.sh
+INITRAMFS_BASE=/root/sdk_ly_x5_1.1.1/out/deploy/boot/initramfs \
+TRACEBOX=/path/to/tracebox ./build/build-kexec-initramfs.sh
+# stage Image-ftrace, initramfs-pf.cpio.gz, kexec_pf on the board, then:
+#   scripts/ftrace-kexec-capture.sh 52
+# see kernel_ftrace/README.md for the safety/recovery contract
 ```

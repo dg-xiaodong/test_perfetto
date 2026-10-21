@@ -232,10 +232,12 @@ These were measured on the board, not assumed:
    `cpu_frequency` on this image, and the Perfetto *Scheduling* state tracks
    will be empty. `configs/trace_ftrace.cfg` is provided for kernels that have
    ftrace; it is **not** usable on this board.
-2. **What does work:** `track_event` (SDK), `linux.process_stats` (thread/RSS),
-   `linux.sys_stats` (meminfo, vmstat, per-CPU times, **cpufreq**),
-   `linux.perf` (perf_event CPU sampling with user-space callstacks).
-   `perf_event_paranoid=2`, so captures must run as root.
+2. **What does work on the stock boot:** `track_event` (SDK),
+   `linux.process_stats` (thread/RSS), `linux.sys_stats` (meminfo, vmstat,
+   per-CPU times, **cpufreq**), `linux.perf` (perf_event CPU sampling with
+   user-space callstacks). `perf_event_paranoid=2`, so captures must run as
+   root. Real kernel scheduling data requires the optional kexec tracing kernel
+   described in §7.
 3. **Runnable-wait evidence without sched_switch:** the fixture records real
    wake-up overshoot of a 20 Hz absolute-timer thread pinned to the contended
    core (`SchedWakeupOvershootMs`), per-thread CPU% from `/proc`, thread states
@@ -244,7 +246,46 @@ These were measured on the board, not assumed:
 
 ---
 
-## 7. Verification
+## 7. Real kernel scheduling data (optional kexec tracing kernel)
+
+The stock X5 image is built with `CONFIG_FTRACE=n` (no tracefs, no sched/block
+tracepoints, no `/proc/schedstat`), so a stock boot cannot produce Perfetto's
+Scheduling tracks. `kernel_ftrace/` contains a verified, **flash-free** way to
+get them anyway:
+
+1. `build/build-ftrace-kernel.sh` rebuilds the same kernel source with tracing
+   enabled, starting from the board's exact config (`kernel_ftrace/board.config`,
+   byte-identical to `/proc/config.gz`);
+2. the tracing kernel is booted **once via `kexec_file_load`** (available on the
+   stock kernel) with a small initramfs (`build/build-kexec-initramfs.sh`);
+3. the initramfs mounts tracefs, runs `pf-demo-x5` + `tracebox` for N seconds,
+   writes the `.pftrace` to `/userdata`, and reboots back to the stock kernel;
+4. a hardware watchdog is armed before `RB_KEXEC`, so a failed boot resets the
+   board back to the stock kernel. **No partition is written.**
+
+Recorded evidence (in `logs/`):
+
+| trace | kernel data |
+|---|---|
+| `kernel-ftrace-full-52s.pftrace` | 33 652 `sched_switch`, 100 k syscalls, 2 672 `cpu_frequency`, 470 block events, 3 280 SDK flows, 10 144 perf samples |
+| `kernel-ftrace-45s.pftrace` | sched-only variant with `pf-infer` Runnable wait 5.34 s, of which 5.34 s in SCHED_CONTENTION |
+
+Kernel-level Runnable waits for `pf-infer`: SCHED_CONTENTION **3.39 s** total
+(max 40 ms), every other phase 5–15 ms; wakeup chains are real
+(`pf-capture → pf-syncwait` 810 times, `pf-preproc → pf-infer` 661 times).
+Full details and the exact commands are in `kernel_ftrace/README.md` and
+`logs/kernel-ftrace-full-analysis.txt`.
+
+**Operational warning:** this mode takes the board offline for ~2 minutes and
+needs physical access in the worst case. During development, after five
+consecutive kexec boots the board stopped answering on the network and needed a
+power cycle (first four boots self-recovered normally; root cause unconfirmed).
+Run it as a supervised single-shot, verify `uname -r` shows the stock kernel
+afterwards, and do not use it for routine window-B captures. Making the tracing
+kernel persistent requires replacing kernel + modules together (a
+`struct task_struct` ABI change) and has **not** been done.
+
+## 8. Verification
 
 ```bash
 $D/scripts/verify.sh 100

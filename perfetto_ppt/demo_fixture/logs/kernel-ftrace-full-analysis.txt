@@ -1,0 +1,76 @@
+# Kernel ftrace trace analysis (kexec ftrace kernel 6.1.83+ #4)
+# trace: ftrace-kernel-full-52s.pftrace (52 s, full event set)
+
+## totals
+"sched_rows","slices","flows","perf_samples","counters","block_events","cpu_freq_events"
+33652,119072,3280,10144,69569,470,2672
+
+## runnable wait per pf-* thread (kernel sched, CPU-idle state R)
+"name","segs","total_wait_ms","max_wait_ms"
+"pf-contend1",750,5032.940000,40.020000
+"pf-contend2",752,4927.300000,42.150000
+"pf-infer",1685,3447.890000,40.000000
+"pf-preproc",1478,1384.750000,14.460000
+"pf-syncwait",1344,1139.750000,15.250000
+"pf-schedprobe",1026,72.880000,12.160000
+"pf-output",1544,51.600000,0.120000
+"pf-postproc",1423,49.750000,0.090000
+"pf-capture",815,25.370000,0.080000
+"pf-ioworker",601,20.670000,0.080000
+"pf-demo-x5",513,17.140000,0.180000
+"pf-monitor",515,16.820000,0.180000
+"pf-memheap",283,9.980000,0.120000
+
+## pf-infer runnable wait per phase
+"name","segs","wait_ms","max_ms"
+"BASELINE",173,8.920000,0.140000
+"CPU_BURST",313,6.220000,0.070000
+"MEMORY_PULSE",279,15.080000,0.900000
+"MIXED_PIPELINE",232,5.520000,0.100000
+"SCHED_CONTENTION",305,3392.040000,40.000000
+"SYNC_IO",287,15.320000,0.180000
+
+## wakeup edges into pf-* threads (kernel sched_waking)
+"waker","wakee","c","avg_runnable_ms"
+"pf-postproc","pf-output",811,0.034000
+"pf-capture","pf-syncwait",810,1.339000
+"swapper","pf-capture",807,0.031000
+"swapper","pf-postproc",769,0.033000
+"pf-capture","pf-preproc",750,1.799000
+"swapper","pf-output",714,0.032000
+"pf-preproc","pf-infer",661,0.342000
+"swapper","pf-preproc",647,0.033000
+"pf-infer","pf-postproc",640,0.038000
+"swapper","pf-syncwait",530,0.029000
+"swapper","pf-demo-x5",513,0.033000
+"swapper","pf-monitor",511,0.033000
+
+## block I/O per process
+"name","c"
+"kworker/0:1H",234
+"kworker/4:1H",114
+"kworker/2:1H",95
+"kworker/3:1H",12
+"kworker/5:1H",8
+"kworker/1:1H",7
+
+## cpu frequency
+"samples","min_khz","max_khz"
+3496,300000.000000,1500000.000000
+
+## track_event stage slices still present
+"name","c"
+"SyntheticCapture",820
+"Preprocess",820
+"Postprocess",820
+"Output",820
+"InferenceStub",820
+"FramePipeline",103
+
+## required counters
+"name","n","mx"
+"CompletedFrames",820,864.000000
+"EndToEndLatencyMs",820,1475.700000
+"InflightFrames",104,25.000000
+"LiveAllocatedBytes",208,12582912.000000
+"QueueDepth",104,22.000000

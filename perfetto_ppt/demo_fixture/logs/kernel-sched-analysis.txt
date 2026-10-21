@@ -1,0 +1,49 @@
+# Kernel scheduling data (ftrace kernel 6.1.83+ #4, kexec boot)
+# trace: ftrace-kernel-45s.pftrace (45 s)
+
+## sched/thread_state totals
+"sched_rows","thread_states","perf_samples"
+29609,48815,8603
+
+## runnable wait per pf-* thread (state=R, cpu IS NULL)
+"name","segs","total_wait_ms","max_wait_ms"
+"pf-infer",1744,5393.960000,60.000000
+"pf-contend1",698,5036.510000,60.000000
+"pf-contend2",693,5011.040000,60.010000
+"pf-syncwait",1150,1190.010000,21.310000
+"pf-preproc",1305,1050.210000,14.410000
+"pf-output",1316,39.170000,0.080000
+"pf-postproc",1216,36.990000,0.100000
+"pf-schedprobe",890,24.410000,0.120000
+"pf-capture",707,19.930000,0.080000
+"pf-ioworker",531,17.420000,0.110000
+"pf-monitor",444,13.000000,0.080000
+"pf-demo-x5",443,12.720000,0.230000
+"pf-memheap",249,7.750000,0.100000
+
+## pf-infer runnable wait per phase
+"name","segs","wait_ms","max_ms"
+"CPU_BURST",348,8.570000,0.110000
+"MEMORY_PULSE",339,15.530000,0.150000
+"MIXED_PIPELINE",344,9.060000,0.100000
+"SCHED_CONTENTION",303,5341.820000,60.000000
+"SYNC_IO",301,13.760000,0.110000
+
+## wakeup edges into pf-* threads (who wakes whom)
+"waker","wakee","c"
+"[NULL]","pf-output",1316
+"[NULL]","pf-preproc",1264
+"[NULL]","pf-postproc",1213
+"[NULL]","pf-syncwait",1135
+"[NULL]","pf-schedprobe",889
+"[NULL]","pf-infer",820
+"[NULL]","pf-capture",707
+"[NULL]","pf-demo-x5",444
+"[NULL]","pf-ioworker",443
+"[NULL]","pf-monitor",443
+"[NULL]","pf-contend2",433
+"[NULL]","pf-contend1",431
+
+## blocked (D) functions
+"blocked_function","c","ms"
+"[NULL]",461,274.070000

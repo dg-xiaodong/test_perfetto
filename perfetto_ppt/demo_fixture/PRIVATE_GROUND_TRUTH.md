@@ -155,6 +155,36 @@ signature of each phase is stable.
 - one 52 s trace contained 820 frames (~15.8 fps average across the cycle)
 - `frames.log` / `pf-demo-x5.log` rotate at 8 MiB (one `.1` backup) — bounded
 
+## 6b. Kernel scheduling ground truth (optional kexec tracing kernel)
+
+Captured with the flash-free kexec tracing kernel (see `kernel_ftrace/README.md`
+and `logs/kernel-ftrace-full-52s.pftrace`). This is the number set to compare
+window B's analysis against when a sched-data trace is used.
+
+| measurement (52 s trace) | value |
+|---|---|
+| `sched_switch` rows | 33 652 |
+| `cpu_frequency` events | 2 672 (300 MHz–1.5 GHz) |
+| block I/O events | 470 |
+| syscalls | 100 k |
+| SDK slices / flows / perf samples (same trace) | 119 072 / 3 280 / 10 144 |
+| `pf-infer` runnable wait total | 3 448 ms (max 40 ms) |
+| `pf-infer` runnable wait in SCHED_CONTENTION | **3 392 ms** |
+| `pf-infer` runnable wait other phases | 5–15 ms each |
+| `pf-contend1/2` runnable wait | 5 033 / 4 927 ms |
+| `pf-preproc` runnable wait | 1 385 ms |
+| `pf-syncwait` runnable wait | 1 140 ms |
+| wakeup chains | `pf-postproc→pf-output` 811, `pf-capture→pf-syncwait` 810, `pf-capture→pf-preproc` 750, `pf-preproc→pf-infer` 661, `pf-infer→pf-postproc` 640 |
+
+Notes:
+* runnable wait = `thread_state.state='R' AND thread_state.cpu IS NULL`
+  (kernel sched, not the app-level proxy);
+* the sched-only 45 s trace (`logs/kernel-ftrace-45s.pftrace`) shows the same
+  shape with a different window (contention wait 5 342 ms);
+* the tracing kernel is not persistent: a stock boot has no sched data. The
+  traces in `logs/` are the reference; do not expect window B's routine
+  captures to contain these rows.
+
 ## 7. Board facts (measured, not assumed)
 
 - `uname -a`: `6.1.83-DR-PL5.1_V1.1.1`, aarch64, buildroot 2022.08, glibc 2.35
