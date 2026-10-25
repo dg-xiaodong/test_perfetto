@@ -18,11 +18,15 @@
 用 <https://ui.perfetto.dev> 打开即可；时钟为 BOOTTIME，公共 CSV 为 MONOTONIC（offset 291/250ns，
 见报告 §13）。ftrace 数据封装在 `.pftrace` 内（`ftrace_event` / `thread_state` / `sched_slice` 表）。
 
+UI 截图：[`cap-ov-1/ui-runnable-starvation.png`](cap-ov-1/ui-runnable-starvation.png) ——
+overview trace（Duration 29s 706ms 99µs 223ns）中 `pf-t0 4705` 的长 Runnable 条（红框，~36ms）
+结束后才获得 CPU；同一时间窗 CPU 5 由 `pf-sched-case [4703] / pf-t1 [4706]` 占用。
+
 ## 校验
 
 ```sh
 cd ppt_doc/schedule
-sha256sum -c SHA256SUMS.txt          # 覆盖除 README.md 外的全部文件（冻结证据集）
+sha256sum -c SHA256SUMS.txt          # 覆盖冻结证据集（README.md 与 UI 截图 ui-runnable-starvation.png 除外）
 sha256sum -c FIRST_PASS_REPORT.md.sha256
 ```
 
