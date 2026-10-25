@@ -1,0 +1,6 @@
+Loading trace: 0.00 MBLoading trace: 1.39 MB[177.616]     common_flags.cc:474 Trace loaded: 1.39 MB in 0.05s (29.0 MB/s)
+column 0 = link_id
+column 1 = n
+column 2 = so
+column 3 = si
+[177.617]            query.cc:159 Query execution time: 0 ms

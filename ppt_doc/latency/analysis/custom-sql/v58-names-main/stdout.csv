@@ -1,0 +1,9 @@
+"name","n","open","min_dur","max_dur"
+"lat.stage.result",5400,0,0,0
+"lat.stage",5400,0,2005583,85254292
+"lat.send",5400,0,0,0
+"lat.receive",5400,0,0,0
+"lat.queue",5400,0,26000,2505389042
+"lat.request.end",1800,0,0,0
+"lat.request.begin",1800,0,0,0
+"lat.request",1800,0,15177666,2565427834

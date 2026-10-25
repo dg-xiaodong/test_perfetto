@@ -1,0 +1,7 @@
+Loading trace: 0.00 MBLoading trace: 1.39 MB[119.481]     common_flags.cc:474 Trace loaded: 1.39 MB in 0.05s (28.1 MB/s)
+column 0 = name
+column 1 = n
+column 2 = open
+column 3 = min_dur
+column 4 = max_dur
+[119.482]            query.cc:159 Query execution time: 0 ms

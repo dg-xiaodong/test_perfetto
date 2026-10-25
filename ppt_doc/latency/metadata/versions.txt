@@ -1,0 +1,14 @@
+window: B (independent blind first pass)
+date_utc: 2026-10-25T07:06:08Z
+host: Linux LUOBO-ESPBR58 6.18.40.1-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Fri Jul 31 22:12:15 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+board: Linux buildroot 6.1.83-DR-PL5.1_V1.1.1 aarch64
+board_nproc: 8
+board_mem_MB: 1304
+app: pf-lat-case 1.0.0 sha256=bab492b264f6e5bd5d993d6228d309b1610e1a7bd37dad2bbb71d9dac1f00b55
+app_run_id: run-6692-6482 (pid 6692, started 2026-01-01 01:48 board local, never restarted during captures)
+sdk_version: v58.2 (per PUBLIC_BRIEF/FROZEN)
+tracebox: Perfetto v58.2-add693d8b sha256=2d21883e9c55818f851fd8c391afb9b366032b3110076b4fd41f31f30b5849fa (/userdata/perfetto-skill-lab/work/b/tracebox)
+trace_processor: Perfetto v58.2-add693d8b sha256=58042408e6cc861fb1a731c26bb082dc222285561eaa4e12a48a8b2b90dca7b9 (host x86_64)
+skill: perfetto-latency-debugging v0.1.1 candidate (/root/.dsh/skills/perfetto-latency-debugging)
+category: rdk.latency
+trace_config: track_event only (main/probe); track_event+linux.ftrace(sched_switch,sched_waking)+process_stats (sched)

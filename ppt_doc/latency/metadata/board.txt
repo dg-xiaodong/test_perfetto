@@ -1,0 +1,28 @@
+Linux buildroot 6.1.83-DR-PL5.1_V1.1.1 #1 SMP PREEMPT Thu Oct 22 11:40:38 CST 2026 aarch64 GNU/Linux
+---
+8
+---
+Linux version 6.1.83-DR-PL5.1_V1.1.1 (root@LUOBO-ESPBR58) (aarch64-none-linux-gnu-gcc (Arm GNU Toolchain 11.3.Rel1) 11.3.1 20220712, GNU ld (Arm GNU Toolchain 11.3.Rel1) 2.38.20220708) #1 SMP PREEMPT Thu Oct 22 11:40:38 CST 2026
+---
+               total        used        free      shared  buff/cache   available
+Mem:            1304         187         921           0         195        1094
+---
+Perfetto v58.2-add693d8b (add693d8b338ba9599dbcbc3e300b1ab8c000897)
+2d21883e9c55818f851fd8c391afb9b366032b3110076b4fd41f31f30b5849fa  /userdata/perfetto-skill-lab/work/b/tracebox
+bab492b264f6e5bd5d993d6228d309b1610e1a7bd37dad2bbb71d9dac1f00b55  /userdata/perfetto-skill-lab/latency/pf-lat-case
+---
+pf-lat-case 1.0.0 starting pid=6692 run_id=run-6692-6482 tracing=0
+---
+6692
+---
+total 4048
+drwxr-xr-x 2 root root    4096 Jan  1 01:48 .
+drwx------ 7 root root    4096 Jan  1 01:42 ..
+-rw-r--r-- 1 root root    2282 Jan  1 01:48 PUBLIC_BRIEF.md
+-rwxr-xr-x 1 root root 2222504 Jan  1 01:42 pf-lat-case
+-rw-r--r-- 1 root root       5 Jan  1 01:48 pf-lat-case.pid
+-rw-r--r-- 1 root root 1882761 Jan  1 02:18 public_requests.csv
+-rw-r--r-- 1 root root      67 Jan  1 01:48 run.log
+-rwxr-xr-x 1 root root     798 Jan  1 01:42 start.sh
+-rwxr-xr-x 1 root root     597 Jan  1 01:42 status.sh
+-rwxr-xr-x 1 root root     680 Jan  1 01:42 stop.sh

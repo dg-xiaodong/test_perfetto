@@ -1,0 +1,44 @@
+class n p50 p95 p99 max (e2e ms)
+normal           1246       15.782       16.039       16.150       96.474
+mild              181       29.344       29.905       30.001       30.008
+severe_arrival    211     1332.480     2459.503     2565.018     2565.467
+drain_after       162     1309.762     2430.939     2520.758     2520.873
+
+component medians by class (ms):
+normal          n= 1246 pre=2.027 work=8.019 out=5.022 qpre=0.125 qwork=0.126 qout=0.069 sw=15.069 qs=0.349
+mild            n=  181 pre=2.015 work=22.008 out=5.008 qpre=0.061 qwork=0.064 qout=0.036 sw=29.036 qs=0.164
+severe_arrival  n=  211 pre=2.027 work=8.016 out=85.106 qpre=0.128 qwork=0.128 qout=1236.734 sw=95.139 qs=1236.992
+drain_after     n=  162 pre=2.017 work=8.013 out=5.007 qpre=0.055 qwork=0.049 qout=1316.133 sw=15.045 qs=1316.430
+
+window boundaries (app seconds, from request start sampling):
+  mild: 1100.050 .. 1103.000  n=60
+  mild: 1130.000 .. 1133.000  n=61
+  mild: 1160.050 .. 1163.000  n=60
+  severe_arrival: 1116.050 .. 1119.500  n=70
+  severe_arrival: 1146.050 .. 1149.500  n=70
+  severe_arrival: 1176.000 .. 1179.500  n=71
+
+worst E2E request:
+  rid=22991
+  t=1149.49999984
+  ph=9.4999998400001
+  e2e=2565466668
+  pre=2026458
+  work=8028625
+  out=85154125
+  qpre=125667
+  qwork=204000
+  qout=2469585626
+  sw=95209208
+  qs=2469915293
+
+severe-window first/last request:
+  first: {'rid': 22322, 't': 1116.049969824, 'e2e': 130420042, 'out': 85077667, 'qout': 35164750}
+  last : {'rid': 23591, 't': 1179.499994813, 'e2e': 2565017834, 'out': 85106125, 'qout': 2469083126}
+
+service-rate math:
+  arrival interval median (CSV): see CSV check
+  severe output service time = 85.1 ms -> rate = 11.751/s
+  arrival rate = 20/s -> backlog growth = 8.249/s
+  backlog over 3.5 s = 28.87 requests
+  max queue wait ~ backlog*85.1ms = 2.457 s

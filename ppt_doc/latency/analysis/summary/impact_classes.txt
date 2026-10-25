@@ -1,0 +1,20 @@
+impact classes by E2E (nearest-rank):
+  baseline(<20ms)        n=1239 ( 68.8%) p50=    15.773 p95=    16.030 p99=    16.106 max=    16.393
+  mild(20-40ms)          n= 180 ( 10.0%) p50=    29.344 p95=    29.905 p99=    30.001 max=    30.008
+  transitional(40-100ms) n=   9 (  0.5%) p50=    95.577 p95=    96.474 p99=    96.474 max=    96.474
+  severe(>100ms)         n= 372 ( 20.7%) p50=  1332.480 p95=  2431.369 p99=  2530.232 max=  2565.467
+
+severe(>100ms) component medians:
+  e2e: median=1343.145 ms  p95=2431.369 ms
+  pre: median=2.026 ms  p95=2.032 ms
+  work: median=8.015 ms  p95=8.033 ms
+  out: median=85.067 ms  p95=85.136 ms
+  qout: median=1282.540 ms  p95=2371.316 ms
+  qs: median=1282.801 ms  p95=2371.376 ms
+
+severe requests arriving inside the [6.0,9.5)s window vs outside (drain):
+  inside: 210 p50 e2e 1349.2245005 out med 85.105
+  outside: 162 p50 e2e 1331.78573 out med 5.006729 qout med 1316.1332085
+
+last slow output end time (app s):
+  tail slow outputs continue until ~ 1179.499994813 (arrival; stage end later)

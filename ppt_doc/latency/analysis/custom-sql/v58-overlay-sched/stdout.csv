@@ -1,0 +1,12 @@
+"klass","stage","state","slices","intervals","total_overlap_ms","avg_overlap_ms_per_slice"
+"output_fast","output","Running",1182,1251,5931.200000,5.020000
+"output_fast","output","R",54,69,4.400000,0.080000
+"output_slow","output","S",181,2896,14351.500000,79.290000
+"output_slow","output","Running",181,3089,977.400000,5.400000
+"output_slow","output","R",181,2907,76.800000,0.420000
+"output_slow","output","R+",1,1,0.000000,0.050000
+"preprocess_fast","preprocess","Running",1391,1391,2813.500000,2.020000
+"work_fast","work","Running",1271,1349,10193.300000,8.020000
+"work_fast","work","R",66,78,3.100000,0.050000
+"work_slow","work","Running",121,160,2644.100000,21.850000
+"work_slow","work","R",32,39,21.200000,0.660000

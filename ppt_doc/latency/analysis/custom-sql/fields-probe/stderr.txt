@@ -1,0 +1,21 @@
+Loading trace: 0.00 MBLoading trace: 1.39 MB[128.720]     common_flags.cc:474 Trace loaded: 1.39 MB in 0.06s (23.6 MB/s)
+column 0 = kind
+column 1 = n
+column 2 = cv
+column 3 = runid
+column 4 = streamid
+column 5 = reqid
+column 6 = pid_inst
+column 7 = stageid
+column 8 = stageinst
+column 9 = attempt
+column 10 = queueid
+column 11 = qvisit
+column 12 = linkid
+column 13 = frominst
+column 14 = toinst
+column 15 = status
+column 16 = exp_stage
+column 17 = exp_queue
+column 18 = exp_link
+[128.729]            query.cc:159 Query execution time: 8 ms

@@ -1,0 +1,9 @@
+Cross-check: main trace request lifecycles vs public_requests.csv (same run_id)
+matched by request_id: 1800 / 1800
+status mismatches: 0
+e2e diff (csv trace) ns: min=-86167 median=-209 max=67167
+trace_begin - csv_start ns: min=1125 median=5209 max=71875
+trace_end - csv_finish ns: min=1291 median=3708 max=90000
+interpretation: same clock (CLOCK_MONOTONIC); trace lifecycle matches public record within <0.1 ms;
+the app's own finish includes pre-BEGIN/post-END bookkeeping outside the traced slice.
+csv rows whose start_ns falls inside trace bounds: 1799

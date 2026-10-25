@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/root/code_1.0.20/tmp/perfetto582/linux-amd64/trace_processor_shell",
+    "query",
+    "-f",
+    "/root/sdk_ly_x5_1.1.1/tmp/wb-latency/q/v58-quality-main/query.sql",
+    "/root/sdk_ly_x5_1.1.1/tmp/wb-latency/data/cap-main/trace.pftrace"
+  ],
+  "returncode": 0,
+  "trace_sha256": "ff6cbe6e129d01de5f3738a776948cf5bf3d3a1c2e70460ea11a1889faa6b385",
+  "tp_sha256": "58042408e6cc861fb1a731c26bb082dc222285561eaa4e12a48a8b2b90dca7b9",
+  "sql_sha256": "4ee537c29afd3043b565f7eec3368f72a254fed154d8d65fe9bb5538a10160b1",
+  "note": "Exit 0 confirms execution only. Verify identity, quality, contract and coverage."
+}

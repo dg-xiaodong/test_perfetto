@@ -1,0 +1,10 @@
+# perfetto-latency-debugging 0.1.1 Candidate; collector-specific schema/runtime still need validation.
+duration_ms: 15000
+buffers { size_kb: 16384 fill_policy: DISCARD }
+data_sources { config {
+  name: "track_event"
+  track_event_config {
+    disabled_categories: "*"
+    enabled_categories: "rdk.latency"
+  }
+} }

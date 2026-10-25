@@ -1,0 +1,4 @@
+name,observed,closed_samples,open_or_invalid,mean_wall_ns,p50_wall_ns,p95_wall_ns,p99_wall_ns,max_wall_ns,tail_sample_warning,quality_loss,meaning
+output,1800,1800,0,14496489.928888889,5018917,85119584,85135625,85254292,False,False,Inclusive wall duration of observed slices; not CPU time or E2E attribution
+preprocess,1800,1800,0,2021141.1027777777,2024792,2032167,2106417,2234458,False,False,Inclusive wall duration of observed slices; not CPU time or E2E attribution
+work,1800,1800,0,9421379.606666667,8027291,22008000,22028625,22101375,False,False,Inclusive wall duration of observed slices; not CPU time or E2E attribution
