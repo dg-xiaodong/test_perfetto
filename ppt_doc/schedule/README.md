@@ -22,11 +22,16 @@ UI 截图：[`cap-ov-1/ui-runnable-starvation.png`](cap-ov-1/ui-runnable-starvat
 overview trace（Duration 29s 706ms 99µs 223ns）中 `pf-t0 4705` 的长 Runnable 条（红框，~36ms）
 结束后才获得 CPU；同一时间窗 CPU 5 由 `pf-sched-case [4703] / pf-t1 [4706]` 占用。
 
+UI 截图 2：[`cap-ov-1/p9.webp`](cap-ov-1/p9.webp) —— 同一 trace 中最长的一次等待（`thread_state[3995]`）：
+**Runnable 46ms 504µs 875ns**（00:00:07.497 836 087 起），Previous state `Sleeping 2ms 398µs 458ns`，
+Next state `Running 1ms 117µs 417ns`，**Woken by Interrupt** —— 即 IRQ 上下文唤醒（对应报告 §6/§7 的
+`irq_context=1` 与 46.5ms 最大等待）。
+
 ## 校验
 
 ```sh
 cd ppt_doc/schedule
-sha256sum -c SHA256SUMS.txt          # 覆盖冻结证据集（README.md 与 UI 截图 ui-runnable-starvation.png 除外）
+sha256sum -c SHA256SUMS.txt          # 覆盖冻结证据集（README.md 与 UI 截图 ui-runnable-starvation.png、p9.webp 除外）
 sha256sum -c FIRST_PASS_REPORT.md.sha256
 ```
 
