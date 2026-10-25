@@ -1,0 +1,22 @@
+[982.211]          service.cc:304 Started traced, listening on @traced-p-5758 @traced-c-5758
+[982.500]            probes.cc:98 Starting traced_probes service
+[982.502]  probes_producer.cc:435 Connected to the service
+[982.509]   perf_producer.cc:1394 Connected to the service
+[982.509]    perfetto_cmd.cc:1165 Connected to the Perfetto traced service, TTL: 15s
+[982.510] ng_service_impl.cc:1332 Configured tracing session 1, #sources:4, duration:15000 ms, #buffers:1, total buffer size:8192 KB, total sessions:1, uid:0 session name: ""
+[982.511]    perf_producer.cc:473 StartDataSource(ds 3, session 1, name linux.perf)
+[982.633]    perf_producer.cc:473 StartDataSource(ds 4, session 1, name linux.perf)
+[982.687]          tracefs.cc:399 Failed to setup event triggers for synthetic:rss_stat_throttled (errno: 22, Invalid argument)
+[982.690]  probes_producer.cc:155 Ftrace setup (target_buf=1)
+[982.690]          tracefs.cc:636 disabled ftrace in /sys/kernel/debug/tracing/
+[982.880]          tracefs.cc:633 enabled ftrace in /sys/kernel/debug/tracing/
+[997.516] ng_service_impl.cc:2409 FlushAndDisableTracing(1) done, success=1
+[997.516]  probes_producer.cc:582 Producer stop (id=1)
+[997.517]    perf_producer.cc:658 StopDataSource(3)
+[997.517]  probes_producer.cc:582 Producer stop (id=2)
+[997.517]    perf_producer.cc:658 StopDataSource(4)
+[997.518]          tracefs.cc:636 disabled ftrace in /sys/kernel/debug/tracing/
+[997.546]   perf_producer.cc:1247 FinishDataSourceStop(3)
+[997.650]   perf_producer.cc:1247 FinishDataSourceStop(4)
+[997.800]          tracefs.cc:636 disabled ftrace in /sys/kernel/debug/tracing/
+[997.812]    perfetto_cmd.cc:1322 Wrote 298275 bytes into /userdata/perfetto-skill-lab/work/b/cap-bw-1/trace.pftrace

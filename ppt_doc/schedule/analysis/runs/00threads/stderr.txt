@@ -1,0 +1,10 @@
+Loading trace: 0.00 MBLoading trace: 0.35 MB[544.226]     common_flags.cc:474 Trace loaded: 0.35 MB in 0.06s (5.4 MB/s)
+column 0 = upid
+column 1 = pid
+column 2 = process_name
+column 3 = utid
+column 4 = tid
+column 5 = thread_name
+column 6 = start_ts
+column 7 = end_ts
+[544.226]            query.cc:159 Query execution time: 0 ms

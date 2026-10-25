@@ -1,0 +1,82 @@
+### board identity
+Linux buildroot 6.1.83-DR-PL5.1_V1.1.1 #1 SMP PREEMPT Thu Oct 22 11:40:38 CST 2026 aarch64 GNU/Linux
+kernel=Linux version 6.1.83-DR-PL5.1_V1.1.1 (root@LUOBO-ESPBR58) (aarch64-none-linux-gnu-gcc (Arm GNU Toolchain 11.3.Rel1) 11.3.1 20220712, GNU ld (Arm GNU Toolchain 11.3.Rel1) 2.38.20220708) #1 SMP PREEMPT Thu Oct 22 11:40:38 CST 2026
+uptime=4946.19s
+cpus_online=0-7
+pagesize_bytes=
+tracefs=/sys/kernel/debug/tracing
+trace_clock=local global counter uptime perf mono mono_raw [boot] tai
+tracing_on=0
+perf_event_paranoid=2
+perf_event_mlock_kb=516
+### kernel config
+CONFIG_PERF_EVENTS=y
+CONFIG_TRACEPOINTS=y
+CONFIG_HZ=100
+CONFIG_FRAME_POINTER=y
+CONFIG_STACKTRACE=y
+CONFIG_FTRACE=y
+CONFIG_FUNCTION_TRACER=y
+CONFIG_SCHED_TRACER=y
+### tracepoint availability
+enable filter sched_kthread_stop sched_kthread_stop_ret sched_kthread_work_execute_end sched_kthread_work_execute_start sched_kthread_work_queue_work sched_migrate_task sched_move_numa sched_pi_setprio sched_process_exec sched_process_exit sched_process_fork sched_process_free sched_process_hang sched_process_wait sched_stat_runtime sched_stick_numa sched_swap_numa sched_switch sched_wait_task sched_wake_idle_without_ipi sched_wakeup sched_wakeup_new sched_waking 
+### target process
+pid=4703 starttime=370262
+tid=4703 comm=pf-sched-case state=S nice=0 prio=20 affinity=7 cgroup=
+tid=4705 comm=pf-t0 state=S nice=17 prio=37 affinity=5 cgroup=
+tid=4706 comm=pf-t1 state=S nice=0 prio=20 affinity=5 cgroup=
+tid=4707 comm=pf-t2 state=R nice=0 prio=20 affinity=6 cgroup=
+### app hash
+0c535463214af2bd073e49003e503d6b14fb3a75998ad1f6fa550a3aba321e0b  /userdata/perfetto-skill-lab/scheduling/pf-sched-case
+### csv size/mtime
+-rw-r--r-- 1 root root 3181670 Jan  1 01:22 /userdata/perfetto-skill-lab/scheduling/a_latency.csv
+### tracebox
+Perfetto v58.2-add693d8b (add693d8b338ba9599dbcbc3e300b1ab8c000897)
+2d21883e9c55818f851fd8c391afb9b366032b3110076b4fd41f31f30b5849fa  /userdata/perfetto-skill-lab/work/b/tracebox
+KernelPageSize:        4 kB
+total 0
+-r--------  1 root root 0 Jan  1 01:22 auxv
+-r--r--r--  1 root root 0 Jan  1 01:21 cgroup
+--w-------  1 root root 0 Jan  1 01:22 clear_refs
+-r--r--r--  1 root root 0 Jan  1 01:22 cmdline
+-rw-r--r--  1 root root 0 Jan  1 01:22 comm
+-r--r--r--  1 root root 0 Jan  1 01:22 cpuset
+lrwxrwxrwx  1 root root 0 Jan  1 01:22 cwd -> /userdata/perfetto-skill-lab/scheduling
+-r--------  1 root root 0 Jan  1 01:22 environ
+lrwxrwxrwx  1 root root 0 Jan  1 01:22 exe -> /userdata/perfetto-skill-lab/scheduling/pf-sched-case
+dr-x------  2 root root 0 Jan  1 01:22 fd
+dr-xr-xr-x  2 root root 0 Jan  1 01:22 fdinfo
+-rw-r--r--  1 root root 0 Jan  1 01:22 gid_map
+-r--------  1 root root 0 Jan  1 01:22 io
+-r--------  1 root root 0 Jan  1 01:22 ksm_merging_pages
+-r--------  1 root root 0 Jan  1 01:22 ksm_stat
+-r--r--r--  1 root root 0 Jan  1 01:22 limits
+-rw-r--r--  1 root root 0 Jan  1 01:22 loginuid
+-r--r--r--  1 root root 0 Jan  1 01:22 maps
+-rw-------  1 root root 0 Jan  1 01:22 mem
+-r--r--r--  1 root root 0 Jan  1 01:22 mountinfo
+-r--r--r--  1 root root 0 Jan  1 01:22 mounts
+dr-xr-xr-x 43 root root 0 Jan  1 01:22 net
+dr-x--x--x  2 root root 0 Jan  1 01:22 ns
+-rw-r--r--  1 root root 0 Jan  1 01:22 oom_adj
+-r--r--r--  1 root root 0 Jan  1 01:22 oom_score
+-rw-r--r--  1 root root 0 Jan  1 01:22 oom_score_adj
+-r--------  1 root root 0 Jan  1 01:22 pagemap
+-r--------  1 root root 0 Jan  1 01:22 personality
+-rw-r--r--  1 root root 0 Jan  1 01:22 projid_map
+lrwxrwxrwx  1 root root 0 Jan  1 01:22 root -> /
+-r--r--r--  1 root root 0 Jan  1 01:22 sessionid
+-rw-r--r--  1 root root 0 Jan  1 01:22 setgroups
+-r--r--r--  1 root root 0 Jan  1 01:22 smaps
+-r--r--r--  1 root root 0 Jan  1 01:22 smaps_rollup
+-r--------  1 root root 0 Jan  1 01:22 stack
+-r--r--r--  1 root root 0 Jan  1 01:02 stat
+-r--r--r--  1 root root 0 Jan  1 01:22 statm
+-r--r--r--  1 root root 0 Jan  1 01:02 status
+-r--------  1 root root 0 Jan  1 01:22 syscall
+-rw-r--r--  1 root root 0 Jan  1 01:22 uid_map
+-r--r--r--  1 root root 0 Jan  1 01:22 wchan
+
+cat: /proc/4703/task/4705/sched: No such file or directory
+stat:
+37 17 4

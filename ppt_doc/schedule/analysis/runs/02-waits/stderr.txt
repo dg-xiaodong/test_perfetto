@@ -1,0 +1,15 @@
+Loading trace: 0.00 MBLoading trace: 0.35 MB[544.577]     common_flags.cc:474 Trace loaded: 0.35 MB in 0.05s (7.3 MB/s)
+column 0 = wait_id
+column 1 = utid
+column 2 = state
+column 3 = sleep_start_ts
+column 4 = sleep_ns
+column 5 = wake_ts
+column 6 = run_ts
+column 7 = runnable_ns
+column 8 = runnable_state_id
+column 9 = waker_utid
+column 10 = switch_cpu
+column 11 = run_cpu
+column 12 = boundary_status
+[544.596]            query.cc:159 Query execution time: 18 ms

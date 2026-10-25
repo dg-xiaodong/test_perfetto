@@ -1,0 +1,11 @@
+Loading trace: 0.00 MBLoading trace: 0.35 MB[544.978]     common_flags.cc:474 Trace loaded: 0.35 MB in 0.05s (7.0 MB/s)
+column 0 = id
+column 1 = utid
+column 2 = ts
+column 3 = dur
+column 4 = state
+column 5 = waker_utid
+column 6 = waker_id
+column 7 = irq_context
+column 8 = overlap_ns
+[544.983]            query.cc:159 Query execution time: 3 ms

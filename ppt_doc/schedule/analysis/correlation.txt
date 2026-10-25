@@ -1,0 +1,49 @@
+== public CSV rows whose start falls inside the trace ==
+rows=1398 late(>5ms)=69 clusters=7
+  seq 40087..40096  scheduled_mono 4557973450973..4558393450973  span_ms=420 n=10 maxlat_ms=46.6 meanlat_ms=39.6
+  seq 40270..40279  scheduled_mono 4561913450973..4562333450973  span_ms=420 n=10 maxlat_ms=46.6 meanlat_ms=33.6
+  seq 40452..40460  scheduled_mono 4565793450973..4566153450973  span_ms=360 n=9 maxlat_ms=46.6 meanlat_ms=38.5
+  seq 40629..40637  scheduled_mono 4569573450973..4569933450973  span_ms=360 n=9 maxlat_ms=46.6 meanlat_ms=37.7
+  seq 40832..40841  scheduled_mono 4573873450973..4574293450973  span_ms=420 n=10 maxlat_ms=46.6 meanlat_ms=37.6
+  seq 41006..41015  scheduled_mono 4577613450973..4578013450973  span_ms=400 n=10 maxlat_ms=46.6 meanlat_ms=33.6
+  seq 41180..41190  scheduled_mono 4581313450973..4581773450973  span_ms=460 n=11 maxlat_ms=46.6 meanlat_ms=34.8
+
+== identity / clock audit ==
+matched 1397/1398; residual (csv_start - trace_running_ts) us: min 3.3 p50 15.1 p90 16.5 max 25.5
+  UNMATCHED: (39913, 4554493450973, 4554493520921, 4554494587546, 69948) 
+
+== decomposition of matched episodes ==
+episodes with direct S/D->R->Running adjacency: 1397
+runnable wait ms: p50 0.043 p90 0.046 p99 46.505 max 46.515
+late episodes=69  total runnable wait=2507.1 ms
+  wake_delay us: min 52.0 p50 52.6 max 55.2
+  runnable_wait ms: min 6.48 p50 36.51 max 46.51
+  runnable share of latency: p50 0.9985
+  late wake irq_context=1: 69/69; waker_utid distribution: {211: 69}
+
+== CPU5 occupancy during LATE runnable waits (total 2507.1 ms, all processes) ==
+  pf-t1                2507.02 ms  100.0%
+  kworker/5:2(167)        0.03 ms    0.0%
+  migration/5(29)         0.03 ms    0.0%
+
+== CPU5 occupancy during ALL runnable waits (total 2549.3 ms, all processes) ==
+  pf-t1                2507.02 ms   98.3%
+  swapper(idle)          42.23 ms    1.7%
+  kworker/5:2(167)        0.03 ms    0.0%
+  migration/5(29)         0.03 ms    0.0%
+
+== scheduled_ns increment inside first late episode ==
+  seq 40084 sched=4557913450973 delta_ms=- lat_ms=0.1
+  seq 40085 sched=4557933450973 delta_ms=20 lat_ms=0.1
+  seq 40086 sched=4557953450973 delta_ms=20 lat_ms=0.1
+  seq 40087 sched=4557973450973 delta_ms=20 lat_ms=36.6
+  seq 40088 sched=4558013450973 delta_ms=40 lat_ms=26.6
+  seq 40089 sched=4558053450973 delta_ms=40 lat_ms=36.6
+  seq 40090 sched=4558093450973 delta_ms=40 lat_ms=46.6
+  seq 40091 sched=4558153450973 delta_ms=60 lat_ms=36.6
+  seq 40092 sched=4558193450973 delta_ms=40 lat_ms=46.6
+  seq 40093 sched=4558253450973 delta_ms=60 lat_ms=36.6
+  seq 40094 sched=4558293450973 delta_ms=40 lat_ms=46.6
+  seq 40095 sched=4558353450973 delta_ms=60 lat_ms=36.6
+  seq 40096 sched=4558393450973 delta_ms=40 lat_ms=46.6
+  seq 40097 sched=4558453450973 delta_ms=60 lat_ms=0.1

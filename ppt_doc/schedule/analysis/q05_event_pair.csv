@@ -1,0 +1,34 @@
+Loading trace: 0.00 MBLoading trace: 0.30 MB[649.534]     common_flags.cc:474 Trace loaded: 0.30 MB in 0.05s (6.2 MB/s)
+
+
+Trace health issues:
+
+  Data losses
+    perf_cpu_lost_records[5]: 1 | Count of perf samples lost due to kernel buffer overruns. The trace is missing information, but it's not known which processes are affected. Consider lowering the sampling frequency or raising the ring_buffer_pages config option.
+
+column 0 = wait_id
+column 1 = utid
+column 2 = sleep_start_ts
+column 3 = sleep_ns
+column 4 = waking_boundary_ts
+column 5 = runnable_ns
+column 6 = run_ts
+column 7 = waker_utid
+column 8 = irq_context
+column 9 = switch_cpu
+column 10 = waking_cpu
+column 11 = waking_event_id
+column 12 = switch_candidates
+column 13 = wake_candidates
+column 14 = switch_sample_id
+column 15 = wake_sample_id
+column 16 = switch_offset_ns
+column 17 = wake_offset_ns
+column 18 = switch_status
+column 19 = wake_status
+column 20 = switch_callsite_id
+column 21 = wake_callsite_id
+column 22 = evidence
+[649.762]            query.cc:159 Query execution time: 226 ms
+"wait_id","utid","sleep_start_ts","sleep_ns","waking_boundary_ts","runnable_ns","run_ts","waker_utid","irq_context","switch_cpu","waking_cpu","waking_event_id","switch_candidates","wake_candidates","switch_sample_id","wake_sample_id","switch_offset_ns","wake_offset_ns","switch_status","wake_status","switch_callsite_id","wake_callsite_id","evidence"
+1197,2,4984051172376,2345458,4984053517834,36493917,4984090011751,211,1,5,5,1231,0,0,"[NULL]","[NULL]","[NULL]","[NULL]","SAMPLE_MISSING","IRQ_CONTEXT","[NULL]","[NULL]","PARTIAL_OR_UNKNOWN_NO_ROOT_CAUSE"
