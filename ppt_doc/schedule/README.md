@@ -27,11 +27,16 @@ UI 截图 2：[`cap-ov-1/p9.webp`](cap-ov-1/p9.webp) —— 同一 trace 中最�
 Next state `Running 1ms 117µs 417ns`，**Woken by Interrupt** —— 即 IRQ 上下文唤醒（对应报告 §6/§7 的
 `irq_context=1` 与 46.5ms 最大等待）。
 
+UI 截图 3：[`cap-ov-1/p10.webp`](cap-ov-1/p10.webp) —— 竞争者一侧：CPU 5 上 `pf-t1 [4706]` 的
+**29ms 966µs 41ns 连续 sched slice**（Priority 120 = nice 0，End State Runnable，sched[1241]），
+同一时间窗 `pf-t0 4705` 轨道连续出现 Runnable 条；CPU 6 另见 `pf-t2 [4707]` 长切片
+（不同核，与本问题无关）。
+
 ## 校验
 
 ```sh
 cd ppt_doc/schedule
-sha256sum -c SHA256SUMS.txt          # 覆盖冻结证据集（README.md 与 UI 截图 ui-runnable-starvation.png、p9.webp 除外）
+sha256sum -c SHA256SUMS.txt          # 覆盖冻结证据集（README.md 与 UI 截图 ui-runnable-starvation.png、p9.webp、p10.webp 除外）
 sha256sum -c FIRST_PASS_REPORT.md.sha256
 ```
 
