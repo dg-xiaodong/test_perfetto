@@ -1,0 +1,52 @@
+# growth-phase capture: rss_stat + syscalls + sched + perf mmap callstacks
+buffers { size_kb: 16384 fill_policy: RING_BUFFER }
+duration_ms: 120000
+
+data_sources {
+  config {
+    name: "linux.process_stats"
+    target_buffer: 0
+    process_stats_config {
+      scan_all_processes_on_start: true
+      proc_stats_poll_ms: 1000
+    }
+  }
+}
+
+data_sources {
+  config {
+    name: "linux.ftrace"
+    target_buffer: 0
+    ftrace_config {
+      buffer_size_kb: 4096
+      drain_period_ms: 250
+      ftrace_events: "sched/sched_switch"
+      ftrace_events: "kmem/rss_stat"
+      syscall_events: "sys_mmap"
+      syscall_events: "sys_munmap"
+      syscall_events: "sys_brk"
+      syscall_events: "sys_madvise"
+    }
+  }
+}
+
+data_sources {
+  config {
+    name: "linux.perf"
+    target_buffer: 0
+    perf_event_config {
+      timebase {
+        period: 1
+        tracepoint {
+          name: "raw_syscalls:sys_enter"
+          filter: "id == 222"
+        }
+      }
+      callstack_sampling {
+        scope { target_cmdline: "pf-mem-case" }
+        kernel_frames: false
+      }
+      ring_buffer_pages: 512
+    }
+  }
+}

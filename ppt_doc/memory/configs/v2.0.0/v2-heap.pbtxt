@@ -1,0 +1,25 @@
+buffers { size_kb: 32768 fill_policy: RING_BUFFER }
+duration_ms: 120000
+
+data_sources {
+  config {
+    name: "android.heapprofd"
+    target_buffer: 0
+    heapprofd_config {
+      process_cmdline: "pf-mem-case"
+      sampling_interval_bytes: 4096
+      shmem_size_bytes: 8388608
+      all_heaps: true
+      block_client: true
+      continuous_dump_config { dump_phase_ms: 5000 dump_interval_ms: 5000 }
+    }
+  }
+}
+
+data_sources {
+  config {
+    name: "linux.process_stats"
+    target_buffer: 0
+    process_stats_config { proc_stats_poll_ms: 1000 scan_all_processes_on_start: true }
+  }
+}
