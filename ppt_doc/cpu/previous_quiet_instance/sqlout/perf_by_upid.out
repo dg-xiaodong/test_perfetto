@@ -1,0 +1,14 @@
+Loading trace: 0.00 MBLoading trace: 1.61 MB[067.773]     common_flags.cc:474 Trace loaded: 1.61 MB in 0.09s (18.7 MB/s)
+"upid","pid","name","samples"
+0,0,"[NULL]",15613
+188,1762,"/userdata/perfetto-skill-lab/cpu/pf-cpu-case",294
+2,1787,"/userdata/perfetto-cpu-session/tracebox",49
+1,1791,"/userdata/perfetto-cpu-session/tracebox",27
+191,1783,"/userdata/perfetto-cpu-session/tracebox",8
+189,1773,"sh",2
+193,1794,"sleep",1
+194,1795,"sleep",1
+201,1802,"sleep",1
+203,1804,"sleep",1
+205,1806,"sleep",1
+209,1810,"sleep",1

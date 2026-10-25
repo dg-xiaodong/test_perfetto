@@ -1,0 +1,6 @@
+Loading trace: 0.00 MBLoading trace: 2.31 MB[683.173]     common_flags.cc:474 Trace loaded: 2.31 MB in 0.05s (48.8 MB/s)
+column 0 = cls
+column 1 = slices
+column 2 = avg_ms
+column 3 = max_ms
+[683.173]            query.cc:159 Query execution time: 0 ms

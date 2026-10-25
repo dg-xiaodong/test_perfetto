@@ -1,0 +1,4 @@
+Loading trace: 0.00 MBLoading trace: 1.61 MB[067.878]     common_flags.cc:474 Trace loaded: 1.61 MB in 0.07s (24.7 MB/s)
+"thread_name","leaf_frame","mapping","samples"
+"pf-worker-p","_ZN3pfp12p_kernel_hotEml","/userdata/perfetto-skill-lab/cpu/pf-cpu-case",158
+"pf-worker-q","_ZN3pfq12q_kernel_hotEml","/userdata/perfetto-skill-lab/cpu/pf-cpu-case",136

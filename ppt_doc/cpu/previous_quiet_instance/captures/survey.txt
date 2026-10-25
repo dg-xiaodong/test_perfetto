@@ -1,0 +1,42 @@
+== Platform ==
+Linux buildroot 6.1.83-DR-PL5.1_V1.1.1 #1 SMP PREEMPT Thu Oct 22 11:40:38 CST 2026 aarch64 GNU/Linux
+
+== Tracefs ==
+/sys/kernel/debug/tracing
+current_tracer=nop
+tracing_on=0
+trace_clock=[local] global counter uptime perf mono mono_raw boot tai
+sched:sched_switch
+sched:sched_wakeup_new
+sched:sched_wakeup
+sched:sched_waking
+power:cpu_frequency
+power:cpu_idle
+
+== CPU policy / sysfs ==
+cpu0= 1200000
+cpu1= 1200000
+cpu2= 1200000
+cpu3= 1200000
+cpu4= 1200000
+cpu5= 1200000
+cpu6= 1200000
+cpu7= 1200000
+/proc/sys/kernel/perf_event_paranoid=2
+/proc/sys/kernel/kptr_restrict=0
+
+== Mounts / free space ==
+/dev/root / ext4 ro,relatime 0 0
+tmpfs /tmp tmpfs rw,relatime 0 0
+tmpfs /data tmpfs rw,relatime 0 0
+/dev/block/platform/by-name/userdata /userdata ext4 rw,relatime 0 0
+Filesystem     1K-blocks  Used Available Use% Mounted on
+tmpfs             667768     0    667768   0% /data
+Filesystem                           1K-blocks  Used Available Use% Mounted on
+/dev/block/platform/by-name/userdata  28685284 21048  27181744   1% /userdata
+Filesystem     1K-blocks  Used Available Use% Mounted on
+tmpfs             667768    12    667756   1% /tmp
+
+== Executables ==
+/usr/bin/perf
+Survey finished (read-only).

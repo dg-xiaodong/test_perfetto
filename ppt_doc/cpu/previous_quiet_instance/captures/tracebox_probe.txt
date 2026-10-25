@@ -1,0 +1,45 @@
+fe131c3ac583ffc70936bc2cbfcd5a8e  /userdata/perfetto-cpu-session/tracebox
+=== existing tracing sessions / services ===
+no traced
+no traced_probes
+no traced_perf
+no tracebox
+=== perf support in tracebox ===
+../../src/profiling/perf/traced_perf.cc
+8protos/perfetto/config/profiling/perf_event_config.proto
+The traced_perf service failed unexpectedly. Check the logs (errno: %d, %s)
+linux.perf
+perf_event_config
+perfetto.traced_perf
+traced_perf
+=== tracebox help ===
+
+Usage: /userdata/perfetto-cpu-session/tracebox
+  --background     -d      : Exits immediately and continues in the background.
+                             Prints the PID of the bg process. The printed PID
+                             can used to gracefully terminate the tracing
+                             session by issuing a `kill -TERM $PRINTED_PID`.
+  --background-wait -D     : Like --background, but waits (up to 30s) for all
+                             data sources to be started before exiting. Exit
+                             code is zero if a successful acknowledgement is
+                             received, non-zero otherwise (error or timeout).
+  --notify-fd FD           : Like --background-wait, but instead of daemonizing
+                             and waiting for data sources to be started before
+                             exiting, writes status and closes FD after waiting
+                             for data sources to be started. Writes a zero
+                             byte if a successful acknowledgement is received,
+                             non-zero otherwise (error or timeout).
+  --clone TSID             : Creates a read-only clone of an existing tracing
+                             session, identified by its ID (see --query).
+  --clone-by-name NAME     : Creates a read-only clone of an existing tracing
+                             session, identified by its unique_session_name in
+                             the config.
+  --clone-for-bugreport    : Can only be used with --clone. It disables the
+                             trace_filter on the cloned session.
+  --config         -c      : /path/to/trace/config/file or - for stdin
+  --out            -o      : /path/to/out/trace/file or - for stdout
+                             If using CLONE_SNAPSHOT triggers, each snapshot
+                             will be saved in a new file with a counter suffix
+                             (e.g., file.0, file.1, file.2).
+  --no-clobber             : Do not overwrite an existing output file.
+  --txt                    : Parse config as pbtxt. Not for production use.

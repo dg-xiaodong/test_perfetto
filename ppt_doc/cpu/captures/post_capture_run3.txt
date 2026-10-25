@@ -1,0 +1,13 @@
+## post 14403447915284
+## subject
+  PID STAT     ELAPSED   RSS COMMAND
+ 8143 Ssl        04:24  2500 pf-cpu-case
+## foreign
+  6692 pf-lat-case
+  4703 pf-sched-case
+## loadavg
+1.20 1.00 0.89 2/215 9173
+## cpufreq
+cpu0=1500000 cpu1=1500000 cpu2=1500000 cpu3=1500000 cpu4=1500000 cpu5=1500000 cpu6=1500000 cpu7=1500000 
+## tracing after
+tracing_on=0

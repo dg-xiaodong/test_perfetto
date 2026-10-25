@@ -1,0 +1,10 @@
+Loading trace: 0.00 MBLoading trace: 1.59 MB[343.411]     common_flags.cc:474 Trace loaded: 1.59 MB in 0.07s (23.3 MB/s)
+column 0 = utid
+column 1 = tid
+column 2 = thread_name
+column 3 = target_upid
+column 4 = ts
+column 5 = bucket_index
+column 6 = cpu_ms
+column 7 = overlapping_slices
+[343.430]            query.cc:159 Query execution time: 18 ms

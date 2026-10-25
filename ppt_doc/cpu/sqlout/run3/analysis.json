@@ -1,0 +1,760 @@
+{
+ "label": "run3",
+ "trace": "captures/cpu_run3.pftrace",
+ "heartbeat_csv": "captures/heartbeat_latency.run3.csv",
+ "trace_bounds": {
+  "start_ts": 14378596598731,
+  "end_ts": 14402583053700,
+  "dur_s": 23.986455
+ },
+ "monotonic_offset_ns": [
+  {
+   "trace_ts": 14378582374689,
+   "mono_ns": 14378582375147,
+   "offset_ns": 458
+  },
+  {
+   "trace_ts": 14378582397981,
+   "mono_ns": 14378582398189,
+   "offset_ns": 208
+  }
+ ],
+ "target": {
+  "upid": 4,
+  "pid": 8143,
+  "name": "./pf-cpu-case"
+ },
+ "threads": [
+  {
+   "utid": "219",
+   "tid": "8147",
+   "name": "pf-worker-p",
+   "slices": "269",
+   "cpu_ms": "2126.331000",
+   "cpus": "1"
+  },
+  {
+   "utid": "220",
+   "tid": "8148",
+   "name": "pf-worker-q",
+   "slices": "227",
+   "cpu_ms": "1327.852000",
+   "cpus": "2"
+  },
+  {
+   "utid": "8",
+   "tid": "8146",
+   "name": "pf-svc-tick",
+   "slices": "482",
+   "cpu_ms": "559.115000",
+   "cpus": "1"
+  },
+  {
+   "utid": "7",
+   "tid": "8143",
+   "name": "pf-cpu-case",
+   "slices": "235",
+   "cpu_ms": "6.729000",
+   "cpus": "6"
+  }
+ ],
+ "core_busy": [],
+ "data_loss_nonzero": [],
+ "perf": {
+  "total_samples": 19192,
+  "by_upid": [
+   {
+    "pid": "0",
+    "name": "[NULL]",
+    "samples": "16873"
+   },
+   {
+    "pid": "6692",
+    "name": "/userdata/perfetto-skill-lab/latency/pf-lat-case",
+    "samples": "922"
+   },
+   {
+    "pid": "8143",
+    "name": "./pf-cpu-case",
+    "samples": "784"
+   },
+   {
+    "pid": "4703",
+    "name": "/userdata/perfetto-skill-lab/scheduling/pf-sched-case",
+    "samples": "510"
+   },
+   {
+    "pid": "9127",
+    "name": "/userdata/perfetto-cpu-session/tracebox",
+    "samples": "41"
+   },
+   {
+    "pid": "9131",
+    "name": "/userdata/perfetto-cpu-session/tracebox",
+    "samples": "28"
+   }
+  ],
+  "leaf_frames": [
+   {
+    "thread_name": "pf-svc-tick",
+    "leaf_frame": "_Z17svc_compute_untillm",
+    "mapping": "/userdata/perfetto-skill-lab/cpu/pf-cpu-case",
+    "samples": "435"
+   },
+   {
+    "thread_name": "pf-worker-p",
+    "leaf_frame": "_ZN3pfp12p_kernel_hotEml",
+    "mapping": "/userdata/perfetto-skill-lab/cpu/pf-cpu-case",
+    "samples": "217"
+   },
+   {
+    "thread_name": "pf-worker-q",
+    "leaf_frame": "_ZN3pfq12q_kernel_hotEml",
+    "mapping": "/userdata/perfetto-skill-lab/cpu/pf-cpu-case",
+    "samples": "132"
+   }
+  ],
+  "callsite_depth": [
+   {
+    "max_depth": "1",
+    "callsites": "28"
+   }
+  ],
+  "counters": [
+   {
+    "cpu_clock_counters": "8"
+   }
+  ]
+ },
+ "thread_states": [
+  {
+   "thread_name": "pf-cpu-case",
+   "state": "S",
+   "intervals": "234",
+   "duration_ms": "23388.498000",
+   "max_single_ms": "100.061000"
+  },
+  {
+   "thread_name": "pf-cpu-case",
+   "state": "R",
+   "intervals": "235",
+   "duration_ms": "7.623000",
+   "max_single_ms": "0.192000"
+  },
+  {
+   "thread_name": "pf-cpu-case",
+   "state": "Running",
+   "intervals": "235",
+   "duration_ms": "6.729000",
+   "max_single_ms": "0.200000"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "state": "S",
+   "intervals": "470",
+   "duration_ms": "22680.656000",
+   "max_single_ms": "48.933000"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "state": "Running",
+   "intervals": "482",
+   "duration_ms": "559.115000",
+   "max_single_ms": "1.399000"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "state": "R",
+   "intervals": "482",
+   "duration_ms": "240.168000",
+   "max_single_ms": "14.064000"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "state": "D",
+   "intervals": "5",
+   "duration_ms": "21.158000",
+   "max_single_ms": "5.693000"
+  },
+  {
+   "thread_name": "pf-worker-p",
+   "state": "S",
+   "intervals": "214",
+   "duration_ms": "21251.468000",
+   "max_single_ms": "100.067000"
+  },
+  {
+   "thread_name": "pf-worker-p",
+   "state": "Running",
+   "intervals": "269",
+   "duration_ms": "2126.331000",
+   "max_single_ms": "48.953000"
+  },
+  {
+   "thread_name": "pf-worker-p",
+   "state": "R",
+   "intervals": "269",
+   "duration_ms": "52.942000",
+   "max_single_ms": "1.298000"
+  },
+  {
+   "thread_name": "pf-worker-q",
+   "state": "S",
+   "intervals": "222",
+   "duration_ms": "22123.732000",
+   "max_single_ms": "100.058000"
+  },
+  {
+   "thread_name": "pf-worker-q",
+   "state": "Running",
+   "intervals": "227",
+   "duration_ms": "1327.852000",
+   "max_single_ms": "315.421000"
+  },
+  {
+   "thread_name": "pf-worker-q",
+   "state": "R",
+   "intervals": "227",
+   "duration_ms": "7.049000",
+   "max_single_ms": "0.076000"
+  }
+ ],
+ "runnable_long": [
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "3929358960",
+   "wait_ms": "4.099000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "3979355168",
+   "wait_ms": "4.061000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "4029348793",
+   "wait_ms": "4.065000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "4079348585",
+   "wait_ms": "4.065000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "4129348835",
+   "wait_ms": "4.065000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "4179348627",
+   "wait_ms": "4.064000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "4229348502",
+   "wait_ms": "4.069000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "4279349502",
+   "wait_ms": "14.064000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "4329348460",
+   "wait_ms": "4.065000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "4379348418",
+   "wait_ms": "4.065000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "4429350293",
+   "wait_ms": "12.722000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "9729353421",
+   "wait_ms": "14.061000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "9779350463",
+   "wait_ms": "4.074000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "9829348838",
+   "wait_ms": "4.077000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "9879348504",
+   "wait_ms": "4.066000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "9929348546",
+   "wait_ms": "4.069000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "9979349921",
+   "wait_ms": "4.063000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "10029348838",
+   "wait_ms": "4.067000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "10079350254",
+   "wait_ms": "4.064000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "10129348463",
+   "wait_ms": "4.064000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "10179348671",
+   "wait_ms": "4.065000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "10229348588",
+   "wait_ms": "4.067000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "15629359049",
+   "wait_ms": "4.087000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "15679355382",
+   "wait_ms": "4.058000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "15729348757",
+   "wait_ms": "14.064000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "15779348632",
+   "wait_ms": "4.065000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "15829350757",
+   "wait_ms": "4.065000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "15879348466",
+   "wait_ms": "4.069000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "15929348841",
+   "wait_ms": "4.066000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "15979348382",
+   "wait_ms": "4.065000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "16029348549",
+   "wait_ms": "4.091000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "16079348341",
+   "wait_ms": "4.067000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "16129348424",
+   "wait_ms": "14.064000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "16179349757",
+   "wait_ms": "3.439000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "21679358593",
+   "wait_ms": "4.098000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "21729351968",
+   "wait_ms": "4.064000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "21779348718",
+   "wait_ms": "4.065000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "21829351135",
+   "wait_ms": "4.067000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "21879350385",
+   "wait_ms": "4.063000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "21929348510",
+   "wait_ms": "4.066000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "21979348552",
+   "wait_ms": "4.064000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "22029348635",
+   "wait_ms": "4.068000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "22079348385",
+   "wait_ms": "4.070000",
+   "waker_utid": "219"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "22129348677",
+   "wait_ms": "4.064000",
+   "waker_utid": "219"
+  }
+ ],
+ "cpu1_top": [
+  {
+   "tid": "8147",
+   "name": "pf-worker-p",
+   "proc": "./pf-cpu-case",
+   "ms": 49.0
+  },
+  {
+   "tid": "8147",
+   "name": "pf-worker-p",
+   "proc": "./pf-cpu-case",
+   "ms": 48.9
+  },
+  {
+   "tid": "8147",
+   "name": "pf-worker-p",
+   "proc": "./pf-cpu-case",
+   "ms": 48.9
+  },
+  {
+   "tid": "8147",
+   "name": "pf-worker-p",
+   "proc": "./pf-cpu-case",
+   "ms": 48.9
+  },
+  {
+   "tid": "8147",
+   "name": "pf-worker-p",
+   "proc": "./pf-cpu-case",
+   "ms": 48.9
+  },
+  {
+   "tid": "8147",
+   "name": "pf-worker-p",
+   "proc": "./pf-cpu-case",
+   "ms": 48.9
+  },
+  {
+   "tid": "8147",
+   "name": "pf-worker-p",
+   "proc": "./pf-cpu-case",
+   "ms": 48.9
+  },
+  {
+   "tid": "0",
+   "name": "swapper",
+   "proc": "[NULL]",
+   "ms": 48.9
+  },
+  {
+   "tid": "0",
+   "name": "swapper",
+   "proc": "[NULL]",
+   "ms": 48.9
+  },
+  {
+   "tid": "8147",
+   "name": "pf-worker-p",
+   "proc": "./pf-cpu-case",
+   "ms": 48.9
+  },
+  {
+   "tid": "8147",
+   "name": "pf-worker-p",
+   "proc": "./pf-cpu-case",
+   "ms": 48.9
+  },
+  {
+   "tid": "8147",
+   "name": "pf-worker-p",
+   "proc": "./pf-cpu-case",
+   "ms": 48.9
+  }
+ ],
+ "p_episodes": [
+  {
+   "start_s": 3.897,
+   "end_s": 4.442,
+   "dur_ms": 545.3
+  },
+  {
+   "start_s": 9.713,
+   "end_s": 10.252,
+   "dur_ms": 539.2
+  },
+  {
+   "start_s": 15.601,
+   "end_s": 16.183,
+   "dur_ms": 581.7
+  },
+  {
+   "start_s": 21.639,
+   "end_s": 22.138,
+   "dur_ms": 498.8
+  }
+ ],
+ "q_episodes": [
+  {
+   "start_s": 7.097,
+   "end_s": 7.739,
+   "dur_ms": 642.3
+  },
+  {
+   "start_s": 15.89,
+   "end_s": 16.568,
+   "dur_ms": 678.5
+  }
+ ],
+ "observer_cpu1_episodes": [],
+ "observer_cpu2_episodes": [],
+ "heartbeat_file": {
+  "rows": 5259,
+  "span_s": 262.9
+ },
+ "heartbeat_in_window": 480,
+ "latency_overall_window": {
+  "n": 480,
+  "mean_ms": 1.628,
+  "p50_ms": 1.208,
+  "p90_ms": 1.242,
+  "max_ms": 15.127
+ },
+ "latency_by_class": {
+  "p_only": {
+   "n": 44,
+   "mean_ms": 6.231,
+   "p50_ms": 5.13,
+   "p90_ms": 13.785,
+   "max_ms": 15.127
+  },
+  "q_only": {
+   "n": 20,
+   "mean_ms": 1.09,
+   "p50_ms": 1.082,
+   "p90_ms": 1.1,
+   "max_ms": 1.226
+  },
+  "observer_cpu1": {
+   "n": 0
+  },
+  "p_and_observer": {
+   "n": 0
+  },
+  "none": {
+   "n": 416,
+   "mean_ms": 1.166,
+   "p50_ms": 1.148,
+   "p90_ms": 1.232,
+   "max_ms": 4.608
+  }
+ },
+ "latency_overall_file": {
+  "n": 5259,
+  "min_ms": 1.052,
+  "p50_ms": 1.18,
+  "p90_ms": 1.231,
+  "p99_ms": 15.124,
+  "max_ms": 34.185,
+  "mean_ms": 1.617
+ },
+ "slowest_heartbeats": [
+  {
+   "seq": 4957,
+   "rel_s": 9.744,
+   "lat_ms": 15.127
+  },
+  {
+   "seq": 4848,
+   "rel_s": 4.294,
+   "lat_ms": 15.125
+  },
+  {
+   "seq": 5077,
+   "rel_s": 15.744,
+   "lat_ms": 15.124
+  },
+  {
+   "seq": 5085,
+   "rel_s": 16.144,
+   "lat_ms": 15.124
+  },
+  {
+   "seq": 4851,
+   "rel_s": 4.443,
+   "lat_ms": 13.785
+  },
+  {
+   "seq": 4841,
+   "rel_s": 3.935,
+   "lat_ms": 5.258
+  },
+  {
+   "seq": 5075,
+   "rel_s": 15.635,
+   "lat_ms": 5.244
+  },
+  {
+   "seq": 5196,
+   "rel_s": 21.685,
+   "lat_ms": 5.231
+  },
+  {
+   "seq": 5083,
+   "rel_s": 16.034,
+   "lat_ms": 5.171
+  },
+  {
+   "seq": 4847,
+   "rel_s": 4.234,
+   "lat_ms": 5.148
+  },
+  {
+   "seq": 4958,
+   "rel_s": 9.784,
+   "lat_ms": 5.144
+  },
+  {
+   "seq": 5205,
+   "rel_s": 22.134,
+   "lat_ms": 5.144
+  }
+ ],
+ "freq": [
+  {
+   "cpu": "0",
+   "pts": "365",
+   "min_mhz": "300.000000",
+   "max_mhz": "1500.000000"
+  },
+  {
+   "cpu": "1",
+   "pts": "365",
+   "min_mhz": "300.000000",
+   "max_mhz": "1500.000000"
+  },
+  {
+   "cpu": "2",
+   "pts": "365",
+   "min_mhz": "300.000000",
+   "max_mhz": "1500.000000"
+  },
+  {
+   "cpu": "3",
+   "pts": "365",
+   "min_mhz": "300.000000",
+   "max_mhz": "1500.000000"
+  },
+  {
+   "cpu": "4",
+   "pts": "365",
+   "min_mhz": "300.000000",
+   "max_mhz": "1500.000000"
+  },
+  {
+   "cpu": "5",
+   "pts": "365",
+   "min_mhz": "300.000000",
+   "max_mhz": "1500.000000"
+  },
+  {
+   "cpu": "6",
+   "pts": "365",
+   "min_mhz": "300.000000",
+   "max_mhz": "1500.000000"
+  },
+  {
+   "cpu": "7",
+   "pts": "365",
+   "min_mhz": "300.000000",
+   "max_mhz": "1500.000000"
+  }
+ ]
+}

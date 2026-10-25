@@ -1,0 +1,3 @@
+[PASS] config: structural checks passed (NOT official schema)
+[UNKNOWN] official schema: no --descriptor-set (not treated as failure of static check)
+[NOTE] runtime event support, perf privileges, data, and flush NOT checked

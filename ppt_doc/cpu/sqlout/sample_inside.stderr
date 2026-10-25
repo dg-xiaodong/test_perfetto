@@ -1,0 +1,5 @@
+Loading trace: 0.00 MBLoading trace: 2.31 MB[636.523]     common_flags.cc:474 Trace loaded: 2.31 MB in 0.05s (48.8 MB/s)
+column 0 = total
+column 1 = inside_running
+column 2 = cpu_busy_some_thread
+[636.541]            query.cc:159 Query execution time: 17 ms

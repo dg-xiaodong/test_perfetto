@@ -1,0 +1,36 @@
+=== find tracebox/perfetto ===
++ echo '=== find tracebox/perfetto ==='
++ ls -l /userdata/perfetto-skill-lab/cpu/
+total 564
+-rw-r--r-- 1 root root   1737 Jan  1  1970 RUN_INFO.md
+-rw-r--r-- 1 root root  21811 Jan  1  1970 heartbeat_latency.csv
+-rwxr-xr-x 1 root root 533864 Jan  1  1970 pf-cpu-case
+drwx------ 2 root root   4096 Jan  1  1970 private
+-rw------- 1 root root    464 Jan  1  1970 run.log
++ find / -maxdepth 4 -name 'tracebox*' -o -maxdepth 4 -name 'perfetto*' -o -maxdepth 4 -name 'traced_perf*'
++ head -20
+/userdata/perfetto-skill-lab
+/userdata/perfetto-skill-lab/memory/tracebox
+/userdata/perfetto-cpu-session
+/userdata/sched-ab-demo/tracebox
+/userdata/sched-ab-demo/tracebox-19700101-000231.log
+/userdata/sched-ab-demo/tracebox-19700101-000109.log
+=== program state ===
++ echo '=== program state ==='
++ pgrep -x pf-cpu-case
+++ pgrep -x pf-cpu-case
++ ps -o pid,stat,etime,rss,comm -p
+error: list of process IDs must follow -p
+
+Usage:
+ ps [options]
+
+ Try 'ps --help <simple|list|output|threads|misc|all>'
+  or 'ps --help <s|l|o|t|m|a>'
+ for additional help text.
+
+For more details see ps(1).
+=== perf version ===
++ echo '=== perf version ==='
++ perf --version
+perf version 6.1.12.g47e3d48291e8

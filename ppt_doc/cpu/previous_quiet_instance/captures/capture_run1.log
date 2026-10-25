@@ -1,0 +1,23 @@
+=== pre: pgrep ===
+not_running
+no_other_tracebox
+=== pre: loadavg / stat ===
+0.04 0.01 0.00 1/200 1759
+cpu  705 0 1175 980979 211 127 129 0 0 0
+=== start app (1229639360669) ===
+app pids: 1762 
+csv head at capture start:
+seq,mono_ns,latency_ns
+=== capture start 1233695296296 ===
+tracebox_pid=1782
+DONE size_bytes=1613046
+=== capture rc=0 end 1254852588181 ===
+-rw------- 1 root root      43 Jan  1 00:20 /userdata/perfetto-cpu-session/cpu_firstpass.log
+-rw------- 1 root root     894 Jan  1 00:20 /userdata/perfetto-cpu-session/cpu_firstpass.pbtxt
+-rw------- 1 root root 1613046 Jan  1 00:20 /userdata/perfetto-cpu-session/cpu_firstpass.pftrace
+-rw------- 1 root root       5 Jan  1 00:20 /userdata/perfetto-cpu-session/cpu_firstpass.pid
+-rw------- 1 root root      24 Jan  1 00:20 /userdata/perfetto-cpu-session/cpu_firstpass.status
+-rw------- 1 root root   12324 Jan  1 00:20 /userdata/perfetto-cpu-session/heartbeat_latency.public.csv
+-rw------- 1 root root     764 Jan  1 00:20 /userdata/perfetto-cpu-session/post_capture_state.txt
+DONE size_bytes=1613046
+capture start Thu Jan  1 00:20:33 UTC 1970

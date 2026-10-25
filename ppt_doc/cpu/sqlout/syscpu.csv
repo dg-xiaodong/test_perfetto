@@ -1,0 +1,9 @@
+"name","cpu_ms","pct_of_one_core"
+"/userdata/perfetto-skill-lab/latency/pf-lat-case",7697.800000,32.090000
+"/userdata/perfetto-skill-lab/scheduling/pf-sched-case",6510.400000,27.140000
+"./pf-cpu-case",4020.000000,16.760000
+"/userdata/perfetto-cpu-session/tracebox",1038.800000,4.330000
+"sleep",83.000000,0.350000
+"sh",23.900000,0.100000
+"sugov:0",19.900000,0.080000
+"kworker/u16:3",11.800000,0.050000

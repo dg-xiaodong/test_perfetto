@@ -1,0 +1,9 @@
+Loading trace: 0.00 MBLoading trace: 1.59 MB[343.670]     common_flags.cc:474 Trace loaded: 1.59 MB in 0.07s (22.4 MB/s)
+column 0 = utid
+column 1 = tid
+column 2 = thread_name
+column 3 = state
+column 4 = intervals
+column 5 = duration_ms
+column 6 = max_single_interval_ms
+[343.674]            query.cc:159 Query execution time: 3 ms

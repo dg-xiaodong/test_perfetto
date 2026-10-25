@@ -1,0 +1,17 @@
+=== pre ===
+app pid=1762
+1762 pf-cpu-case cpus=3
+1764 pf-svc-tick cpus=1
+1765 pf-worker-p cpus=1
+1766 pf-worker-q cpus=2
+no_other_tracebox
+=== capture2 start 1420066847802 ===
+tracebox_pid=1926
+DONE size_bytes=1594756
+=== capture2 rc=0 end 1441238504478 ===
+-rw------- 1 root root      43 Jan  1 00:23 /userdata/perfetto-cpu-session/cpu_firstpass2.log
+-rw------- 1 root root 1594756 Jan  1 00:24 /userdata/perfetto-cpu-session/cpu_firstpass2.pftrace
+-rw------- 1 root root       5 Jan  1 00:23 /userdata/perfetto-cpu-session/cpu_firstpass2.pid
+-rw------- 1 root root      24 Jan  1 00:24 /userdata/perfetto-cpu-session/cpu_firstpass2.status
+-rw------- 1 root root  112484 Jan  1 00:24 /userdata/perfetto-cpu-session/heartbeat_latency.run2.csv
+DONE size_bytes=1594756

@@ -1,0 +1,5 @@
+"pid","pname","tid","tname","slices","cpu_ms","cpus"
+1787,"/userdata/perfetto-cpu-session/tracebox",1787,"tracebox",219,594.010000,"2,1"
+1791,"/userdata/perfetto-cpu-session/tracebox",1791,"tracebox",233,147.130000,"0"
+1783,"/userdata/perfetto-cpu-session/tracebox",1783,"tracebox",150,44.990000,"4,1"
+1791,"/userdata/perfetto-cpu-session/tracebox",1793,"stack-unwinding",199,25.400000,"7"

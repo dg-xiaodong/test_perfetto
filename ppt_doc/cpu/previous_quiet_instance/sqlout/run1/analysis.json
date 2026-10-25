@@ -1,0 +1,766 @@
+{
+ "label": "run1",
+ "trace": "captures/cpu_firstpass.pftrace",
+ "heartbeat_csv": "captures/heartbeat_latency.public.csv",
+ "trace_bounds": {
+  "start_ts": 1234004298046,
+  "end_ts": 1254131767722,
+  "dur_s": 20.12747
+ },
+ "monotonic_offset_ns": [
+  {
+   "trace_ts": 1233989453338,
+   "mono_ns": 1233989453796,
+   "offset_ns": 458
+  },
+  {
+   "trace_ts": 1233989476004,
+   "mono_ns": 1233989476254,
+   "offset_ns": 250
+  }
+ ],
+ "target": {
+  "upid": 188,
+  "pid": 1762,
+  "name": "/userdata/perfetto-skill-lab/cpu/pf-cpu-case"
+ },
+ "threads": [
+  {
+   "utid": "209",
+   "tid": "1765",
+   "name": "pf-worker-p",
+   "slices": "226",
+   "cpu_ms": "1555.173000",
+   "cpus": "1"
+  },
+  {
+   "utid": "210",
+   "tid": "1766",
+   "name": "pf-worker-q",
+   "slices": "184",
+   "cpu_ms": "1356.298000",
+   "cpus": "2"
+  },
+  {
+   "utid": "208",
+   "tid": "1764",
+   "name": "pf-svc-tick",
+   "slices": "399",
+   "cpu_ms": "476.244000",
+   "cpus": "1"
+  },
+  {
+   "utid": "189",
+   "tid": "1762",
+   "name": "pf-cpu-case",
+   "slices": "194",
+   "cpu_ms": "6.497000",
+   "cpus": "3"
+  }
+ ],
+ "core_busy": [],
+ "data_loss_nonzero": [],
+ "perf": {
+  "total_samples": 16000,
+  "by_upid": [
+   {
+    "pid": "0",
+    "name": "[NULL]",
+    "samples": "15613"
+   },
+   {
+    "pid": "1762",
+    "name": "/userdata/perfetto-skill-lab/cpu/pf-cpu-case",
+    "samples": "294"
+   },
+   {
+    "pid": "1787",
+    "name": "/userdata/perfetto-cpu-session/tracebox",
+    "samples": "49"
+   },
+   {
+    "pid": "1791",
+    "name": "/userdata/perfetto-cpu-session/tracebox",
+    "samples": "27"
+   },
+   {
+    "pid": "1783",
+    "name": "/userdata/perfetto-cpu-session/tracebox",
+    "samples": "8"
+   },
+   {
+    "pid": "1773",
+    "name": "sh",
+    "samples": "2"
+   }
+  ],
+  "leaf_frames": [
+   {
+    "thread_name": "pf-worker-p",
+    "leaf_frame": "_ZN3pfp12p_kernel_hotEml",
+    "mapping": "/userdata/perfetto-skill-lab/cpu/pf-cpu-case",
+    "samples": "158"
+   },
+   {
+    "thread_name": "pf-worker-q",
+    "leaf_frame": "_ZN3pfq12q_kernel_hotEml",
+    "mapping": "/userdata/perfetto-skill-lab/cpu/pf-cpu-case",
+    "samples": "136"
+   }
+  ],
+  "callsite_depth": [
+   {
+    "max_depth": "1",
+    "callsites": "23"
+   }
+  ],
+  "counters": [
+   {
+    "cpu_clock_counters": "8"
+   }
+  ]
+ },
+ "thread_states": [
+  {
+   "thread_name": "pf-cpu-case",
+   "state": "S",
+   "intervals": "194",
+   "duration_ms": "19388.722000",
+   "max_single_ms": "100.056000"
+  },
+  {
+   "thread_name": "pf-cpu-case",
+   "state": "R",
+   "intervals": "194",
+   "duration_ms": "7.570000",
+   "max_single_ms": "0.118000"
+  },
+  {
+   "thread_name": "pf-cpu-case",
+   "state": "Running",
+   "intervals": "194",
+   "duration_ms": "6.497000",
+   "max_single_ms": "0.104000"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "state": "S",
+   "intervals": "388",
+   "duration_ms": "18810.575000",
+   "max_single_ms": "48.947000"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "state": "Running",
+   "intervals": "399",
+   "duration_ms": "476.244000",
+   "max_single_ms": "1.484000"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "state": "R",
+   "intervals": "397",
+   "duration_ms": "114.432000",
+   "max_single_ms": "12.236000"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "state": "D",
+   "intervals": "4",
+   "duration_ms": "0.092000",
+   "max_single_ms": "0.044000"
+  },
+  {
+   "thread_name": "pf-worker-p",
+   "state": "S",
+   "intervals": "178",
+   "duration_ms": "17681.315000",
+   "max_single_ms": "100.061000"
+  },
+  {
+   "thread_name": "pf-worker-p",
+   "state": "Running",
+   "intervals": "226",
+   "duration_ms": "1555.173000",
+   "max_single_ms": "48.954000"
+  },
+  {
+   "thread_name": "pf-worker-p",
+   "state": "R",
+   "intervals": "226",
+   "duration_ms": "56.092000",
+   "max_single_ms": "14.537000"
+  },
+  {
+   "thread_name": "pf-worker-q",
+   "state": "S",
+   "intervals": "182",
+   "duration_ms": "18033.313000",
+   "max_single_ms": "100.059000"
+  },
+  {
+   "thread_name": "pf-worker-q",
+   "state": "Running",
+   "intervals": "184",
+   "duration_ms": "1356.298000",
+   "max_single_ms": "687.303000"
+  },
+  {
+   "thread_name": "pf-worker-q",
+   "state": "R",
+   "intervals": "184",
+   "duration_ms": "8.187000",
+   "max_single_ms": "0.077000"
+  }
+ ],
+ "runnable_long": [
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "3954281669",
+   "wait_ms": "11.469000",
+   "waker_utid": "209"
+  },
+  {
+   "thread_name": "pf-worker-p",
+   "rel_ns": "9001533213",
+   "wait_ms": "14.537000",
+   "waker_utid": "3"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "9004283338",
+   "wait_ms": "11.840000",
+   "waker_utid": "3"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "13004289673",
+   "wait_ms": "11.415000",
+   "waker_utid": "3"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "15904277508",
+   "wait_ms": "11.492000",
+   "waker_utid": "209"
+  },
+  {
+   "thread_name": "pf-svc-tick",
+   "rel_ns": "19004289218",
+   "wait_ms": "12.236000",
+   "waker_utid": "3"
+  }
+ ],
+ "cpu1_top": [
+  {
+   "tid": "0",
+   "name": "swapper",
+   "proc": "[NULL]",
+   "ms": 49.0
+  },
+  {
+   "tid": "0",
+   "name": "swapper",
+   "proc": "[NULL]",
+   "ms": 49.0
+  },
+  {
+   "tid": "1765",
+   "name": "pf-worker-p",
+   "proc": "/userdata/perfetto-skill-lab/cpu/pf-cpu-case",
+   "ms": 49.0
+  },
+  {
+   "tid": "0",
+   "name": "swapper",
+   "proc": "[NULL]",
+   "ms": 49.0
+  },
+  {
+   "tid": "0",
+   "name": "swapper",
+   "proc": "[NULL]",
+   "ms": 48.9
+  },
+  {
+   "tid": "0",
+   "name": "swapper",
+   "proc": "[NULL]",
+   "ms": 48.9
+  },
+  {
+   "tid": "0",
+   "name": "swapper",
+   "proc": "[NULL]",
+   "ms": 48.9
+  },
+  {
+   "tid": "1765",
+   "name": "pf-worker-p",
+   "proc": "/userdata/perfetto-skill-lab/cpu/pf-cpu-case",
+   "ms": 48.9
+  },
+  {
+   "tid": "1765",
+   "name": "pf-worker-p",
+   "proc": "/userdata/perfetto-skill-lab/cpu/pf-cpu-case",
+   "ms": 48.9
+  },
+  {
+   "tid": "1765",
+   "name": "pf-worker-p",
+   "proc": "/userdata/perfetto-skill-lab/cpu/pf-cpu-case",
+   "ms": 48.9
+  },
+  {
+   "tid": "1765",
+   "name": "pf-worker-p",
+   "proc": "/userdata/perfetto-skill-lab/cpu/pf-cpu-case",
+   "ms": 48.9
+  },
+  {
+   "tid": "1765",
+   "name": "pf-worker-p",
+   "proc": "/userdata/perfetto-skill-lab/cpu/pf-cpu-case",
+   "ms": 48.9
+  }
+ ],
+ "p_episodes": [
+  {
+   "start_s": 3.937,
+   "end_s": 4.496,
+   "dur_ms": 559.5
+  },
+  {
+   "start_s": 9.766,
+   "end_s": 10.29,
+   "dur_ms": 524.5
+  },
+  {
+   "start_s": 15.891,
+   "end_s": 16.389,
+   "dur_ms": 498.6
+  }
+ ],
+ "q_episodes": [
+  {
+   "start_s": 8.089,
+   "end_s": 8.751,
+   "dur_ms": 661.9
+  },
+  {
+   "start_s": 17.277,
+   "end_s": 17.964,
+   "dur_ms": 687.3
+  }
+ ],
+ "observer_cpu1_episodes": [
+  {
+   "start_s": 8.996,
+   "end_s": 9.016,
+   "dur_ms": 20.0
+  },
+  {
+   "start_s": 9.197,
+   "end_s": 9.2,
+   "dur_ms": 3.0
+  },
+  {
+   "start_s": 9.396,
+   "end_s": 9.4,
+   "dur_ms": 3.2
+  },
+  {
+   "start_s": 12.996,
+   "end_s": 13.016,
+   "dur_ms": 19.8
+  },
+  {
+   "start_s": 13.396,
+   "end_s": 13.399,
+   "dur_ms": 3.1
+  },
+  {
+   "start_s": 13.596,
+   "end_s": 13.599,
+   "dur_ms": 3.1
+  },
+  {
+   "start_s": 13.996,
+   "end_s": 14.017,
+   "dur_ms": 21.4
+  },
+  {
+   "start_s": 14.797,
+   "end_s": 14.8,
+   "dur_ms": 3.3
+  },
+  {
+   "start_s": 14.997,
+   "end_s": 15.018,
+   "dur_ms": 21.2
+  },
+  {
+   "start_s": 15.196,
+   "end_s": 15.199,
+   "dur_ms": 3.1
+  },
+  {
+   "start_s": 15.596,
+   "end_s": 15.599,
+   "dur_ms": 3.1
+  },
+  {
+   "start_s": 15.797,
+   "end_s": 15.8,
+   "dur_ms": 3.1
+  },
+  {
+   "start_s": 17.996,
+   "end_s": 18.002,
+   "dur_ms": 5.6
+  },
+  {
+   "start_s": 18.196,
+   "end_s": 18.2,
+   "dur_ms": 3.5
+  },
+  {
+   "start_s": 18.397,
+   "end_s": 18.4,
+   "dur_ms": 3.0
+  },
+  {
+   "start_s": 18.597,
+   "end_s": 18.6,
+   "dur_ms": 3.4
+  },
+  {
+   "start_s": 18.797,
+   "end_s": 18.8,
+   "dur_ms": 3.3
+  },
+  {
+   "start_s": 18.997,
+   "end_s": 19.017,
+   "dur_ms": 19.8
+  },
+  {
+   "start_s": 19.196,
+   "end_s": 19.199,
+   "dur_ms": 3.1
+  },
+  {
+   "start_s": 19.597,
+   "end_s": 19.6,
+   "dur_ms": 3.0
+  }
+ ],
+ "observer_cpu2_episodes": [
+  {
+   "start_s": 0.546,
+   "end_s": 0.554,
+   "dur_ms": 8.6
+  },
+  {
+   "start_s": 0.997,
+   "end_s": 1.007,
+   "dur_ms": 10.3
+  },
+  {
+   "start_s": 1.196,
+   "end_s": 1.199,
+   "dur_ms": 3.1
+  },
+  {
+   "start_s": 1.596,
+   "end_s": 1.599,
+   "dur_ms": 3.0
+  },
+  {
+   "start_s": 1.997,
+   "end_s": 2.017,
+   "dur_ms": 19.9
+  },
+  {
+   "start_s": 2.196,
+   "end_s": 2.199,
+   "dur_ms": 3.0
+  },
+  {
+   "start_s": 2.596,
+   "end_s": 2.6,
+   "dur_ms": 3.3
+  },
+  {
+   "start_s": 2.996,
+   "end_s": 3.016,
+   "dur_ms": 19.5
+  },
+  {
+   "start_s": 3.196,
+   "end_s": 3.2,
+   "dur_ms": 3.3
+  },
+  {
+   "start_s": 3.596,
+   "end_s": 3.599,
+   "dur_ms": 3.0
+  },
+  {
+   "start_s": 3.997,
+   "end_s": 4.007,
+   "dur_ms": 10.3
+  },
+  {
+   "start_s": 4.996,
+   "end_s": 5.002,
+   "dur_ms": 6.0
+  },
+  {
+   "start_s": 5.996,
+   "end_s": 6.016,
+   "dur_ms": 19.9
+  },
+  {
+   "start_s": 6.197,
+   "end_s": 6.2,
+   "dur_ms": 3.0
+  },
+  {
+   "start_s": 6.597,
+   "end_s": 6.6,
+   "dur_ms": 3.3
+  },
+  {
+   "start_s": 6.997,
+   "end_s": 7.017,
+   "dur_ms": 19.8
+  },
+  {
+   "start_s": 7.996,
+   "end_s": 8.016,
+   "dur_ms": 20.2
+  },
+  {
+   "start_s": 9.996,
+   "end_s": 10.001,
+   "dur_ms": 4.7
+  },
+  {
+   "start_s": 10.396,
+   "end_s": 10.399,
+   "dur_ms": 3.1
+  },
+  {
+   "start_s": 10.997,
+   "end_s": 11.009,
+   "dur_ms": 12.7
+  },
+  {
+   "start_s": 11.196,
+   "end_s": 11.199,
+   "dur_ms": 3.0
+  },
+  {
+   "start_s": 11.397,
+   "end_s": 11.4,
+   "dur_ms": 3.2
+  },
+  {
+   "start_s": 11.996,
+   "end_s": 12.016,
+   "dur_ms": 19.8
+  },
+  {
+   "start_s": 12.197,
+   "end_s": 12.2,
+   "dur_ms": 3.1
+  },
+  {
+   "start_s": 15.996,
+   "end_s": 16.002,
+   "dur_ms": 5.6
+  },
+  {
+   "start_s": 16.996,
+   "end_s": 17.009,
+   "dur_ms": 12.6
+  },
+  {
+   "start_s": 17.196,
+   "end_s": 17.199,
+   "dur_ms": 3.2
+  }
+ ],
+ "heartbeat_file": {
+  "rows": 477,
+  "span_s": 23.8
+ },
+ "heartbeat_in_window": 403,
+ "latency_overall_window": {
+  "n": 403,
+  "mean_ms": 1.414,
+  "p50_ms": 1.2,
+  "p90_ms": 1.212,
+  "max_ms": 13.41
+ },
+ "latency_by_class": {
+  "p_only": {
+   "n": 37,
+   "mean_ms": 2.811,
+   "p50_ms": 2.505,
+   "p90_ms": 2.534,
+   "max_ms": 12.645
+  },
+  "q_only": {
+   "n": 36,
+   "mean_ms": 1.115,
+   "p50_ms": 1.086,
+   "p90_ms": 1.204,
+   "max_ms": 1.212
+  },
+  "observer_cpu1": {
+   "n": 14,
+   "mean_ms": 2.874,
+   "p50_ms": 1.201,
+   "p90_ms": 12.625,
+   "max_ms": 13.41
+  },
+  "p_and_observer": {
+   "n": 2,
+   "mean_ms": 7.797,
+   "p50_ms": 7.797,
+   "p90_ms": 12.998,
+   "max_ms": 12.998
+  },
+  "none": {
+   "n": 314,
+   "mean_ms": 1.178,
+   "p50_ms": 1.2,
+   "p90_ms": 1.207,
+   "max_ms": 1.22
+  }
+ },
+ "latency_overall_file": {
+  "n": 477,
+  "min_ms": 1.065,
+  "p50_ms": 1.2,
+  "p90_ms": 1.233,
+  "p99_ms": 12.625,
+  "max_ms": 13.41,
+  "mean_ms": 1.447
+ },
+ "slowest_heartbeats": [
+  {
+   "seq": 441,
+   "rel_s": 19.018,
+   "lat_ms": 13.41
+  },
+  {
+   "seq": 241,
+   "rel_s": 9.017,
+   "lat_ms": 12.998
+  },
+  {
+   "seq": 379,
+   "rel_s": 15.917,
+   "lat_ms": 12.645
+  },
+  {
+   "seq": 140,
+   "rel_s": 3.967,
+   "lat_ms": 12.642
+  },
+  {
+   "seq": 321,
+   "rel_s": 13.017,
+   "lat_ms": 12.625
+  },
+  {
+   "seq": 141,
+   "rel_s": 4.007,
+   "lat_ms": 2.597
+  },
+  {
+   "seq": 147,
+   "rel_s": 4.307,
+   "lat_ms": 2.551
+  },
+  {
+   "seq": 380,
+   "rel_s": 15.957,
+   "lat_ms": 2.534
+  },
+  {
+   "seq": 381,
+   "rel_s": 16.007,
+   "lat_ms": 2.53
+  },
+  {
+   "seq": 257,
+   "rel_s": 9.807,
+   "lat_ms": 2.526
+  },
+  {
+   "seq": 261,
+   "rel_s": 10.007,
+   "lat_ms": 2.524
+  },
+  {
+   "seq": 143,
+   "rel_s": 4.107,
+   "lat_ms": 2.522
+  }
+ ],
+ "freq": [
+  {
+   "cpu": "0",
+   "pts": "250",
+   "min_mhz": "300.000000",
+   "max_mhz": "1500.000000"
+  },
+  {
+   "cpu": "1",
+   "pts": "250",
+   "min_mhz": "300.000000",
+   "max_mhz": "1500.000000"
+  },
+  {
+   "cpu": "2",
+   "pts": "250",
+   "min_mhz": "300.000000",
+   "max_mhz": "1500.000000"
+  },
+  {
+   "cpu": "3",
+   "pts": "250",
+   "min_mhz": "300.000000",
+   "max_mhz": "1500.000000"
+  },
+  {
+   "cpu": "4",
+   "pts": "250",
+   "min_mhz": "300.000000",
+   "max_mhz": "1500.000000"
+  },
+  {
+   "cpu": "5",
+   "pts": "250",
+   "min_mhz": "300.000000",
+   "max_mhz": "1500.000000"
+  },
+  {
+   "cpu": "6",
+   "pts": "250",
+   "min_mhz": "300.000000",
+   "max_mhz": "1500.000000"
+  },
+  {
+   "cpu": "7",
+   "pts": "250",
+   "min_mhz": "300.000000",
+   "max_mhz": "1500.000000"
+  }
+ ]
+}

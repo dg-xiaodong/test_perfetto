@@ -1,0 +1,18 @@
+# post-capture public state  1254861705181
+## pgrep -x pf-cpu-case
+1762 
+## ps -o pid,stat,etime,rss,comm
+  PID STAT     ELAPSED   RSS COMMAND
+ 1762 Ssl        00:25  2500 pf-cpu-case
+## /proc/loadavg
+0.34 0.09 0.03 1/204 1826
+## run.log (program stdout, public)
+pf-cpu-case v1.0.0 pid=1762 build="Oct 25 2026 00:25:03"
+  mode=single (svc-tick + worker-p + worker-q, all SCHED_OTHER)
+pf-cpu-case: probing 8 allowed CPU(s) for ~1.2 s...
+pf-cpu-case: selected p_core=1 (hosts svc-tick+worker-p) q_core=2 main_core=3; ordered candidates=[1 2 3 4 6 7 5 ]
+pf-cpu-case: svc-tick+worker-p -> cpu1, worker-q -> cpu2, main -> cpu3
+## cpufreq now
+cpu0=1500000 cpu1=1500000 cpu2=1500000 cpu3=1500000 cpu4=1500000 cpu5=1500000 cpu6=1200000 cpu7=1200000 
+## governor
+schedutil

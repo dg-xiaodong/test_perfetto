@@ -1,0 +1,9 @@
+Loading trace: 0.00 MBLoading trace: 1.59 MB[343.551]     common_flags.cc:474 Trace loaded: 1.59 MB in 0.08s (19.6 MB/s)
+column 0 = ts
+column 1 = dur
+column 2 = first_bucket
+column 3 = last_bucket
+column 4 = buckets_in_episode
+column 5 = peak_cpu_ms
+column 6 = avg_cpu_ms
+[343.562]            query.cc:159 Query execution time: 10 ms

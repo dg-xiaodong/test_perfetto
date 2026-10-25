@@ -1,0 +1,9 @@
+Loading trace: 0.00 MBLoading trace: 1.61 MB[181.158]     common_flags.cc:474 Trace loaded: 1.61 MB in 0.05s (31.9 MB/s)
+column 0 = pid
+column 1 = pname
+column 2 = tid
+column 3 = tname
+column 4 = slices
+column 5 = cpu_ms
+column 6 = cpus
+[181.158]            query.cc:159 Query execution time: 0 ms

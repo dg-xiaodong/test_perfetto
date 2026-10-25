@@ -1,0 +1,31 @@
+=== tracebox versions ===
+Perfetto v58.2-add693d8b (add693d8b338ba9599dbcbc3e300b1ab8c000897)
+Perfetto v57.1-c59f57dd4 (c59f57dd4d9c4ad37c44f0fee9dde060707534fa)
+2d5711984373fa2911963b708b791513  /userdata/sched-ab-demo/tracebox
+fe131c3ac583ffc70936bc2cbfcd5a8e  /userdata/perfetto-skill-lab/memory/tracebox
+=== cpu topology ===
+8
+cpu0 cap=1024 max=1500000 min=300000
+cpu1 cap=1024 max=1500000 min=300000
+cpu2 cap=1024 max=1500000 min=300000
+cpu3 cap=1024 max=1500000 min=300000
+cpu4 cap=1024 max=1500000 min=300000
+cpu5 cap=1024 max=1500000 min=300000
+cpu6 cap=1024 max=1500000 min=300000
+cpu7 cap=1024 max=1500000 min=300000
+=== load ===
+0.00 0.00 0.00 1/199 1669
+cpu  587 0 1116 905727 198 117 117 0 0 0
+=== stale public csv (last 3) ===
+seq,mono_ns,latency_ns
+1,8590956108346,1089459
+840,8632906206824,1187937
+841,8632956205949,1187062
+842,8633006201449,1182562
+843 /userdata/perfetto-skill-lab/cpu/heartbeat_latency.csv
+pf-cpu-case v1.0.0 pid=26044 build="Oct 25 2026 00:25:03"
+  mode=single (svc-tick + worker-p + worker-q, all SCHED_OTHER)
+pf-cpu-case: probing 8 allowed CPU(s) for ~1.2 s...
+pf-cpu-case: selected p_core=2 (hosts svc-tick+worker-p) q_core=3 main_core=4; ordered candidates=[2 3 4 5 6 7 1 ]
+pf-cpu-case: svc-tick+worker-p -> cpu2, worker-q -> cpu3, main -> cpu4
+pf-cpu-case: up=31s heartbeats=606 max_latency=16.113ms p_bursts=5 q_bursts=4 sink=14758975176519944023

@@ -1,0 +1,12 @@
+## capture2 post state 1441249612937
+## app pid/tids
+  1762 pf-cpu-case
+  1764 pf-svc-tick
+  1765 pf-worker-p
+  1766 pf-worker-q
+## pgrep
+1762 
+## loadavg
+0.33 0.16 0.06 1/204 1970
+## cpufreq
+cpu0=1500000 cpu1=1200000 cpu2=1200000 cpu3=1200000 cpu4=1200000 cpu5=1200000 cpu6=1200000 cpu7=1200000 

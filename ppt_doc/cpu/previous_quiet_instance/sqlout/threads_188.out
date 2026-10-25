@@ -1,0 +1,6 @@
+Loading trace: 0.00 MBLoading trace: 1.61 MB[059.571]     common_flags.cc:474 Trace loaded: 1.61 MB in 0.08s (19.8 MB/s)
+"utid","tid","name","is_main_thread","slices","cpu_ms","first_ms","last_ms"
+209,1765,"pf-worker-p",0,226,1555.170000,1234605.202000,1253897.771000
+210,1766,"pf-worker-q",0,184,1356.300000,1234573.459000,1253971.234000
+208,1764,"pf-svc-tick",0,399,476.240000,1234558.590000,1253959.916000
+189,1762,"pf-cpu-case",1,194,6.500000,1234658.272000,1253960.967000
