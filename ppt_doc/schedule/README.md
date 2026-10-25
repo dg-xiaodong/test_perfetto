@@ -32,11 +32,18 @@ UI 截图 3：[`cap-ov-1/p10.webp`](cap-ov-1/p10.webp) —— 竞争者一侧：
 同一时间窗 `pf-t0 4705` 轨道连续出现 Runnable 条；CPU 6 另见 `pf-t2 [4707]` 长切片
 （不同核，与本问题无关）。
 
+UI 截图 4：[`cap-ov-1/p11.webp`](cap-ov-1/p11.webp) —— ⚠️ 按存放位置放在本目录，但内容来自
+**`cap-bw-1` 定向 block/wake trace**（trace (2)，Start 01:23:02.634 661 584，Duration
+**14s 880ms 454µs 257ns**，可见 `Callstacks (scheduling.switch/waking)` perf 轨道）：
+`pf-t0 4705 Callstacks (scheduling.switch)` 样本的 Callstack 火焰图，时间戳 00:00:01.706 471 25…，
+栈为 `el0t_64_sync → … → invoke_syscall → __arm64_sys_clock_nanosleep → common_nsleep_timens
+→ hrtimer_nanosleep → do_nanosleep` —— 即报告 §7.3 的切出栈：pf-t0 的睡眠是 clock_nanosleep。
+
 ## 校验
 
 ```sh
 cd ppt_doc/schedule
-sha256sum -c SHA256SUMS.txt          # 覆盖冻结证据集（README.md 与 UI 截图 ui-runnable-starvation.png、p9.webp、p10.webp 除外）
+sha256sum -c SHA256SUMS.txt          # 覆盖冻结证据集（README.md 与 UI 截图 ui-runnable-starvation.png、p9.webp、p10.webp、p11.webp 除外）
 sha256sum -c FIRST_PASS_REPORT.md.sha256
 ```
 
