@@ -14,6 +14,7 @@
 | Skill 缺口清单 | [`SKILL_GAPS.md`](SKILL_GAPS.md) |
 | 上一轮（更空闲的板面）报告与 Trace | [`previous_quiet_instance/`](previous_quiet_instance/) |
 | 上一轮 Trace | [`previous_quiet_instance/captures/cpu_firstpass.pftrace`](previous_quiet_instance/captures/cpu_firstpass.pftrace)（观察者未绑核）、[`cpu_firstpass2.pftrace`](previous_quiet_instance/captures/cpu_firstpass2.pftrace)（观察者已移出工作核） |
+| Perfetto UI 截图 | [`captures/p12.png`](captures/p12.png) |
 
 打开方式：把 `.pftrace` 拖进 <https://ui.perfetto.dev/> 即可，无需安装。Trace 为 Perfetto v57.1 格式。
 
@@ -43,7 +44,7 @@ ppt_doc/cpu/
 ├── SHA256SUMS.txt             ← 本目录全部文件哈希（除自身）
 ├── analyze.py                 ← 分析脚本（生成报告中的统计数字）
 ├── run_sql.sh / run_sqlf.sh   ← trace_processor 查询封装（stdout/stderr 分离）
-├── captures/                  ← Trace、公共时延 CSV、板端采集脚本、采集日志
+├── captures/                  ← Trace、公共时延 CSV、板端采集脚本、采集日志、UI 截图 p12.png
 ├── cfg/                       ← 实际生效的 TraceConfig（.pbtxt）与生成/校验记录
 ├── sqlout/                    ← 原始 SQL 与原始输出（含 skill 自带 02/03/05/06/08）
 └── previous_quiet_instance/   ← 上一轮：更空闲板面下的同程序测量（2 条 trace）
@@ -51,6 +52,12 @@ ppt_doc/cpu/
 
 `sqlout/` 里的 `*.csv` 是 trace_processor 的原始输出，`*.stderr` 是它的日志（`column N = ...`、`Loading trace`），
 `*-run.sql` 是把 Skill 模板参数替换后的可复现 SQL 全文。
+
+### UI 截图
+
+| 文件 | 内容 |
+|---|---|
+| `captures/p12.png` | Perfetto UI 全览（48 tracks）：`CPU 1 Scheduling`、`CPU 2 Scheduling`、`pf-worker-p 8147`、`pf-worker-q 8148`、`pf-svc-tick 8146`；时间轴上选中了一段约 **14.69 ms** 的区间，另有一处书签。对应 `captures/cpu_run3.pftrace`。 |
 
 ---
 
