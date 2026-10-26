@@ -44,7 +44,7 @@ ppt_doc/cpu/
 ├── SHA256SUMS.txt             ← 本目录全部文件哈希（除自身）
 ├── analyze.py                 ← 分析脚本（生成报告中的统计数字）
 ├── run_sql.sh / run_sqlf.sh   ← trace_processor 查询封装（stdout/stderr 分离）
-├── captures/                  ← Trace、公共时延 CSV、板端采集脚本、采集日志、UI 截图 p12.png
+├── captures/                  ← Trace、公共时延 CSV、板端采集脚本、采集日志、UI 截图 p12/p13-1/p13-2
 ├── cfg/                       ← 实际生效的 TraceConfig（.pbtxt）与生成/校验记录
 ├── sqlout/                    ← 原始 SQL 与原始输出（含 skill 自带 02/03/05/06/08）
 └── previous_quiet_instance/   ← 上一轮：更空闲板面下的同程序测量（2 条 trace）
@@ -58,6 +58,12 @@ ppt_doc/cpu/
 | 文件 | 内容 |
 |---|---|
 | `captures/p12.png` | Perfetto UI 全览（48 tracks）：`CPU 1 Scheduling`、`CPU 2 Scheduling`、`pf-worker-p 8147`、`pf-worker-q 8148`、`pf-svc-tick 8146`；时间轴上选中了一段约 **14.69 ms** 的区间，另有一处书签。对应 `captures/cpu_run3.pftrace`。 |
+| `captures/p13-1.png` | 放大到**一个异常心跳**（≈3.929–3.935 s，p 峰期内）：`pf-svc-tick` 先 **Runnable 4.099 ms**（此间 cpu1 由 `pf-worker-p` 占着），随后自己运行 **1.288 ms**；框选 **5.381 ms**（= R 开始 → 本次运行结束）。对应公共 CSV 的 `seq=4841`，latency **5.258 ms**。 |
+| `captures/p13-2.png` | 放大到**一个基线心跳**（≈3.879–3.881 s，p 峰期之前）：`pf-svc-tick` 只等了 **0.047 ms** 就上了 CPU，运行 **1.307 ms**；框选 **1.353 ms**。 |
+
+> **p13-1 与 p13-2 的对照就是本报告的核心机制**：两次心跳的**运行时间几乎相同**（1.288 ms vs 1.307 ms），
+> 差别全在那段 Runnable —— **4.099 ms vs 0.047 ms（≈87 倍）**。即延迟来自“排队”，不是“算得慢”。
+> 两图均为 `captures/cpu_run3.pftrace`，纵轴均只勾选 `pf-worker-p / pf-worker-q / pf-svc-tick`。
 
 ---
 
