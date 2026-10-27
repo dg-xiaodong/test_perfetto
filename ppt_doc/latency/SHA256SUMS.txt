@@ -1,7 +1,7 @@
-1452d7020cadcd7d7c3ea74ebdeb83d475d94f9d9c2842d1c412da973f475240  FIRST_PASS_REPORT.md
-48aac4678d916b05ec3c64c26d824bb7c9d36a47718143983dea5f1a0c8fe30c  README.md
+023fdacf12abfe514e5d34452b83bcae9d51473d0d37a4489f038e52f951d7e0  FIRST_PASS_REPORT.md
+bf8c97e7268f3e1da35b1e4217418a8c75d25e417ee49dba50bb4ed2c4264758  README.md
 b539671b80f33d97d84017a3144dc252549746e22f6d922ea366ee5fa3fe5a6c  SKILL_GAPS.md
-2a6c2fd1898c4adff29d7df52db07e17c3d167fc8585b023182f8a3abab5482a  UI_REVIEW.md
+bfb0e096f2a4b6d8f493ee5b06347b4a6317284b02da3a722abdf8cfc3b1f1bf  UI_REVIEW.md
 7a97729dee6c87c263d49d4eb4e2ba5f68323e0634f0b68c99a393a61543403f  analysis/custom-sql/ctrargmax-main/query.sql
 4928d28c9173805cda112ac514411cc6ab82f239c712c88bb93aa148ffd5fbdf  analysis/custom-sql/ctrargmax-main/run.json
 bfa197b67fdbf9f646d8e2c0b6b3d7e6019d646df1856920145d0d752f132727  analysis/custom-sql/ctrargmax-main/stderr.txt
@@ -212,13 +212,14 @@ ff6cbe6e129d01de5f3738a776948cf5bf3d3a1c2e70460ea11a1889faa6b385  traces/cap-mai
 9f2518a4701b83f8b1b0c61ef0efd40f0dfe29368b8d7848af9c7362de264891  traces/p19.png
 1e89ee214e4852f868ffd4973bdd6a880a54e090eac535befe4c6abef61b06f8  traces/p20-1.png
 d3582d20af79ef908e37810fdfafe57677d21675701caa9499bf2911dc7cbc92  traces/p20-2.png
+6b87548d05cec8c8188f940c666c34a172cfc971e1a4c5b2c7bcf6816a71a453  traces/p21.png
 9a22132e3f1bccd08347d95f4b0092b53723ca1a89e9675fb83ddf77accf68b7  traces/p22.png
 
 # =====================================================================
-# FROZEN (window B first pass, rev3: counters corrected; UI evidence p19, p20-1, p20-2, p22)
-# timestamp_utc: 2026-10-27T03:30:02Z
+# FROZEN (window B first pass, rev3: counters corrected; UI evidence p19, p20-1, p20-2, p21, p22)
+# timestamp_utc: 2026-10-27T03:40:24Z
 # last three lines = report + primary traces
 # =====================================================================
-1452d7020cadcd7d7c3ea74ebdeb83d475d94f9d9c2842d1c412da973f475240  FIRST_PASS_REPORT.md
+023fdacf12abfe514e5d34452b83bcae9d51473d0d37a4489f038e52f951d7e0  FIRST_PASS_REPORT.md
 ff6cbe6e129d01de5f3738a776948cf5bf3d3a1c2e70460ea11a1889faa6b385  traces/cap-main-90s.pftrace
 334c832ae1ebe9e0752609dee47b0a7b9f99caee74518cb23c704a110f33dc7e  traces/cap-sched-70s.pftrace

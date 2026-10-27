@@ -11,7 +11,7 @@
 - 线程：`pf-lat-0`(utid 2)、`pf-lat-1`(utid 3，preprocess)、`pf-lat-2`(utid 4，work)、`pf-lat-3`(utid 5，output)。
 - 自定义 Track：`request lane 00` … `request lane 51`（52 条）、`q-pre lane 00`…、`q-work lane 00`…、`q-out lane 00`…。
 - 事件：`lat.request.begin` / `lat.request` / `lat.request.end` / `lat.stage` / `lat.stage.result` / `lat.queue` / `lat.send` / `lat.receive`（各 1,800 或 5,400 条）。
-- Counter：`lat.queue_depth.q_pre` / `lat.queue_depth.q_work` / `lat.queue_depth.q_out` 各 3,600 点（q_pre/q_work 恒 ≤1；q_out severe 期三角形、峰值 51）。UI 截图样例（用户侧提供）：`traces/p19.png`（q_out 三角形峰值 51）、`traces/p20-1.png`（severe 慢 output Slice = 85ms 66µs 750ns）、`traces/p20-2.png`（mild 慢 work Slice = 22ms 06µs）、`traces/p22.png`（severe 长请求 2s162ms，同屏 q_out 三角形与两个 `lat.queue`）。
+- Counter：`lat.queue_depth.q_pre` / `lat.queue_depth.q_work` / `lat.queue_depth.q_out` 各 3,600 点（q_pre/q_work 恒 ≤1；q_out severe 期三角形、峰值 51）。UI 截图样例（用户侧提供）：`traces/p19.png`（q_out 三角形峰值 51）、`traces/p20-1.png`（severe 慢 output Slice = 85ms 66µs 750ns）、`traces/p20-2.png`（mild 慢 work Slice = 22ms 06µs）、`traces/p22.png`（severe 长请求 2s162ms，同屏 q_out 三角形与两个 `lat.queue`）、`traces/p21.png`（cap-sched trace 的线程状态：选中慢 `lat.stage` 可见 Runnable 后连续 Sleeping 片段，每段约 5ms）。
 
 ## 1. 复核 severe：慢 output 与超长 E2E
 
