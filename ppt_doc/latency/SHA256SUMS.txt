@@ -1,7 +1,7 @@
-eb97f49c817c17947ba6463db06cedb274da743a125659d89ba1af4313e52356  FIRST_PASS_REPORT.md
-29af8ef1213b8f32ac7cca53ce60881c0e3c26de6ed7e8c22d60a9c476187bd4  README.md
+4bf5b3784e775c00478d4e3f4ab6294b1bfe5a5e1d167bcd2181b1567cfacef0  FIRST_PASS_REPORT.md
+cab8e755fcdf7745556ab04992941569b05fe13230cbee9e73a81beee7559131  README.md
 b539671b80f33d97d84017a3144dc252549746e22f6d922ea366ee5fa3fe5a6c  SKILL_GAPS.md
-c7ca35526057aec470c530fe22f4a9aebe0f5e7552a55016eb143230388494f1  UI_REVIEW.md
+9d0f068cb647054d01f6477beaec72d86e1d83013faa8159eac4edc796416a2b  UI_REVIEW.md
 7a97729dee6c87c263d49d4eb4e2ba5f68323e0634f0b68c99a393a61543403f  analysis/custom-sql/ctrargmax-main/query.sql
 4928d28c9173805cda112ac514411cc6ab82f239c712c88bb93aa148ffd5fbdf  analysis/custom-sql/ctrargmax-main/run.json
 bfa197b67fdbf9f646d8e2c0b6b3d7e6019d646df1856920145d0d752f132727  analysis/custom-sql/ctrargmax-main/stderr.txt
@@ -210,12 +210,14 @@ ff6cbe6e129d01de5f3738a776948cf5bf3d3a1c2e70460ea11a1889faa6b385  traces/cap-mai
 5510d535214b6fe26622dc581d2cccbe68e3463adbe597709478e2aeaad6d98b  traces/cap-probe-15s.pftrace
 334c832ae1ebe9e0752609dee47b0a7b9f99caee74518cb23c704a110f33dc7e  traces/cap-sched-70s.pftrace
 9f2518a4701b83f8b1b0c61ef0efd40f0dfe29368b8d7848af9c7362de264891  traces/p19.png
+1e89ee214e4852f868ffd4973bdd6a880a54e090eac535befe4c6abef61b06f8  traces/p20-1.png
+d3582d20af79ef908e37810fdfafe57677d21675701caa9499bf2911dc7cbc92  traces/p20-2.png
 
 # =====================================================================
-# FROZEN (window B first pass, rev3: queue-depth counters corrected, +p19.png)
-# timestamp_utc: 2026-10-27T02:44:03Z
+# FROZEN (window B first pass, rev3: counters corrected; UI evidence p19, p20-1, p20-2)
+# timestamp_utc: 2026-10-27T03:26:40Z
 # last three lines = report + primary traces
 # =====================================================================
-eb97f49c817c17947ba6463db06cedb274da743a125659d89ba1af4313e52356  FIRST_PASS_REPORT.md
+4bf5b3784e775c00478d4e3f4ab6294b1bfe5a5e1d167bcd2181b1567cfacef0  FIRST_PASS_REPORT.md
 ff6cbe6e129d01de5f3738a776948cf5bf3d3a1c2e70460ea11a1889faa6b385  traces/cap-main-90s.pftrace
 334c832ae1ebe9e0752609dee47b0a7b9f99caee74518cb23c704a110f33dc7e  traces/cap-sched-70s.pftrace

@@ -1,6 +1,6 @@
 # UI 复核说明（手动 Perfetto UI）
 
-本文件只描述**在真实 Trace 存在的数据上**如何手动复核；本轮未执行 UI 自动化/截图验收（Skill 不默认 UI 自动化）。
+本文件只描述**在真实 Trace 存在的数据上**如何手动复核；本轮未执行 UI 自动化；文末截图 `p19/p20-1/p20-2.png` 为用户侧 UI 复核证据（Skill 不默认 UI 自动化）。
 打开的文件：`traces/cap-main-90s.pftrace`（应用采集）与 `traces/cap-sched-70s.pftrace`（含 sched）。
 
 ## 0. 先确认对象存在（不是承诺视图）
@@ -11,7 +11,7 @@
 - 线程：`pf-lat-0`(utid 2)、`pf-lat-1`(utid 3，preprocess)、`pf-lat-2`(utid 4，work)、`pf-lat-3`(utid 5，output)。
 - 自定义 Track：`request lane 00` … `request lane 51`（52 条）、`q-pre lane 00`…、`q-work lane 00`…、`q-out lane 00`…。
 - 事件：`lat.request.begin` / `lat.request` / `lat.request.end` / `lat.stage` / `lat.stage.result` / `lat.queue` / `lat.send` / `lat.receive`（各 1,800 或 5,400 条）。
-- Counter：`lat.queue_depth.q_pre` / `lat.queue_depth.q_work` / `lat.queue_depth.q_out` 各 3,600 点（q_pre/q_work 恒 ≤1；q_out severe 期三角形、峰值 51）。UI 截图样例：`traces/p19.png`。
+- Counter：`lat.queue_depth.q_pre` / `lat.queue_depth.q_work` / `lat.queue_depth.q_out` 各 3,600 点（q_pre/q_work 恒 ≤1；q_out severe 期三角形、峰值 51）。UI 截图样例（用户侧提供）：`traces/p19.png`（q_out 三角形峰值 51）、`traces/p20-1.png`（severe 慢 output Slice = 85ms 66µs 750ns）、`traces/p20-2.png`（mild 慢 work Slice = 22ms 06µs）。
 
 ## 1. 复核 severe：慢 output 与超长 E2E
 

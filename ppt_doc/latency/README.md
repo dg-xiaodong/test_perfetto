@@ -17,6 +17,8 @@ traces/
   cap-sched-70s.pftrace   补证（+ sched_switch/sched_waking，70 s，线程状态）
   cap-probe-15s.pftrace   冒烟测试（仅确认数据源/契约，不参与结论）
   p19.png                 UI 截图证据（q_out 深度三角形，峰值 51）
+  p20-1.png              UI 截图证据：severe 窗口慢 output Slice（85ms 66µs）
+  p20-2.png              UI 截图证据：mild 窗口慢 work Slice（22ms 06µs）
 
 configs/
   main.pbtxt, sched.pbtxt, probe.pbtxt          host 生成并校验的配置
