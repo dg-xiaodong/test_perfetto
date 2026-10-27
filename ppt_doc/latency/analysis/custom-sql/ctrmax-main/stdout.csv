@@ -1,0 +1,4 @@
+"name","max_depth","min_depth","n"
+"lat.queue_depth.q_out",51.000000,0.000000,3600
+"lat.queue_depth.q_pre",1.000000,0.000000,3600
+"lat.queue_depth.q_work",1.000000,0.000000,3600

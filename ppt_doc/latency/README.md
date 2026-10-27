@@ -16,6 +16,7 @@ traces/
   cap-main-90s.pftrace    主证据（track_event only，90 s，1800 请求，0 open）
   cap-sched-70s.pftrace   补证（+ sched_switch/sched_waking，70 s，线程状态）
   cap-probe-15s.pftrace   冒烟测试（仅确认数据源/契约，不参与结论）
+  p19.png                 UI 截图证据（q_out 深度三角形，峰值 51）
 
 configs/
   main.pbtxt, sched.pbtxt, probe.pbtxt          host 生成并校验的配置

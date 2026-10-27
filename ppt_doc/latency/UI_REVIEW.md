@@ -11,7 +11,7 @@
 - 线程：`pf-lat-0`(utid 2)、`pf-lat-1`(utid 3，preprocess)、`pf-lat-2`(utid 4，work)、`pf-lat-3`(utid 5，output)。
 - 自定义 Track：`request lane 00` … `request lane 51`（52 条）、`q-pre lane 00`…、`q-work lane 00`…、`q-out lane 00`…。
 - 事件：`lat.request.begin` / `lat.request` / `lat.request.end` / `lat.stage` / `lat.stage.result` / `lat.queue` / `lat.send` / `lat.receive`（各 1,800 或 5,400 条）。
-- **不存在**：`lat.queue_depth.*` Counter（所以不要按 Skill 的通用步骤去找队列深度 Counter；本 Trace 的队列证据是 `lat.queue` Slice）。
+- Counter：`lat.queue_depth.q_pre` / `lat.queue_depth.q_work` / `lat.queue_depth.q_out` 各 3,600 点（q_pre/q_work 恒 ≤1；q_out severe 期三角形、峰值 51）。UI 截图样例：`traces/p19.png`。
 
 ## 1. 复核 severe：慢 output 与超长 E2E
 
@@ -19,7 +19,7 @@
 2. 时间轴跳到 trace 开始后 ≈17.5 s（绝对 ts ≈7,606,814,332,511 ns；app 1116.0 s，severe 窗口起点；另两个 severe 窗口在 ≈47.5 s / ≈77.5 s，mild 窗口在 ≈1.5 s / ≈31.5 s / ≈61.5 s）。
 3. 展开 `lat.stage`：可见一串 `output` Slice，每个 **≈85.07 ms**；窗口外同阶段为 **≈5.02 ms**。选中一个，详情中应看到 `stage_id=output`、`stage_instance_id=out-<rid>`、`request_id=<rid>`。
 4. 到 `request lane NN` 找同 `request_id` 的 `lat.request`：窗口末请求（rid 22991）生命周期 **2.565 s**。
-5. 到 `q-out lane NN` 找同请求的 `lat.queue`：**≈2.4696 s**。对照可见：慢 Slice 只是 85 ms，真正的 2.47 s 在队列 Slice 上。
+5. 到 `q-out lane NN` 找同请求的 `lat.queue`：**≈2.4696 s**。慢 Slice 只是 85 ms，真正的 2.47 s 在队列 Slice 上。再展开 `lat.queue_depth.q_out`：三角形峰值 51 在慢消化结束点（窗口#1 ≈ trace+23.5 s），随后 ≈5.1 ms 减 1 排空——与截图 `traces/p19.png` 一致（y 轴顶格 55 是刻度）。
 6. 选中 `lat.send`（Instant）应出现 Flow 箭头指向对应 `lat.receive`；每请求 3 条。用 SQL 交叉：
 
 ```sql
@@ -54,5 +54,5 @@ WHERE a.category='rdk.latency' OR b.category='rdk.latency' LIMIT 20;
 
 - Slice 长度 = 墙钟；`lat.request`/`lat.stage` 所在 Track（自定义 / 线程）不同，不能拿“最长 Slice”当关键路径。
 - 队列等待、阶段墙钟、CPU/Running 是不同维度，不相加当 E2E。
-- 本 Trace 无 Counter，不构造队列深度曲线。
+- 队列深度直接看现成的 `lat.queue_depth.*` Counter（q_out 峰值 51；q_pre/q_work ≤1）。
 - 阶段在自定义 Track 上时不要虚构唯一执行线程；本 Trace 的 `lat.stage` 确实在 `thread_track` 上（`thread_utid` 非空），可直接与 Thread State 对齐。

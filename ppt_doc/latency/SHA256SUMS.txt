@@ -1,7 +1,17 @@
-7c42d7dc0651e8ec9986e8478534859e53b500fa27a71fe41fc8b3b0a5911904  FIRST_PASS_REPORT.md
-01912c8d6aad015cba5e60ed02c9ae5c358b42dfe0bd0ee778962195e8d4388a  README.md
-f0cb4d57cceb6262078a5e38ec9af60153ff664744c4645eea59aac132462237  SKILL_GAPS.md
-c281fcdf05c22d9034a24ef559e0836d2a7a7106c789afacc2c910006c88ccfc  UI_REVIEW.md
+eb97f49c817c17947ba6463db06cedb274da743a125659d89ba1af4313e52356  FIRST_PASS_REPORT.md
+29af8ef1213b8f32ac7cca53ce60881c0e3c26de6ed7e8c22d60a9c476187bd4  README.md
+b539671b80f33d97d84017a3144dc252549746e22f6d922ea366ee5fa3fe5a6c  SKILL_GAPS.md
+c7ca35526057aec470c530fe22f4a9aebe0f5e7552a55016eb143230388494f1  UI_REVIEW.md
+7a97729dee6c87c263d49d4eb4e2ba5f68323e0634f0b68c99a393a61543403f  analysis/custom-sql/ctrargmax-main/query.sql
+4928d28c9173805cda112ac514411cc6ab82f239c712c88bb93aa148ffd5fbdf  analysis/custom-sql/ctrargmax-main/run.json
+bfa197b67fdbf9f646d8e2c0b6b3d7e6019d646df1856920145d0d752f132727  analysis/custom-sql/ctrargmax-main/stderr.txt
+899a90e128c87fd8d1c526f553983e06ff2000b815ac7e2b25c0b53ab3e73b31  analysis/custom-sql/ctrargmax-main/stdout.csv
+5b9bafda7473d76619a42ac820879d34087d268dad6cb4942e12d5c7f5171ce2  analysis/custom-sql/ctrargmax-main/version.txt
+ccf5f0eda1b14913ceadbdabf99f7d081f4ef7e9ed027460309c8783a1601937  analysis/custom-sql/ctrmax-main/query.sql
+c2181be69832e59d9046c6aba81bf8dbea56eece73ab6b45e2966938581deb4d  analysis/custom-sql/ctrmax-main/run.json
+610e54b2520afe5743c60159ce130c94f6a961a008982b0aba8c53e51f800bbc  analysis/custom-sql/ctrmax-main/stderr.txt
+61bfc33c142975138549835ed7ea11ffc024c71ca4912ab93b9fc1ba1f35ede5  analysis/custom-sql/ctrmax-main/stdout.csv
+5b9bafda7473d76619a42ac820879d34087d268dad6cb4942e12d5c7f5171ce2  analysis/custom-sql/ctrmax-main/version.txt
 1968eb7a61c19a2e7915230668358e8f061dbdda289cbd29b7bf6c10e4dc40b3  analysis/custom-sql/fields-probe/query.sql
 1fe90e278c3e2bbb78fc407786f051b69a9c1fe03898f47c01778de1f88a0241  analysis/custom-sql/fields-probe/run.json
 3750118324806c458526d61bc75451adb18187eaa3c34007b2694c97b7eccbac  analysis/custom-sql/fields-probe/stderr.txt
@@ -199,12 +209,13 @@ c856404f75e96496c4cbf1d649ebf6bdb76ada45b07ae061bff20ee69c5a56b1  tooling/skill-
 ff6cbe6e129d01de5f3738a776948cf5bf3d3a1c2e70460ea11a1889faa6b385  traces/cap-main-90s.pftrace
 5510d535214b6fe26622dc581d2cccbe68e3463adbe597709478e2aeaad6d98b  traces/cap-probe-15s.pftrace
 334c832ae1ebe9e0752609dee47b0a7b9f99caee74518cb23c704a110f33dc7e  traces/cap-sched-70s.pftrace
+9f2518a4701b83f8b1b0c61ef0efd40f0dfe29368b8d7848af9c7362de264891  traces/p19.png
 
 # =====================================================================
-# FROZEN (window B first pass, rev2: fixed UI navigation timestamps)
-# timestamp_utc: 2026-10-25T09:16:10Z
+# FROZEN (window B first pass, rev3: queue-depth counters corrected, +p19.png)
+# timestamp_utc: 2026-10-27T02:44:03Z
 # last three lines = report + primary traces
 # =====================================================================
-7c42d7dc0651e8ec9986e8478534859e53b500fa27a71fe41fc8b3b0a5911904  FIRST_PASS_REPORT.md
+eb97f49c817c17947ba6463db06cedb274da743a125659d89ba1af4313e52356  FIRST_PASS_REPORT.md
 ff6cbe6e129d01de5f3738a776948cf5bf3d3a1c2e70460ea11a1889faa6b385  traces/cap-main-90s.pftrace
 334c832ae1ebe9e0752609dee47b0a7b9f99caee74518cb23c704a110f33dc7e  traces/cap-sched-70s.pftrace

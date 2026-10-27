@@ -1,6 +1,6 @@
 # FIRST_PASS_REPORT — `pf-lat-case` 周期性端到端时延升高（窗口 B 独立盲测）
 
-- 版本/轮次：window B，first pass（首轮盲测，未做对照实验、未取私有真值）
+- 版本/轮次：window B，first pass **rev3**（首轮盲测，未做对照实验、未取私有真值。rev2 修正 UI 跳转时间戳；rev3 修正『无队列深度 Counter』的错误结论，新增 §5.7 Counter 交叉验证与 UI 截图证据 traces/p19.png）
 - 目标：RDK X5（aarch64 buildroot）上的 `pf-lat-case 1.0.0`（pid 6692，run_id `run-6692-6482`，采集期间未重启）
 - 方法：只使用已安装的 `perfetto-latency-debugging` Skill（v0.1.1 candidate）规定的入口——**TrackEvent 埋点** + Perfetto 实采 + Trace Processor SQL；不使用源码/反编译/私有 Ground Truth。
 - 结论置信度：**阶段归因与排队放大：高**（实采数据 + 可复算模型）；**具体触发原因/阻塞原语：中**（可观测特征清楚，但缺 syscall/锁事件，见 §7、SKILL_GAPS.md）。
@@ -17,7 +17,7 @@
    - 窗口 A 的 +14 ms 是 **CPU 忙**（`work` Slice 内 99.3% 时间处于 Running）；
    - 窗口 B 的 +80 ms 是 **阻塞/定时等待**（`output` Slice 内 93.2% 时间处于 S 状态，约 16 次 × 5.0 ms 的可中断睡眠，每次唤醒仅运行约 33 µs），**不是 CPU 不足、也不是被抢占**。
 4. **排除项**：不是 tracing 开销（15 分钟无 tracing 的公共 CSV 同样异常）；不是 CPU 争用/调度饥饿（窗口期整机 CPU 利用率约 8.4%，`output` 线程 R 仅 0.42 ms/Slice）；不是其他 lab 进程跨进程干扰（异常全部发生在 `pf-lat-case` 自己的 4 个线程内）。
-5. **不确定项**：为什么会以 30 s 周期、在 20.0 s / 6.0 s 相位打开这两个窗口，以及窗口 B 的 5 ms 轮询到底在等什么，**无法从现有事件判定**（没有触发事件、没有队列深度 Counter、没有 syscall/锁追踪；Skill 配置校验器也不允许加 syscall 事件）。已在 SKILL_GAPS.md 记录。
+5. **不确定项**：为什么会以 30 s 周期、在 20.0 s / 6.0 s 相位打开这两个窗口，以及窗口 B 的 5 ms 轮询到底在等什么，**无法从现有事件判定**（没有触发/原因事件、没有 syscall/锁追踪；Skill 配置校验器也不允许加 syscall 事件）。队列深度 Counter 存在且已用于交叉验证（§5.7）。其余缺口见 SKILL_GAPS.md。
 
 ---
 
@@ -125,7 +125,7 @@ Sched Trace：`traces/cap-sched-70s.pftrace`，sha256 `334c832ae1ebe9e0752609dee
 
 - 所有事件 `contract_version="latency.v1"`；ID 为字符串，无 `[NULL]`/空值。
 - 每请求恰好 3 个阶段实例（`preprocess`/`work`/`output`）、3 次队列访问（`q_pre`/`q_work`/`q_out`）、3 条显式 Flow 边（`lat.send`→`lat.receive`，link_id 唯一）；`analyze.py` 的 Flow 校验均为 VALID。
-- `lat.queue_depth.*` Counter **不存在**（`04-counters` 为空）；这是本 Trace 的契约缺口，见 SKILL_GAPS.md G1。
+- `lat.queue_depth.q_pre/q_work/q_out` Counter **存在**：各 3,600 个采样点（每请求入队/出队各记一次），`04-counters` 导出非空。首轮 rev1 曾误判其不存在，rev3 已修正并用于 §5.7 的模型交叉验证。
 
 ### 3.5 与公共记录交叉验证（`data/crosscheck_trace_vs_csv.txt`）
 
@@ -199,7 +199,7 @@ lat.request.end（status + expected_stage/queue/link_count）
 ```
 
 - 三个阶段各自固定跑在独立线程（`stages.csv` 的 `thread_utid`：pre=3/pf-lat-1、work=4/pf-lat-2、output=5/pf-lat-3），主线程与 `pf-lat-0` 基本空闲。
-- 队列等待按 `lat.queue` Slice 的 `dur` 计算（入队→出队墙钟），**不是** Counter 快照；本 Trace 无 Counter，见 G1。
+- 队列等待按 `lat.queue` Slice 的 `dur` 计算（入队→出队墙钟）；队列瞬时深度由 `lat.queue_depth.*` Counter 独立记录，两者口径不同、可互相验证（§5.7）。
 - `lat.request` 是 UI 展示用的显式 Track Slice，**E2E 以 `lat.request.begin/end` 两个 Instant 计算**（Skill 要求）。
 
 ### 5.2 窗口内逐请求时间线（`analysis/summary/timeline_severe.csv`）
@@ -266,6 +266,20 @@ lat.request.end（status + expected_stage/queue/link_count）
 - 慢 `output` 的 Runnable 每 Slice 仅 0.42 ms（最大 R 区间 131.5 µs），不构成“等 CPU”。
 - 因此：窗口内慢不是外部 CPU 压力或调度饥饿造成，而是**阶段内部主动/被动的定时等待**。
 
+### 5.7 队列深度 Counter 交叉验证（rev3 新增；UI 截图证据 `traces/p19.png`）
+
+`lat.queue_depth.q_pre / q_work / q_out` 各 3,600 个采样点（`analysis/custom-sql/v58-ctrmax-main/`、`main582/04-counters/`）：
+
+| Counter | min | max | 行为 |
+|---|---|---|---|
+| `q_pre` | 0 | **1** | 从不积压 |
+| `q_work` | 0 | **1** | 从不积压 |
+| `q_out` | 0 | **51** | severe 窗口期爬升；峰值出现在慢 output 消化结束时（≈窗口起点+6.05s，如窗口#3：51 @ trace+83.56s），随后以 ≈每 5.1ms 减 1 的斜率排空（正是 5ms 的 output 服务率） |
+
+模型对账：窗口末积压 ≈30（71 到达 − 41 已出队），慢消化期间再入队 ≈51、同时出队剩余慢请求 ≈29 → 预测峰值 ≈52，与实测 51 吻合；`q_pre/q_work ≤1` 证明积压只发生在 output 一级。UI 截图（`traces/p19.png`，用户侧复核）中 `q_out` 的三角形与此一致；其 y 轴顶格 55 是坐标轴刻度，数据峰值 51。
+
+> 修订说明：rev1 曾误判『无队列深度 Counter』——当时只枚举了含 Slice 的轨道、未查 `counter_track`；rev3 修正，并把该 Counter 用作队列模型的独立验证。
+
 ---
 
 ## 6. 次异常（mild）：证据链
@@ -313,7 +327,7 @@ lat.request.end（status + expected_stage/queue/link_count）
 | tracing 开销导致 | 15 min 无 tracing 的 CSV 有完全相同的 30 s 周期/幅度 |
 | CPU 争用/调度饥饿 | 窗口期整机 CPU 8.4%；慢 `output` Runnable 0.42 ms/Slice；`output` 是 S 不是 R |
 | 其他 lab 进程跨进程干扰 | 异常全部在 `pf-lat-case` 的 4 个线程内；`pf-cpu-case`/`pf-sched-case` 是独立进程，其线程活动不改变本应用的逐请求固定增量 |
-| 队列 Counter/采样伪影 | 无 Counter；队列等待来自 `lat.queue` Slice，且与 E2E/CSV 相互印证 |
+| 队列 Counter/采样伪影 | `lat.queue_depth.q_out` Counter 独立印证：峰值 51 @ 慢消化结束点、排空 ≈5.1ms/个，与 `lat.queue` Slice 等待和 E2E/CSV 三方一致（§5.7） |
 | 采集边界/截断 | 主 Trace 0 open、1,800 全 COMPLETE；边界截断只在 sched 的 28 个尾部请求，已排除 |
 
 ---
@@ -326,7 +340,7 @@ lat.request.end（status + expected_stage/queue/link_count）
 2. **定位慢 output**：主 Trace 有 3 个 severe 窗口，在 trace 开始后 ≈17.5 s / 47.5 s / 77.5 s（绝对 ts ≈7,606,814,332,511 / 7,636,814,332,511 / 7,666,814,332,511 ns，对应 app 1116.0 / 1146.0 / 1176.0 s）。在 `pf-lat-3` 线程轨道上任选一个窗口展开 `lat.stage`，可见 dur≈85.1 ms 的 `output` Slice；普通时刻同阶段为 5.0 ms。选中 Slice，详情中 `stage_id=output`、`stage_instance_id=out-<request_id>`、`request_id` 可从 debug annotation 读到。
 3. **请求生命周期**：在 `request lane 00`…`request lane 51` 自定义 Track 上找 `lat.request`（最长 2.565 s）；详情里用 `run_id/stream_id/request_id` 区分并发请求（不要用 lane 号当身份）。
 4. **Flow**：选中 `lat.send`（Instant）可见 Flow 箭头指向对应 `lat.receive`；每请求 3 条边，`link_id` 唯一；用 `analysis/custom-sql/flow-probe-1`/`02-flow` 的 SQL 可复核 `flow` 表。
-5. **队列**：在 `q-out lane 00`… 上查看 `lat.queue`（q_out 最长 2.505 s）；`lat.queue_depth.*` Counter **不存在**，不要虚构队列深度视图。
+5. **队列**：在 `q-out lane 00`… 上查看 `lat.queue`（q_out 最长 2.505 s）；同时展开 `lat.queue_depth.q_out` Counter：severe 期三角形爬升，峰值 **51**（y 轴顶格 55 是刻度）在慢消化结束点（≈窗口起点+6.05s），随后 ≈5.1ms 减 1 排空；`q_pre/q_work` 恒 ≤1。截图样例 `traces/p19.png`。
 6. **线程状态（sched Trace）**：打开 `traces/cap-sched-70s.pftrace`，选中 `pf-lat-3` 上的慢 `output` Slice，开启 CPU/Thread State 轨道，可看到 `S`（~5 ms）与 `Running`（~33 µs）交替约 16 次；`work` 慢 Slice 则几乎全为 `Running`。
 7. **SQL 复核**：UI Query 中直接粘贴 `analysis/main582/00-inventory/query.sql`、`analysis/main582/01-events/query.sql` 等（`${CATEGORY}` 已替换为 `rdk.latency`）；或用 `ui-request-track.sql` 生成派生 Debug Track（只含严格合格请求，不是新测量）。
 8. **看图注意**：Slice 长度是墙钟；`lat.request`/`lat.stage` 跑在自定义/线程 Track 上，不能把最长 Slice 直接当关键路径；队列等待、阶段墙钟、CPU 时间是三个不同维度。
@@ -373,6 +387,8 @@ python3 scripts/analyze.py --tp <TP> --trace cap-main/trace.pftrace --out analys
 | 数据质量/无丢失 | `analysis/custom-sql/v58-quality-main/`、`v58-quality-sched/` |
 | 边界/截断处理 | `analysis/sched582/requests.csv`（CENSORED/INCOMPLETE 行） |
 | 原始 Trace/Config/采集日志 | `traces/`、`configs/`、`metadata/collector-*.log` |
+| 队列深度 Counter（峰值 51、排空斜率） | `analysis/custom-sql/v58-ctrmax-main/`、`analysis/main582/04-counters/` |
+| UI 截图证据（q_out 深度三角形） | `traces/p19.png` |
 | Skill 文件版本与哈希 | `metadata/skill-files.sha256`、`metadata/versions.txt` |
 
 ---

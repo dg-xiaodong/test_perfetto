@@ -4,11 +4,15 @@
 
 ---
 
-## G1. 契约有 `lat.queue`，但没有 queue-depth Counter；Counter 数据源为空
+## G1. Counter 盘点不在 analyzer/checklist 里，容易漏判（本轮 rev1 即因此误判，rev3 已修正）
 
-- **现象**：Trace 中只有 `lat.queue` Slice（入队→出队墙钟），没有 `lat.queue_depth.<queue>` Counter。`sql/04-counters.sql` 返回空；`lat.queue_depth.pre/infer/post`（`references/05-ui.md` 第 4 步）在本例不存在。
-- **影响**：无法用“精确快照深度”验证积压曲线，只能用 `lat.queue` 的 `dur` 反推（本轮用 2505 ms / 85.1 ms ≈ 29.4 个前序单元交叉校验，结论仍成立）。若遇到“队列长但单次 wait 短”的形态，缺少 Counter 会更难判别。
-- **建议**：在示例/契约中把 Counter 标为 **optional**，或在 Skill 的检查清单里显式写“若 Counter 缺失，允许用 queue Slice 的等待时长 + 到达率建模，但需在报告标注口径”。
+- **现象**：本 Trace 实际**存在** `lat.queue_depth.q_pre/q_work/q_out` 三个 Counter（各 3,600 采样点）。但首轮报告 rev1 误判为『Counter 不存在』——盘点轨道时只查了含 Slice 的 track（`slice.track_id` 路径），没有单独枚举 `counter_track`；`analyze.py` 虽导出了 `04-counters`（非空），但没有任何步骤提示『这些 Counter 存在、可用作队列模型验证』，于是被忽略。
+- **影响**：按 rev1 结论会错失一个现成的独立验证手段（峰值深度、排空斜率可直接对账排队模型），并向 Skill 报了一条不存在的缺口。
+- **建议**：
+  1. `analyze.py` 的 summary 增加 `counter_tracks` 清单（名称/点数/min/max），非空时显式列出；
+  2. 诊断 checklist 加一条：队列类结论必须与 `lat.queue_depth.*`（若存在）对账；
+  3. `04-counters` 导出附每条 Counter 的 min/max/argmax，而不只是原始值流。
+- **修订记录**：rev1 误判 → rev3 修正本条，并在报告新增 §5.7（q_out 峰值 51 @ 慢消化结束点、排空 ≈5.1ms/个、q_pre/q_work ≤1）。
 
 ## G2. 没有“原因/相位/触发”事件，机制只能靠时长分布反推
 
