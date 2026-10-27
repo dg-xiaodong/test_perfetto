@@ -334,7 +334,7 @@ lat.request.end（status + expected_stage/queue/link_count）
 
 ## 8. UI 复核说明（手动，未自动化）
 
-前提：UI 打开真实 `.pftrace`；下列对象在 Trace 中确实存在（名称来自本 Trace）。截图样例：`traces/p19.png`（q_out 深度三角形，峰值 51）、`traces/p20-1.png`（severe 慢 output 85ms 66µs）、`traces/p20-2.png`（mild 慢 work 22ms 06µs）。
+前提：UI 打开真实 `.pftrace`；下列对象在 Trace 中确实存在（名称来自本 Trace）。截图样例：`traces/p19.png`（q_out 深度三角形，峰值 51）、`traces/p20-1.png`（severe 慢 output 85ms 66µs）、`traces/p20-2.png`（mild 慢 work 22ms 06µs）、`traces/p22.png`（severe 长请求 2s162ms + 两个 `lat.queue` + q_out 三角形）。
 
 1. **主 Trace**：打开 `traces/cap-main-90s.pftrace`，在进程 `/userdata/perfetto-skill-lab/latency/pf-lat-case` 下找到线程 `pf-lat-1`（preprocess）、`pf-lat-2`（work）、`pf-lat-3`（output）。
 2. **定位慢 output**：主 Trace 有 3 个 severe 窗口，在 trace 开始后 ≈17.5 s / 47.5 s / 77.5 s（绝对 ts ≈7,606,814,332,511 / 7,636,814,332,511 / 7,666,814,332,511 ns，对应 app 1116.0 / 1146.0 / 1176.0 s）。在 `pf-lat-3` 线程轨道上任选一个窗口展开 `lat.stage`，可见 dur≈85.1 ms 的 `output` Slice；普通时刻同阶段为 5.0 ms。选中 Slice，详情中 `stage_id=output`、`stage_instance_id=out-<request_id>`、`request_id` 可从 debug annotation 读到。
@@ -388,7 +388,7 @@ python3 scripts/analyze.py --tp <TP> --trace cap-main/trace.pftrace --out analys
 | 边界/截断处理 | `analysis/sched582/requests.csv`（CENSORED/INCOMPLETE 行） |
 | 原始 Trace/Config/采集日志 | `traces/`、`configs/`、`metadata/collector-*.log` |
 | 队列深度 Counter（峰值 51、排空斜率） | `analysis/custom-sql/v58-ctrmax-main/`、`analysis/main582/04-counters/` |
-| UI 截图证据（q_out 深度三角形；慢 output 85ms；慢 work 22ms） | `traces/p19.png`、`traces/p20-1.png`、`traces/p20-2.png` |
+| UI 截图证据（q_out 深度三角形；慢 output 85ms；慢 work 22ms；2.16s 长请求+队列） | `traces/p19.png`、`traces/p20-1.png`、`traces/p20-2.png`、`traces/p22.png` |
 | Skill 文件版本与哈希 | `metadata/skill-files.sha256`、`metadata/versions.txt` |
 
 ---

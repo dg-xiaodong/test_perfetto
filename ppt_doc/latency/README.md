@@ -19,6 +19,7 @@ traces/
   p19.png                 UI 截图证据（q_out 深度三角形，峰值 51）
   p20-1.png              UI 截图证据：severe 窗口慢 output Slice（85ms 66µs）
   p20-2.png              UI 截图证据：mild 窗口慢 work Slice（22ms 06µs）
+  p22.png                UI 截图证据：severe 窗口长请求（2.16s）+ 两个 lat.queue + q_out 三角形
 
 configs/
   main.pbtxt, sched.pbtxt, probe.pbtxt          host 生成并校验的配置
