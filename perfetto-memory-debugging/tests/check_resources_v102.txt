@@ -1,0 +1,13 @@
+# v1.0.2 resource check evidence
+
+$ python3 scripts/validate_config.py --check-resources
+[PASS] resources: 33 required files + 10 configs readable
+[NOTE] runtime not verified by preflight: pass/fail above covers only static premises; readiness/injection/stop/flush still need runtime evidence
+EXIT_CODE=0
+
+# Counterexample: copy the package, remove scripts/linux_trace_session.sh, rerun
+$ rm scripts/linux_trace_session.sh
+$ python3 scripts/validate_config.py --check-resources
+[UNKNOWN] resources: cannot complete resource check: scripts/linux_trace_session.sh
+[NOTE] runtime not verified by preflight: pass/fail above covers only static premises; readiness/injection/stop/flush still need runtime evidence
+EXIT_CODE=2

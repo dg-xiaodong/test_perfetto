@@ -1,0 +1,5 @@
+Initial RED test written before modifying v0.1.0 source:
+python3 -B -m unittest discover -s tests -p test_cross_process_guidance.py -v
+Result: Ran 6 tests; FAILED (failures=13, errors=1).
+Reasons: no Track::Global guidance, no two-process demo and no specific L8 acceptance.
+Raw output was examined at creation time; summary kept to avoid repeating full original documents.

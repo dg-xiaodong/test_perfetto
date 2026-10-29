@@ -1,0 +1,21 @@
+{
+  "source_package": "perfetto-scheduling-debugging-v0.1.0-candidate.zip",
+  "source_package_sha256": "fc77e61dc415a43f4156b471aea4ea17cdfe1dae9d8ffab9d11a0ef1a62ff775",
+  "files": {
+    "record.sh": {
+      "source_sha256": "bccb27ab88696ceca908b02b7c186697cb8f7e4270f25c493779ec044aa99692",
+      "current_sha256": "55736004783d4e135ef040f96373113e17111b93091d5fea2367527e6e26fc3f",
+      "mode": "adapted"
+    },
+    "pull.sh": {
+      "source_sha256": "731381c95399824bfd7cf439abc451453405f7446682da56efc090b14fd7c157",
+      "current_sha256": "731381c95399824bfd7cf439abc451453405f7446682da56efc090b14fd7c157",
+      "mode": "copied"
+    },
+    "validate_config.py": {
+      "source_sha256": "a4a338bf101495c5d3a4be345c3d3cfa7d1bc112b1d0b4764238082e2e10080f",
+      "current_sha256": "3b877c976feac925fb361ebadc7b19e0b7964b0afa00f293213200e9765b113b",
+      "mode": "adapted"
+    }
+  }
+}

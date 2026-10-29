@@ -1,0 +1,15 @@
+test_minimal_track_only (test_core.ConfigTests.test_minimal_track_only) ... FAIL
+
+======================================================================
+FAIL: test_minimal_track_only (test_core.ConfigTests.test_minimal_track_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/perfetto-latency-debugging/tests/test_core.py", line 141, in test_minimal_track_only
+    s=self.cfg.generate_config(); self.assertIn('track_event',s);self.assertNotIn('linux.ftrace',s);self.val.check_policy(s)
+                                  ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: 'track_event' not found in ''
+
+----------------------------------------------------------------------
+Ran 1 test in 0.003s
+
+FAILED (failures=1)

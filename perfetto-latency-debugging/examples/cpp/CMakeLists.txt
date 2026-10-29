@@ -1,0 +1,22 @@
+cmake_minimum_required(VERSION 3.16)
+project(latency_demo LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(PERFETTO_SDK_DIR "" CACHE PATH "Directory containing the real v58.2 perfetto.h and perfetto.cc")
+if(NOT EXISTS "${PERFETTO_SDK_DIR}/perfetto.h" OR NOT EXISTS "${PERFETTO_SDK_DIR}/perfetto.cc")
+  message(FATAL_ERROR "Real Perfetto SDK missing; prepare verified SDK using scripts/prepare_sdk.py. No stub fallback.")
+endif()
+find_package(Threads REQUIRED)
+add_library(perfetto_sdk STATIC "${PERFETTO_SDK_DIR}/perfetto.cc")
+target_include_directories(perfetto_sdk PUBLIC "${PERFETTO_SDK_DIR}")
+target_link_libraries(perfetto_sdk PUBLIC Threads::Threads ${CMAKE_DL_LIBS})
+add_executable(latency_demo pipeline_demo.cc latency_trace.cc)
+target_link_libraries(latency_demo PRIVATE perfetto_sdk)
+target_compile_options(latency_demo PRIVATE -O1 -g -Wall -Wextra -fno-omit-frame-pointer -fno-optimize-sibling-calls)
+target_link_options(latency_demo PRIVATE -Wl,--build-id=sha1)
+
+# Optional cross-process System Backend smoke test. Same real SDK, distinct
+# producer processes. Does not modify the original latency_demo target.
+add_executable(latency_xproc_demo cross_process_slice_demo.cc)
+target_link_libraries(latency_xproc_demo PRIVATE perfetto_sdk)
+target_compile_options(latency_xproc_demo PRIVATE -O1 -g -Wall -Wextra)
