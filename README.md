@@ -126,3 +126,10 @@ X5 imx678 linear **offline**（SIF→DDR→ISP）的四项时延测量设计。*
 
 关键事实：运行中的 `vs_sif_nat.ko`/`vs_isp_nat.ko` 已含 `camsys.sif.frame`/`camsys.isp.frame`，**T3/T4 用现有模块即可采**；
 T1 需替换新模块（vermagic 与板上 `6.1.83-DR-PL5.1_V1.0.20` 一致）；T2 需真实 Perfetto SDK 重编 libisc。
+
+## 双目深度链路（[`hobot_stereonet/`](hobot_stereonet/)）
+
+X5 + SC132GS 双目模组从 MIPI 到 WebSocket 的链路梳理：标定 → `mipi_cam` → `StereoNetNode` → `hobot_codec`
+→ `hobot_websocket` 四个进程的输入输出、队列深度、逐级字节数与格式、量化张量形状，
+以及 17 项待上板验证的清单与复现命令。含 5 张链路图（`hobot_stereonet/images/`）。
+本文档由飞书文档转换而来，硬件流水线与拆图/丢帧部分仅有源码依据（板 192.168.1.15 自 10 月 28 日起不可达）。
