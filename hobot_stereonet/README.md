@@ -2,52 +2,45 @@
 
 > 来源：飞书文档《X5 双目深度链路：从 MIPI 到 WebSocket》
 > <https://horizonrobotics.feishu.cn/docx/OHSzdPn7TowBchxCMvccyuNFnEd>，2026-11-02 转换为 Markdown；
-> 2026-11-03 同步第 1 章三次改版：结构由「四个进程」→「整体软件架构 / 节点接口 / 两种 Web 展示方案」，
-> 节点接口表合并为 5 列，1.2 改为 A/B 对比表，开头环境与板况两段移入第 6、7 章；图 1 三次换版。
+> 2026-11-03 同步第 1 章四次改版：结构由「四个进程」→「整体软件架构 / 节点订阅与输出接口 / 两种 Web 展示方案」，
+> 节点接口表与 A/B 对比表逐步精简，图 1 在章内位置调整三次、内容换版四次。
 > 图片经飞书文档素材接口下载后存放于 [`images/`](images/)。
 
 ## 1. 整体软件架构
 
-公共部分是 `mipi_cam` 和 `StereoNetNode`：前者把两路 sensor 拼成一张图，后者拆图推理出视差、深度和点云。之后在「怎么送到浏览器」这一步分成两种方案——方案 A 用 `pointcloud_web_viewer`（3 个节点，浏览器能看 3D 点云和 2D 图像），方案 B 用 `hobot_codec` + `hobot_websocket`（4 个节点，浏览器只能看 2D 图像）。
+系统是 ROS2 多节点架构。mipi_cam 负责双目采集、GDC 校正和拼接，StereoNetNode 负责 BPU 推理与深度计算，两者构成公共的双目深度链路。
 
-本文档记录的是方案 B（TROS 3.5.0 + DStereoV2.4_int16）；当前 develop 的 `stereonet_model_web_visual.launch.py` 里 `enable_web_viewer` 默认 True，起的是方案 A。
-
-### 1.1 节点接口
-
-| Node | 方案 | 职责 | 输入（Topic · 类型） | 输出（Topic · 类型） |
-|-|-|-|-|-|
-| `mipi_cam` | A、B | 采集、GDC 校正、配对拼接 | 两路 MIPI sensor（RAW10，硬件输入） | `/image_combine_raw`（Image / NV12）、左右 `camera_info`（CameraInfo） |
-| `StereoNetNode` | A、B | 推理、后处理、发布 | `/image_combine_raw`（Image）、左右 `camera_info` | `stereonet_visual`（Image / BGR8）、`stereonet_depth`（Image / mono16）、`stereonet_pointcloud2`（PointCloud2）、`camera_info` |
-| `pointcloud_web_viewer` | A | 点云序列化、JPEG 编码、HTTP / WS 服务 | `stereonet_pointcloud2`（PointCloud2）、`stereonet_visual`（Image） | HTTP + WebSocket（网络数据，非 Topic） |
-| `hobot_codec` | B | 可视化图像编码为 JPEG | `stereonet_visual`（Image / BGR8） | `/image_jpeg`（CompressedImage） |
-| `hobot_websocket` | B | JPEG 封装成帧并推送 | `/image_jpeg`（CompressedImage） | WebSocket（protobuf，非 Topic） |
-
-表里除 `/image_combine_raw`、`/image_jpeg` 外，其余 Topic 都在 `/StereoNetNode/` 命名空间下，这里省略了前缀。五种 Node 不同时启用：A 起 3 个、B 起 4 个；传感器、BPU、浏览器、nginx 都不是 ROS2 节点。
-
-本表只列主要接口，不是全部：`mipi_cam` 在 `dual_combine=1` 时还发 `/image_left_raw`、`/image_right_raw`，`StereoNetNode` 还发左右校正图，这些都放在各节点章节。
-
-本方案的尺寸：合帧 NV12 640×704（每眼 640×352），`visual` 为 BGR8 640×704，深度 16 位 640×352。这些是本次配置，不是组件的固定要求。
-
-### 1.2 两种 Web 展示方案的区别
-
-| 比较项 | 方案 A | 方案 B |
-|-|-|-|
-| Web 展示节点 | `pointcloud_web_viewer` | `hobot_codec` + `hobot_websocket` |
-| ROS2 节点总数 | 3 | 4 |
-| Web 展示能力 | 3D 点云 + 2D 图像 | 仅 2D 图像 |
-| 浏览器收到的数据 | 自定义点云二进制 + JPEG | JPEG 经 Protobuf 封装 |
-| JPEG 编码 | Viewer 内部 OpenCV `cv::imencode()` | X5 的 JPEG 编码路径 |
-| Web 服务 | Viewer 内置 HTTP / WebSocket | nginx 提供静态页，WebSocket 节点推送 |
-
-方案 A 订阅 `stereonet_pointcloud2` 和 `stereonet_visual` 两路：点云转成自定义二进制给浏览器做 WebGL 渲染，图像用 `ImageCodec` 软件编码成 JPEG，不依赖 `hobot_codec`。方案 B 只订阅 `stereonet_visual`，点云不进这条 Web 链路，所以浏览器只能看 2D；`StereoNetNode` 仍提供点云接口，其他节点可以按需订阅。
-
-端口：A 的 HTTP 与 WebSocket 通常都在 8080；B 的静态页在 8000、WebSocket 在 8080。并行启动时要避免冲突。
+Web 展示分成两种方案：方案 A 用 pointcloud_web_viewer，支持 3D 点云和 2D 图像；方案 B 用 hobot_codec 加 hobot_websocket，只支持 2D 图像。本文档记录的是方案 B（TROS 3.5.0 + DStereoV2.4_int16），当前 develop 的 launch 里 enable_web_viewer 默认 True，起的是方案 A。
 
 ![整体软件架构：公共链路 + 方案 A / B](images/fig_architecture.png)
 
 > **补充图（非飞书原文）**：同一套链路的节点与数据流总览。相对上面的架构图，它额外标出 BPU 4 个量化张量的字节数、CPU 产物到对外话题的对应关系，以及方案 A 的实测开销（订阅点云后 `StereoNetNode` CPU 增 20–30%，viewer 自身约 47% CPU / 116 MB）。
 
 ![节点与数据流总览：方案 B（codec + websocket，默认）与方案 A（pointcloud_web_viewer，仅 develop）](images/node_graph.png)
+
+### 1.1 节点订阅与输出接口
+
+| Node | 方案 | 职责 | 输入（Topic · 类型） | 输出（Topic · 类型） |
+|-|-|-|-|-|
+| mipi_cam | A、B | 采集、校正、拼接 | 两路 MIPI sensor（RAW10） | /image_combine_raw（NV12）、左右 camera_info |
+| StereoNetNode | A、B | 推理、后处理 | /image_combine_raw、左右 camera_info | stereonet_visual（BGR8）、stereonet_depth（mono16）、stereonet_pointcloud2、camera_info |
+| pointcloud_web_viewer | A | 点云序列化、JPEG 编码、Web 服务 | stereonet_pointcloud2、stereonet_visual | HTTP + WebSocket（非 Topic） |
+| hobot_codec | B | JPEG 编码 | stereonet_visual（BGR8） | /image_jpeg（CompressedImage） |
+| hobot_websocket | B | 封帧、推送 | /image_jpeg | WebSocket（protobuf，非 Topic） |
+
+本表只列主链路的主要接口，其他可选 Topic 在对应节点章节里介绍；除 /image_combine_raw 和 /image_jpeg 外，其余 Topic 都在 /StereoNetNode/ 命名空间下。
+
+### 1.2 两种 Web 展示方案
+
+| 对比项 | 方案 A | 方案 B |
+|-|-|-|
+| Web 展示节点 | pointcloud_web_viewer | hobot_codec + hobot_websocket |
+| Web 展示能力 | 3D 点云 + 2D 图像 | 2D 图像 |
+| 浏览器收到的数据 | 点云二进制 + JPEG | JPEG 经 Protobuf 封装 |
+| JPEG 编码方式 | Viewer 内部 OpenCV 软件编码 | X5 的 JPEG 编码路径 |
+| Web 服务 | Viewer 内置 HTTP / WebSocket | nginx 静态页 + WebSocket 节点 |
+
+方案 A 直接订阅点云和可视化图像，浏览器通过 WebGL 展示三维点云；方案 B 的 Web 链路只传可视化图像，不含点云。两套方案的 WebSocket 默认都涉及 8080，并行运行要调端口。
 
 ## 2. 标定
 
