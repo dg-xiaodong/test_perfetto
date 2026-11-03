@@ -1,40 +1,36 @@
 # X5 双目深度链路：从 MIPI 到 WebSocket
 
 > 来源：飞书文档《X5 双目深度链路：从 MIPI 到 WebSocket》
-> <https://horizonrobotics.feishu.cn/docx/OHSzdPn7TowBchxCMvccyuNFnEd>，2026-11-02 转换为 Markdown，
+> <https://horizonrobotics.feishu.cn/docx/OHSzdPn7TowBchxCMvccyuNFnEd>，2026-11-02 转换为 Markdown；
+> 2026-11-03 同步第 1 章更新（「四个进程」→「整体软件架构 / 节点接口」，图 1 换为「整体软件架构：四个 ROS2 节点」）。
 > 图片经飞书文档素材接口下载后存放于 [`images/`](images/)。
 
-链路是四个进程串起来的：标定离线产出 K/D/R/T，mipi_cam 用它生成 GDC 表并把两路 sensor 拼成一张 640×704；StereoNetNode 拆开后送 BPU，输出视差、深度和可视化图；hobot_codec 压成 jpeg；hobot_websocket 推给浏览器。
+这套文档讲 RDK X5 加 SC132GS 双目模组上的一条深度链路：模型 DStereoV2.4_int16，TROS 3.5.0（stereonet 2.5.6、mipi-cam 2.5.2、codec 2.3.5），30 fps 采集。
 
-环境是 RDK X5 加 SC132GS 双目模组，模型 DStereoV2.4_int16，TROS 3.5.0（stereonet 2.5.6、mipi-cam 2.5.2、codec 2.3.5），30 fps 采集。板 192.168.1.15 从 10 月 28 日起 ping 不通，所以硬件流水线、拆图与丢帧这几块只有源码依据，其余数字是之前实测的。
+板 192.168.1.15 从 10 月 28 日起 ping 不通，所以硬件流水线、拆图与丢帧这几块只有源码依据，其余数字是之前实测的。
 
-## 1. 四个进程
+## 1. 整体软件架构
 
-| 进程 | 订阅 | 发布 | 频率 | 输出字节 |
-|-|-|-|-|-|
-| `mipi_cam` | 无 | `/image_combine_raw`（nv12 640×704） | 30 Hz | 675,840 |
-| `stereonet_model` | `/image_combine_raw` | `~/stereonet_visual`（bgr8 640×704）、`~/stereonet_depth`（u16）、`~/stereonet_pointcloud2` | 15 Hz | 1,351,680 / 450,560 / 1,792,672 |
-| `hobot_codec_rep` | `~/stereonet_visual` | `~/image_jpeg`（CompressedImage） | 15 Hz | ≈65,000 |
-| `websocket` | `~/image_jpeg` | WebSocket 帧（protobuf 封装） | 15 Hz | ≈69,000 |
-| `nginx` | — | `:8000` 静态页 | — | — |
+方案 B 用四个 ROS2 节点串起整条链路：`mipi_cam` 取两路 sensor 拼成一张图，`StereoNetNode` 拆图推理出视差与深度，`hobot_codec` 压成 JPEG，`hobot_websocket` 推给浏览器。
 
-跨进程的数据从 675,840 B 到 69,000 B。BPU 的 4,618,240 B 只在 `stereonet_model` 进程内，不跨进程。
+只有可视化图像进 Web 展示链路。深度、点云和相机参数是 `StereoNetNode` 的独立输出，供其他节点直接订阅，不经过 codec 和 websocket。
 
-### 1.1 三处队列
+### 1.1 节点接口
 
-| 进程 | 队列 | 深度 | 策略 | 后果 |
-|-|-|-|-|-|
-| `stereonet_model` 输入 | `input_image_queue_` | 1 | 丢旧帧 | 30 Hz 采、15 Hz 算 |
-| `stereonet_model` 结果 | `pub_data_queue_` | `infer_thread_num` | 丢旧帧 | 延迟不累积 |
-| `websocket` 待发 | `x3_frames_` | 100 | 丢最旧 | 抗网络抖动，最多积压 6.6 s（65 KB × 100） |
+| Node | 职责 | 输入 / 订阅 | 输入类型 | 输出 / 发布 | 输出类型 |
+|-|-|-|-|-|-|
+| `mipi_cam` | 双目采集、GDC 校正、左右配对与拼接 | 两路 MIPI sensor | RAW10（硬件输入，不是 ROS2 Topic） | `/image_combine_raw`、`/image_combine_raw/left/camera_info`、`/image_combine_raw/right/camera_info` | `sensor_msgs/msg/Image`（NV12）、`sensor_msgs/msg/CameraInfo` |
+| `StereoNetNode` | 拆图、BPU 推理、后处理与发布 | `/image_combine_raw`、左右 `camera_info` | `sensor_msgs/msg/Image`、`sensor_msgs/msg/CameraInfo` | `/StereoNetNode/stereonet_visual`、`/StereoNetNode/stereonet_depth`、`/StereoNetNode/stereonet_pointcloud2`、深度与校正图的 `camera_info` | `sensor_msgs/msg/Image`（BGR8 / mono16）、`sensor_msgs/msg/PointCloud2`、`sensor_msgs/msg/CameraInfo` |
+| `hobot_codec` | 可视化图像编码为 JPEG | `/StereoNetNode/stereonet_visual` | `sensor_msgs/msg/Image`（BGR8） | `/image_jpeg` | `sensor_msgs/msg/CompressedImage`（JPEG） |
+| `hobot_websocket` | JPEG 封装成帧并推送 | `/image_jpeg` | `sensor_msgs/msg/CompressedImage` | WebSocket 数据流 | protobuf 二进制（不是 ROS2 Topic） |
 
-三处都是丢旧保新，深度差 100 倍。诊断卡顿时先看哪一层在丢：算法层丢帧表现为频率下降，传输层丢帧表现为画面延迟增长。
+本方案的尺寸：合帧 nv12 640×704（每眼 640×352），visual bgr8 640×704，depth 16 位 640×352。这些是本次配置，不是组件的固定要求。传感器、BPU、浏览器和 nginx 都不是 ROS2 节点；静态页与 WebSocket 分别由 nginx 的 `:8000` 和 `:8080` 提供。
 
-![四个进程与它们之间的数据](images/fig_processes.png)
+![整体软件架构：四个 ROS2 节点与独立输出](images/fig_architecture.png)
+
+> **补充图（非飞书原文）**：同一套链路的节点与数据流总览，对比方案 B（默认）与方案 A（仅 develop），并标出 BPU 4 个量化张量到 CPU 3 个对外话题的对应关系。
 
 ![节点与数据流总览：方案 B（codec + websocket，默认）与方案 A（pointcloud_web_viewer，仅 develop）](images/node_graph.png)
-
-节点与数据流总览：方案 B 是 2.5.4–2.5.9 的默认路径（节点 1–4 加浏览器），方案 A 用 `pointcloud_web_viewer` 顶替节点 3、4，两套 8080 端口冲突只能二选一；图中同时给出 BPU 的 4 个量化张量与 CPU 侧 3 个对外话题的对应关系。
 
 ## 2. 标定
 
