@@ -2,45 +2,28 @@
 
 > 来源：飞书文档《X5 双目深度链路：从 MIPI 到 WebSocket》
 > <https://horizonrobotics.feishu.cn/docx/OHSzdPn7TowBchxCMvccyuNFnEd>，2026-11-02 转换为 Markdown；
-> 2026-11-03 同步第 1 章四次改版：结构由「四个进程」→「整体软件架构 / 节点订阅与输出接口 / 两种 Web 展示方案」，
-> 节点接口表与 A/B 对比表逐步精简，图 1 在章内位置调整三次、内容换版四次。
+> 2026-11-03 同步第 1 章六次改版，最终结构收敛为：一段总述 + 架构图（公共链路 + 方案 A/B）+ 发布/订阅关系表 + 一段补充。
 > 图片经飞书文档素材接口下载后存放于 [`images/`](images/)。
 
 ## 1. 整体软件架构
 
-系统是 ROS2 多节点架构。mipi_cam 负责双目采集、GDC 校正和拼接，StereoNetNode 负责 BPU 推理与深度计算，两者构成公共的双目深度链路。
+`mipi_cam` 与 `StereoNetNode` 构成公共链路；方案 A 用 `pointcloud_web_viewer` 展示 3D 点云和 2D 图像，方案 B 用 `hobot_codec` + `hobot_websocket` 展示 2D 图像（本文实测为方案 B）。
 
-Web 展示分成两种方案：方案 A 用 pointcloud_web_viewer，支持 3D 点云和 2D 图像；方案 B 用 hobot_codec 加 hobot_websocket，只支持 2D 图像。本文档记录的是方案 B（TROS 3.5.0 + DStereoV2.4_int16），当前 develop 的 launch 里 enable_web_viewer 默认 True，起的是方案 A。
+![整体软件架构](images/fig_architecture.png)
 
-![整体软件架构：公共链路 + 方案 A / B](images/fig_architecture.png)
-
-> **补充图（非飞书原文）**：同一套链路的节点与数据流总览。相对上面的架构图，它额外标出 BPU 4 个量化张量的字节数、CPU 产物到对外话题的对应关系，以及方案 A 的实测开销（订阅点云后 `StereoNetNode` CPU 增 20–30%，viewer 自身约 47% CPU / 116 MB）。
+> **补充图（非飞书原文）**：同一套链路的节点与数据流总览。相对上图，它额外标出 BPU 4 个量化张量的字节数、CPU 产物到对外话题的对应关系，以及方案 A 的实测开销（订阅点云后 `StereoNetNode` CPU 增 20–30%，viewer 自身约 47% CPU / 116 MB）。
 
 ![节点与数据流总览：方案 B（codec + websocket，默认）与方案 A（pointcloud_web_viewer，仅 develop）](images/node_graph.png)
 
-### 1.1 节点订阅与输出接口
+| 发布者 | 订阅者 | Topic | 消息类型 |
+|-|-|-|-|
+| `mipi_cam` | `StereoNetNode` | `/image_combine_raw` | `Image`（NV12） |
+| `mipi_cam` | `StereoNetNode` | `/image_combine_raw/left/camera_info`、`/image_combine_raw/right/camera_info` | `CameraInfo` |
+| `StereoNetNode` | `pointcloud_web_viewer`（A） | `/StereoNetNode/stereonet_pointcloud2` | `PointCloud2` |
+| `StereoNetNode` | `pointcloud_web_viewer`（A）、`hobot_codec`（B） | `/StereoNetNode/stereonet_visual` | `Image`（BGR8） |
+| `hobot_codec` | `hobot_websocket`（B） | `/image_jpeg` | `CompressedImage`（JPEG） |
 
-| Node | 方案 | 职责 | 输入（Topic · 类型） | 输出（Topic · 类型） |
-|-|-|-|-|-|
-| mipi_cam | A、B | 采集、校正、拼接 | 两路 MIPI sensor（RAW10） | /image_combine_raw（NV12）、左右 camera_info |
-| StereoNetNode | A、B | 推理、后处理 | /image_combine_raw、左右 camera_info | stereonet_visual（BGR8）、stereonet_depth（mono16）、stereonet_pointcloud2、camera_info |
-| pointcloud_web_viewer | A | 点云序列化、JPEG 编码、Web 服务 | stereonet_pointcloud2、stereonet_visual | HTTP + WebSocket（非 Topic） |
-| hobot_codec | B | JPEG 编码 | stereonet_visual（BGR8） | /image_jpeg（CompressedImage） |
-| hobot_websocket | B | 封帧、推送 | /image_jpeg | WebSocket（protobuf，非 Topic） |
-
-本表只列主链路的主要接口，其他可选 Topic 在对应节点章节里介绍；除 /image_combine_raw 和 /image_jpeg 外，其余 Topic 都在 /StereoNetNode/ 命名空间下。
-
-### 1.2 两种 Web 展示方案
-
-| 对比项 | 方案 A | 方案 B |
-|-|-|-|
-| Web 展示节点 | pointcloud_web_viewer | hobot_codec + hobot_websocket |
-| Web 展示能力 | 3D 点云 + 2D 图像 | 2D 图像 |
-| 浏览器收到的数据 | 点云二进制 + JPEG | JPEG 经 Protobuf 封装 |
-| JPEG 编码方式 | Viewer 内部 OpenCV 软件编码 | X5 的 JPEG 编码路径 |
-| Web 服务 | Viewer 内置 HTTP / WebSocket | nginx 静态页 + WebSocket 节点 |
-
-方案 A 直接订阅点云和可视化图像，浏览器通过 WebGL 展示三维点云；方案 B 的 Web 链路只传可视化图像，不含点云。两套方案的 WebSocket 默认都涉及 8080，并行运行要调端口。
+`StereoNetNode` 还发布 `/StereoNetNode/stereonet_depth`（`Image`，mono16）等独立 ROS2 输出；Web 浏览器数据通过 HTTP / WebSocket 传输。
 
 ## 2. 标定
 

@@ -130,7 +130,7 @@ T1 需替换新模块（vermagic 与板上 `6.1.83-DR-PL5.1_V1.0.20` 一致）�
 ## 双目深度链路（[`hobot_stereonet/`](hobot_stereonet/)）
 
 X5 + SC132GS 双目模组从 MIPI 到 WebSocket 的链路梳理：整体软件架构（公共链路 + 方案 A `pointcloud_web_viewer` /
-方案 B `hobot_codec`+`hobot_websocket` 的节点接口表与差异）→ 标定 → `mipi_cam` → `StereoNetNode`（BPU 量化张量与后处理）
+方案 B `hobot_codec`+`hobot_websocket`）与发布/订阅关系表 → 标定 → `mipi_cam` → `StereoNetNode`（BPU 量化张量与后处理）
 → 逐级格式与字节数，以及待上板验证的清单与复现命令。含 5 张链路图 + 1 张节点数据流补充图（`hobot_stereonet/images/`）。
-本文档由飞书文档转换而来（2026-11-03 四次同步第 1 章：整体软件架构 / 节点订阅与输出接口 / 两种 Web 展示方案），
+本文档由飞书文档转换而来（2026-11-03 第 1 章多轮改版，最终结构：总述 + 架构图 + 发布/订阅关系表 + 补充说明），
 硬件流水线与拆图/丢帧部分仅有源码依据（板 192.168.1.15 自 10 月 28 日起不可达）。
