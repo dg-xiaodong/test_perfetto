@@ -32,6 +32,10 @@
 
 ![四个进程与它们之间的数据](images/fig_processes.png)
 
+![节点与数据流总览：方案 B（codec + websocket，默认）与方案 A（pointcloud_web_viewer，仅 develop）](images/node_graph.png)
+
+节点与数据流总览：方案 B 是 2.5.4–2.5.9 的默认路径（节点 1–4 加浏览器），方案 A 用 `pointcloud_web_viewer` 顶替节点 3、4，两套 8080 端口冲突只能二选一；图中同时给出 BPU 的 4 个量化张量与 CPU 侧 3 个对外话题的对应关系。
+
 ## 2. 标定
 
 标定离线做，产出 K/D/R/T；启动时这些参数被编成 GDC 每帧要查的 bin，同时发布成 `CameraInfo`。
