@@ -9,6 +9,7 @@ RDK X5 / ISP8000 V62x（`isp8000_6_2_0_rc0s`）在 HDR 场景下的 ISP 寄存�
 | `isp_sc230ai_regs.txt` | SC230AI 传感器配置下的 ISP 寄存器 dump |
 | `isp_ov50q40_regs.txt` | OV50Q40 传感器配置下的 ISP 寄存器 dump |
 | `Vivante.ISP8000.Series.V62x.Accessible.Registers-00A3-v0.80_isp8000_6_2_0_rc0s-B-20230718.pdf` | 官方寄存器手册（00A3 / v0.80，536 页 A4，2023-07-18 生成），用于查地址含义与位域 |
+| `isp8000.txt` | 同一份手册的**纯文本抽取版**（27,415 行，便于 `grep` 查寄存器名/位域，如 `grep -n "0x3d000410" isp8000.txt`） |
 
 ## 寄存器 dump 格式
 
