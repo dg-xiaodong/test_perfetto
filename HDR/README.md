@@ -11,6 +11,13 @@ RDK X5 / ISP8000 V62x（`isp8000_6_2_0_rc0s`）在 HDR 场景下的 ISP 寄存�
 | `Vivante.ISP8000.Series.V62x.Accessible.Registers-00A3-v0.80_isp8000_6_2_0_rc0s-B-20230718.pdf` | 官方寄存器手册（00A3 / v0.80，536 页 A4，2023-07-18 生成），用于查地址含义与位域 |
 | `isp8000.txt` | 同一份手册的**纯文本抽取版**（27,415 行，便于 `grep` 查寄存器名/位域，如 `grep -n "0x3d000410" isp8000.txt`） |
 
+## 时序图
+
+| 文件 | 内容 |
+|---|---|
+| `fig_4-15_dcg_vs_2exp_stagger_hdr_timing.png` | DCG with VS（2-exposure stagger HDR）时序：HCG/LCG/短曝光三路行读出与 blanking 关系（原图 figure 4-15） |
+| `fig_2-5_sc230ai_line_interleave_hdr_no_vc_mode_b_timing.png` | SC230AI 行交叠 HDR（不使用 virtual channel）数据模式 b 的读出时序：Framen_long / Framen_short 与 dummy_data 的排布（原图 图 2-5） |
+
 ## 寄存器 dump 格式
 
 - 每行一条：`<地址> <数值>`，均为十六进制，例如 `0x3d000410 0x00000780`；
