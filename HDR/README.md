@@ -9,6 +9,7 @@ RDK X5 / ISP8000 V62x（`isp8000_6_2_0_rc0s`）在 HDR 场景下的 ISP 寄存�
 | `isp_sc230ai_regs.txt` | SC230AI 传感器配置下的 ISP 寄存器 dump |
 | `isp_ov50q40_regs.txt` | OV50Q40 传感器配置下的 ISP 寄存器 dump |
 | `Vivante.ISP8000.Series.V62x.Accessible.Registers-00A3-v0.80_isp8000_6_2_0_rc0s-B-20230718.pdf` | 官方寄存器手册（00A3 / v0.80，536 页 A4，2023-07-18 生成），用于查地址含义与位域 |
+| `Vivante.AppNote.ISP8x00.Series.HDR.Modes.and.Sensor.Timing-v1.06-D-20260909.pdf` | 官方应用笔记：ISP8x00 系列 HDR 模式与 sensor 时序（Rev 1.06，29 页，兼容 ISP8000 V3.x/4.x/5.x 与 ISP8200 V6.x）——讲清 stagger/DCG/VS 各 HDR 模式的时序约束，与上面的 `fig_4-15`/`fig_2-5` 配套阅读 |
 | `isp8000.txt` | 同一份手册的**纯文本抽取版**（27,415 行，便于 `grep` 查寄存器名/位域，如 `grep -n "0x3d000410" isp8000.txt`） |
 
 ## 时序图
